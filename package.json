@@ -1,0 +1,18 @@
+{
+  "name": "brianshortapps",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "applications/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "echo Workspace build",
+    "lint": "echo Workspace lint",
+    "test": "echo Workspace test",
+    "format": "echo Workspace format"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
