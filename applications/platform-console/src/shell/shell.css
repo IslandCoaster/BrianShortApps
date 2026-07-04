@@ -105,7 +105,7 @@
   min-width: 0;
 }
 
-.engineering-topbar {
+.engineering-workspace-header {
   display: flex;
   justify-content: space-between;
   gap: var(--space-6);
@@ -115,20 +115,20 @@
   background: var(--surface-background);
 }
 
-.engineering-topbar p {
+.engineering-workspace-header p {
   margin: 0 0 var(--space-1);
   color: var(--text-muted);
   font-size: var(--text-sm);
 }
 
-.engineering-topbar h1 {
+.engineering-workspace-header h1 {
   margin: 0;
   color: var(--text-primary);
   font-size: var(--text-2xl);
   letter-spacing: -0.04em;
 }
 
-.engineering-topbar__status {
+.engineering-workspace-header__status {
   padding: var(--space-2) var(--space-4);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-full);

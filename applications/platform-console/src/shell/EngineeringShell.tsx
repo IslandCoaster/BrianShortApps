@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { Navigator } from "./Navigator/Navigator";
-import { TopBar } from "./TopBar/TopBar";
+import { WorkspaceHeader } from "./WorkspaceHeader/WorkspaceHeader";
 import "./shell.css";
 
 type EngineeringShellProps = {
@@ -13,7 +13,7 @@ export function EngineeringShell({ children }: EngineeringShellProps) {
     <div className="engineering-shell">
       <Navigator />
       <section className="engineering-shell__main">
-        <TopBar />
+        <WorkspaceHeader />
         <div className="engineering-shell__content">{children}</div>
       </section>
     </div>
