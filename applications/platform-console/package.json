@@ -9,6 +9,7 @@
     "@bsa/design-system": "*",
     "@bsa/diagnostics": "*",
     "@bsa/registry": "*",
-    "@bsa/ui": "*"
+    "@bsa/ui": "*",
+    "@bsa/knowledge": "*"
   }
 }
