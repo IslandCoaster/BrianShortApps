@@ -1,4 +1,5 @@
-import { navigatorPrimaryItems, navigatorSecondaryItems } from "./navigator.config";
+import { navigatorPrimaryItems } from "./navigator.config";
+import { WorkspaceStatus } from "../WorkspaceStatus/WorkspaceStatus";
 
 export function Navigator() {
   return (
@@ -25,14 +26,7 @@ export function Navigator() {
         ))}
       </nav>
 
-      <div className="engineering-navigator__status">
-        {navigatorSecondaryItems.map((item) => (
-          <div className="engineering-navigator__status-row" key={item.label}>
-            <span>{item.label}</span>
-            <strong>{item.value}</strong>
-          </div>
-        ))}
-      </div>
+      <WorkspaceStatus />
     </aside>
   );
 }
