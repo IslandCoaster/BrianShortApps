@@ -1,9 +1,9 @@
-import { navigatorPrimaryItems } from "./navigator.config";
 import { WorkspaceStatus } from "../WorkspaceStatus/WorkspaceStatus";
+import { navigatorPrimaryItems } from "./navigator.config";
 
 export function Navigator() {
   return (
-    <aside className="engineering-navigator" aria-label="Engineering workspace navigation">
+    <aside className="engineering-navigator" aria-label="Engineering workspace navigator">
       <div className="engineering-navigator__brand">
         <img src="/bsa-platform-mark.svg" alt="" className="engineering-navigator__mark" />
         <div>
@@ -16,12 +16,13 @@ export function Navigator() {
         {navigatorPrimaryItems.map((item) => (
           <button
             className={`engineering-navigator__item ${
-              item === "Engineering Workspace" ? "engineering-navigator__item--active" : ""
+              item.status === "active" ? "engineering-navigator__item--active" : ""
             }`}
-            key={item}
+            key={item.id}
             type="button"
           >
-            {item}
+            <span className="engineering-navigator__item-label">{item.label}</span>
+            <span className="engineering-navigator__item-description">{item.description}</span>
           </button>
         ))}
       </nav>

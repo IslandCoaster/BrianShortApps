@@ -150,3 +150,18 @@
     min-height: auto;
   }
 }
+
+.engineering-navigator__item-label {
+  display: block;
+  color: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
+
+.engineering-navigator__item-description {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+}
