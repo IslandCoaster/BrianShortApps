@@ -165,3 +165,37 @@
   font-size: var(--text-xs);
   line-height: 1.4;
 }
+
+.engineering-workspace-header__subtitle {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.engineering-workspace-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.engineering-workspace-header__action {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  background: var(--surface-control);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition:
+    border-color var(--motion-fast) var(--curve-standard),
+    color var(--motion-fast) var(--curve-standard),
+    background var(--motion-fast) var(--curve-standard);
+}
+
+.engineering-workspace-header__action:hover {
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
