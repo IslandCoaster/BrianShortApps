@@ -1,6 +1,6 @@
 import "./EngineeringWorkspace.css";
 
-import { architectureDocuments, foundationDocuments, workspaceTruths } from "./engineeringWorkspace.model";
+import { architectureDocuments, foundationDocuments, workspaceTruths } from "./engineeringWorkspace.experience";
 
 export default function EngineeringWorkspace() {
   return (
