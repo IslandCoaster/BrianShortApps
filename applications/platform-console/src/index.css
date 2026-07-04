@@ -1,0 +1,17 @@
+@import "../../../packages/design-system/tokens/index.css";
+
+:root {
+  color-scheme: dark;
+  font-family: var(--font-sans);
+  background: var(--surface-background);
+  color: var(--text-primary);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--surface-background);
+}

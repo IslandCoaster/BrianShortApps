@@ -1,0 +1,16 @@
+:root {
+  --color-brand-primary: #2563eb;
+  --color-brand-secondary: #0f172a;
+  --color-brand-surface: #f8fafc;
+  --color-brand-neutral: #64748b;
+
+  --color-product-bsa: #2563eb;
+  --color-product-mco: #38bdf8;
+  --color-product-flightlog: #10b981;
+  --color-product-debt: #8b5cf6;
+
+  --color-status-success: #22c55e;
+  --color-status-warning: #f59e0b;
+  --color-status-danger: #ef4444;
+  --color-status-info: #3b82f6;
+}

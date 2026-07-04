@@ -1,0 +1,27 @@
+:root {
+  --surface-background: #07111f;
+  --surface-base: #0f172a;
+  --surface-card: #111827;
+  --surface-elevated: #1e293b;
+  --surface-modal: #020617;
+  --surface-popover: #172033;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-disabled: #64748b;
+  --text-inverse: #020617;
+
+  --border-subtle: rgba(148, 163, 184, 0.16);
+  --border-default: rgba(148, 163, 184, 0.24);
+  --border-strong: rgba(226, 232, 240, 0.36);
+  --border-focus: var(--color-brand-primary);
+}
+
+:root {
+  --surface-panel: rgba(15, 23, 42, 0.72);
+  --surface-panel-muted: rgba(15, 23, 42, 0.68);
+  --surface-control: rgba(30, 41, 59, 0.72);
+
+  --effect-brand-glow: rgba(65, 105, 225, 0.22);
+}
