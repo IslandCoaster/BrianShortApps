@@ -1,0 +1,3 @@
+// @bsa/aws
+
+export {};

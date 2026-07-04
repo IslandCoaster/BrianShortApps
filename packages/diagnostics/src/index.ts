@@ -1,0 +1,3 @@
+// @bsa/diagnostics
+
+export {};
