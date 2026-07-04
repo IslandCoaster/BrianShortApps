@@ -16,11 +16,11 @@ const architectureDocuments = [
   "Root Diagnostics",
 ];
 
-const platformStats = [
-  { label: "SDK Packages", value: "7" },
-  { label: "Engineering Applications", value: "3" },
+const workspaceTruths = [
+  { label: "Shared Packages", value: "7" },
+  { label: "Platform Areas", value: "5" },
   { label: "Product Applications", value: "3" },
-  { label: "Platform Runtime Areas", value: "5" },
+  { label: "Engineering Experiences", value: "3" },
 ];
 
 export default function EngineeringWorkspace() {
@@ -67,9 +67,9 @@ export default function EngineeringWorkspace() {
         </article>
 
         <article className="engineering-workspace__section">
-          <h2>Workspace Truths</h2>
+          <h2>Platform Inventory</h2>
           <div className="engineering-workspace__metrics">
-            {platformStats.map((stat) => (
+            {workspaceTruths.map((stat) => (
               <div className="engineering-workspace__metric" key={stat.label}>
                 <span>{stat.value}</span>
                 <p>{stat.label}</p>
