@@ -1,4 +1,4 @@
-import "../App.css";
+import "./EngineeringWorkspace.css";
 
 const foundationDocuments = [
   "Platform Vision",
