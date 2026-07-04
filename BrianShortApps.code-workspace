@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "name": "BrianShortApps",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.turbo": true
+    },
+    "explorer.compactFolders": false
+  }
+}
