@@ -15,6 +15,7 @@ Engineering Application
 - @bsa/auth
 - @bsa/design-system
 - @bsa/diagnostics
+- @bsa/knowledge
 - @bsa/registry
 - @bsa/ui
 
