@@ -23,51 +23,54 @@ const platformStats = [
   { label: "Platform Runtime Areas", value: "5" },
 ];
 
-function App() {
+export default function EngineeringWorkspace() {
   return (
-    <main className="platform-console">
-      <section className="hero">
-        <p className="eyebrow">BrianShortApps Platform</p>
-        <h1>Platform Console</h1>
-        <p className="hero-copy">
-          The administration interface for the BrianShortApps Engineering
-          Platform.
+    <main className="engineering-workspace">
+      <section className="engineering-workspace__intro">
+        <p className="engineering-workspace__eyebrow">BrianShortApps Platform</p>
+        <h1 className="engineering-workspace__title">Engineering Workspace</h1>
+        <p className="engineering-workspace__summary">
+          The operating environment for building, governing, and evolving the BrianShortApps
+          ecosystem.
         </p>
       </section>
 
-      <section className="statement">
+      <section className="engineering-workspace__principle">
         <h2>Build the platform before the product.</h2>
         <p>
-          The Platform Console begins by surfacing the architecture, standards,
-          and package ecosystem that every BrianShortApps application will
-          inherit.
+          The Engineering Workspace surfaces the architecture, standards, SDK, and visual operating
+          system that every BrianShortApps application inherits.
         </p>
       </section>
 
-      <section className="console-grid">
-        <article className="panel">
+      <section className="engineering-workspace__grid">
+        <article className="engineering-workspace__section">
           <h2>Foundation</h2>
-          <ul>
+          <ul className="engineering-workspace__list">
             {foundationDocuments.map((document) => (
-              <li key={document}>{document}</li>
+              <li className="engineering-workspace__list-item" key={document}>
+                {document}
+              </li>
             ))}
           </ul>
         </article>
 
-        <article className="panel">
+        <article className="engineering-workspace__section">
           <h2>Architecture</h2>
-          <ul>
+          <ul className="engineering-workspace__list">
             {architectureDocuments.map((document) => (
-              <li key={document}>{document}</li>
+              <li className="engineering-workspace__list-item" key={document}>
+                {document}
+              </li>
             ))}
           </ul>
         </article>
 
-        <article className="panel metrics-panel">
+        <article className="engineering-workspace__section">
           <h2>Workspace Truths</h2>
-          <div className="metrics">
+          <div className="engineering-workspace__metrics">
             {platformStats.map((stat) => (
-              <div className="metric" key={stat.label}>
+              <div className="engineering-workspace__metric" key={stat.label}>
                 <span>{stat.value}</span>
                 <p>{stat.label}</p>
               </div>
@@ -78,5 +81,3 @@ function App() {
     </main>
   );
 }
-
-export default App;
