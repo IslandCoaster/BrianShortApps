@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" role="img" aria-labelledby="title desc">
+  <title id="title">BrianShortApps Platform Mark</title>
+  <desc id="desc">Three engineered circular rings representing experience, products, and progress, with offset access breaks and a center product-safe zone.</desc>
+
+  <defs>
+    <style>
+      .ring {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 22;
+        stroke-linecap: butt;
+      }
+
+      .construction {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        opacity: 0.14;
+      }
+    </style>
+  </defs>
+
+  <!-- Outer Ring: Experience -->
+  <circle
+    class="ring"
+    cx="500"
+    cy="500"
+    r="420"
+    stroke-dasharray="800 70 800 70 800 70"
+    stroke-dashoffset="35"
+    transform="rotate(-90 500 500)"
+  />
+
+  <!-- Middle Ring: Products -->
+  <circle
+    class="ring"
+    cx="500"
+    cy="500"
+    r="365"
+    stroke-dasharray="690 64 690 64 690 64"
+    stroke-dashoffset="32"
+    transform="rotate(-30 500 500)"
+  />
+
+  <!-- Inner Ring: Progress -->
+  <circle
+    class="ring"
+    cx="500"
+    cy="500"
+    r="310"
+    stroke-dasharray="582 58 582 58 582 58"
+    stroke-dashoffset="29"
+    transform="rotate(-90 500 500)"
+  />
+
+  <!-- Product Safe Zone -->
+  <circle
+    class="construction"
+    cx="500"
+    cy="500"
+    r="215"
+  />
+</svg>
