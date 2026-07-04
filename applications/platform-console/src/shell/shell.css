@@ -6,7 +6,7 @@
   color: var(--text-primary);
 }
 
-.engineering-sidebar {
+.engineering-navigator {
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
@@ -16,36 +16,36 @@
   background: var(--surface-panel);
 }
 
-.engineering-sidebar__brand {
+.engineering-navigator__brand {
   display: flex;
   gap: var(--space-4);
   align-items: center;
 }
 
-.engineering-sidebar__mark {
+.engineering-navigator__mark {
   width: 42px;
   height: 42px;
   color: var(--color-brand-primary);
 }
 
-.engineering-sidebar__brand p {
+.engineering-navigator__brand p {
   margin: 0;
   color: var(--text-primary);
   font-size: var(--text-base);
   font-weight: var(--font-semibold);
 }
 
-.engineering-sidebar__brand span {
+.engineering-navigator__brand span {
   color: var(--text-muted);
   font-size: var(--text-sm);
 }
 
-.engineering-sidebar__nav {
+.engineering-navigator__nav {
   display: grid;
   gap: var(--space-2);
 }
 
-.engineering-sidebar__item {
+.engineering-navigator__item {
   width: 100%;
   padding: var(--space-3) var(--space-4);
   border: 1px solid transparent;
@@ -61,32 +61,32 @@
     color var(--motion-fast) var(--curve-standard);
 }
 
-.engineering-sidebar__item:hover {
+.engineering-navigator__item:hover {
   border-color: var(--border-subtle);
   background: var(--surface-control);
   color: var(--text-primary);
 }
 
-.engineering-sidebar__item--active {
+.engineering-navigator__item--active {
   border-color: var(--border-default);
   background: var(--surface-control);
   color: var(--text-primary);
 }
 
-.engineering-sidebar__status {
+.engineering-navigator__status {
   display: grid;
   gap: var(--space-3);
   margin-top: auto;
 }
 
-.engineering-sidebar__status-row {
+.engineering-navigator__status-row {
   padding: var(--space-4);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   background: var(--surface-control);
 }
 
-.engineering-sidebar__status-row span {
+.engineering-navigator__status-row span {
   display: block;
   margin-bottom: var(--space-1);
   color: var(--text-muted);
@@ -95,7 +95,7 @@
   letter-spacing: 0.08em;
 }
 
-.engineering-sidebar__status-row strong {
+.engineering-navigator__status-row strong {
   color: var(--text-primary);
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
@@ -146,7 +146,7 @@
     grid-template-columns: 1fr;
   }
 
-  .engineering-sidebar {
+  .engineering-navigator {
     min-height: auto;
   }
 }

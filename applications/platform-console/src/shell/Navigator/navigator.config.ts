@@ -1,4 +1,4 @@
-export const sidebarPrimaryItems = [
+export const navigatorPrimaryItems = [
   "Engineering Workspace",
   "Platform",
   "Knowledge",
@@ -7,7 +7,7 @@ export const sidebarPrimaryItems = [
   "Applications",
 ];
 
-export const sidebarSecondaryItems = [
+export const navigatorSecondaryItems = [
   { label: "Workspace", value: "Development" },
   { label: "Branch", value: "mc-003-1-platform-foundation" },
   { label: "Identity", value: "BSA-Root" },
