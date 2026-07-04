@@ -7,7 +7,7 @@
 }
 
 .engineering-workspace__intro {
-  max-width: 880px;
+  max-width: 960px;
   margin-bottom: var(--space-8);
 }
 
@@ -64,7 +64,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-6);
-  max-width: 1180px;
+  max-width: 1240px;
 }
 
 .engineering-workspace__section {

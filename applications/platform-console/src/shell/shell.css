@@ -11,7 +11,7 @@
   flex-direction: column;
   gap: var(--space-8);
   min-height: 100vh;
-  padding: var(--space-8);
+  padding: var(--space-10);
   border-right: 1px solid var(--border-subtle);
   background: var(--surface-panel);
 }
