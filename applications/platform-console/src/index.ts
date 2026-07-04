@@ -1,0 +1,3 @@
+// @bsa/platform-console
+
+export {};

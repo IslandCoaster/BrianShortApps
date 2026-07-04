@@ -1,0 +1,14 @@
+{
+  "name": "@bsa/platform-console",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "dependencies": {
+    "@bsa/auth": "*",
+    "@bsa/design-system": "*",
+    "@bsa/diagnostics": "*",
+    "@bsa/registry": "*",
+    "@bsa/ui": "*"
+  }
+}
