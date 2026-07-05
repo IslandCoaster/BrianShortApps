@@ -4,5 +4,5 @@ export type {
   Experience,
   ExperienceItem,
   ExperienceItemStatus,
-  ExperienceSection,
+  ExperienceRegion,
 } from "./experience";

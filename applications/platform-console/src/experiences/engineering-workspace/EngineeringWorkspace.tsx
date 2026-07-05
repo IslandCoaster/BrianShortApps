@@ -3,10 +3,10 @@ import "./EngineeringWorkspace.css";
 import { engineeringWorkspaceExperience } from "./engineering-workspace.experience";
 
 export default function EngineeringWorkspace() {
-  const foundation = engineeringWorkspaceExperience.sections.find((section) => section.id === "foundation");
-  const architecture = engineeringWorkspaceExperience.sections.find((section) => section.id === "architecture");
-  const inventory = engineeringWorkspaceExperience.sections.find(
-    (section) => section.id === "platform-inventory",
+  const foundation = engineeringWorkspaceExperience.regions.find((region) => region.id === "foundation");
+  const architecture = engineeringWorkspaceExperience.regions.find((region) => region.id === "architecture");
+  const inventory = engineeringWorkspaceExperience.regions.find(
+    (region) => region.id === "platform-inventory",
   );
 
   if (!foundation || !architecture || !inventory) {

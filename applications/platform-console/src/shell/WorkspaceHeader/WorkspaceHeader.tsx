@@ -1,7 +1,7 @@
 import { engineeringWorkspaceExperience } from "../../experiences/engineering-workspace/engineering-workspace.experience";
 
 const workspaceActions =
-  engineeringWorkspaceExperience.sections.find((section) => section.id === "workspace-actions")
+  engineeringWorkspaceExperience.regions.find((region) => region.id === "workspace-actions")
     ?.items ?? [];
 
 export function WorkspaceHeader() {

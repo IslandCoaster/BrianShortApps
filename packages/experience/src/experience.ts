@@ -4,10 +4,10 @@ export interface Experience {
   id: string;
   title: string;
   description: string;
-  sections: ExperienceSection[];
+  regions: ExperienceRegion[];
 }
 
-export interface ExperienceSection {
+export interface ExperienceRegion {
   id: string;
   title: string;
   items: ExperienceItem[];

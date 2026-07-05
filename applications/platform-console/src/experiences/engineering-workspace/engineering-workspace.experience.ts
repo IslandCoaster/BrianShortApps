@@ -5,7 +5,7 @@ export const engineeringWorkspaceExperience: Experience = {
   title: "Engineering Workspace",
   description:
     "The operating environment for building, governing, and evolving the BrianShortApps ecosystem.",
-  sections: [
+  regions: [
     {
       id: "foundation",
       title: "Foundation",
