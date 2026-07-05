@@ -1,3 +1,4 @@
 // @bsa/knowledge
 
-export {};
+export type { KnowledgeDocument } from "./knowledge";
+export { knowledgeDocuments } from "./knowledge";

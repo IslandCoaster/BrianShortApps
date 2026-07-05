@@ -1,4 +1,5 @@
 import type { Experience } from "@bsa/experience";
+import { knowledgeDocuments } from "@bsa/knowledge";
 
 export const engineeringWorkspaceExperience: Experience = {
   id: "engineering-workspace",
@@ -9,13 +10,14 @@ export const engineeringWorkspaceExperience: Experience = {
     {
       id: "foundation",
       title: "Foundation",
-      items: [
-        { id: "platform-vision", label: "Platform Vision", status: "available" },
-        { id: "platform-model", label: "Platform Model", status: "available" },
-        { id: "engineering-platform", label: "Engineering Platform", status: "available" },
-        { id: "engineering-philosophy", label: "Engineering Philosophy", status: "available" },
-        { id: "platform-principles", label: "Platform Principles", status: "available" },
-      ],
+      items: knowledgeDocuments
+        .filter((document) => document.category === "foundation")
+        .map((document) => ({
+          id: document.id,
+          label: document.title,
+          description: document.path,
+          status: "available",
+        })),
     },
     {
       id: "architecture",
