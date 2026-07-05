@@ -36,8 +36,13 @@ export default function EngineeringWorkspace({
 
       {selectedDocument ? (
         <section className="engineering-workspace__document">
-          <p className="engineering-workspace__document-eyebrow">Knowledge Preview</p>
-          <h2>{selectedDocument.title}</h2>
+          <div className="engineering-workspace__document-header">
+            <div>
+              <p className="engineering-workspace__document-eyebrow">Live Knowledge</p>
+              <h2>{selectedDocument.title}</h2>
+            </div>
+            <span className="engineering-workspace__document-badge">Repository Source</span>
+          </div>
           <dl className="engineering-workspace__document-meta">
             <div>
               <dt>Source</dt>

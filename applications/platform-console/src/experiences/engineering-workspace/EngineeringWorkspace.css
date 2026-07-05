@@ -307,3 +307,20 @@
   color: var(--text-secondary);
   line-height: 1.7;
 }
+
+.engineering-workspace__document-header {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-6);
+  align-items: flex-start;
+}
+
+.engineering-workspace__document-badge {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  background: var(--surface-control);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+}
