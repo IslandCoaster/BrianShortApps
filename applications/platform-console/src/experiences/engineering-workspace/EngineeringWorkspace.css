@@ -198,34 +198,9 @@
   cursor: pointer;
 }
 
-.engineering-workspace__document {
-  max-width: 1240px;
-  margin-top: var(--space-8);
-  padding: var(--space-8);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-2xl);
-  background: var(--surface-panel);
-}
 
-.engineering-workspace__document-eyebrow {
-  margin: 0 0 var(--space-2);
-  color: var(--text-muted);
-  font-size: var(--text-xs);
-  font-weight: var(--font-bold);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
 
-.engineering-workspace__document h2 {
-  margin: 0 0 var(--space-3);
-  color: var(--text-primary);
-  font-size: var(--text-2xl);
-}
 
-.engineering-workspace__document p {
-  margin: 0;
-  color: var(--text-secondary);
-}
 
 .engineering-workspace__experience [data-experience-item] button {
   align-items: flex-start;
@@ -242,85 +217,4 @@
   font-size: var(--text-sm);
   line-height: 1.35;
   text-align: right;
-}
-
-.engineering-workspace__document-meta {
-  display: grid;
-  gap: var(--space-3);
-  margin: var(--space-4) 0 0;
-}
-
-.engineering-workspace__document-meta div {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.engineering-workspace__document-meta dt {
-  color: var(--text-muted);
-  font-size: var(--text-xs);
-  font-weight: var(--font-bold);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.engineering-workspace__document-meta dd {
-  margin: 0;
-  color: var(--text-secondary);
-  overflow-wrap: anywhere;
-}
-
-.engineering-workspace__document-content {
-  margin: var(--space-6) 0 0;
-  padding: var(--space-6);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  background: var(--surface-control);
-  color: var(--text-secondary);
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  line-height: 1.7;
-  white-space: pre-wrap;
-}
-
-.engineering-workspace__document-content h1,
-.engineering-workspace__document-content h2,
-.engineering-workspace__document-content h3 {
-  margin: var(--space-4) 0 var(--space-2);
-  color: var(--text-primary);
-  letter-spacing: -0.03em;
-}
-
-.engineering-workspace__document-content h1 {
-  font-size: var(--text-2xl);
-}
-
-.engineering-workspace__document-content h2 {
-  font-size: var(--text-xl);
-}
-
-.engineering-workspace__document-content h3 {
-  font-size: var(--text-lg);
-}
-
-.engineering-workspace__document-content p {
-  margin: 0 0 var(--space-3);
-  color: var(--text-secondary);
-  line-height: 1.7;
-}
-
-.engineering-workspace__document-header {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-6);
-  align-items: flex-start;
-}
-
-.engineering-workspace__document-badge {
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-full);
-  background: var(--surface-control);
-  color: var(--text-secondary);
-  font-size: var(--text-xs);
-  font-weight: var(--font-medium);
 }
