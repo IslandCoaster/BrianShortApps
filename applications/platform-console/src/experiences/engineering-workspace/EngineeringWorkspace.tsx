@@ -1,5 +1,5 @@
 import { ExperienceRenderer } from "@bsa/experience";
-import { getKnowledgeDocumentContent } from "@bsa/knowledge";
+import { createMarkdownPreview, getKnowledgeDocumentContent } from "@bsa/knowledge";
 
 import "./EngineeringWorkspace.css";
 import { engineeringWorkspaceExperience } from "./engineering-workspace.experience";
@@ -14,6 +14,9 @@ export default function EngineeringWorkspace({
   onSelectKnowledge,
 }: EngineeringWorkspaceProps) {
   const selectedDocument = selectedKnowledgeId ? getKnowledgeDocumentContent(selectedKnowledgeId) : null;
+  const selectedDocumentPreview = selectedDocument
+    ? createMarkdownPreview(selectedDocument.content)
+    : [];
 
   return (
     <main className="engineering-workspace">
@@ -41,7 +44,17 @@ export default function EngineeringWorkspace({
               <dd>{selectedDocument.path}</dd>
             </div>
           </dl>
-          <pre className="engineering-workspace__document-content">{selectedDocument.content}</pre>
+          <div className="engineering-workspace__document-content">
+            {selectedDocumentPreview.map((block, index) => {
+              if (block.type === "heading") {
+                const HeadingTag = `h${block.level}` as "h1" | "h2" | "h3";
+
+                return <HeadingTag key={`${block.text}-${index}`}>{block.text}</HeadingTag>;
+              }
+
+              return <p key={`${block.text}-${index}`}>{block.text}</p>;
+            })}
+          </div>
         </section>
       ) : null}
 

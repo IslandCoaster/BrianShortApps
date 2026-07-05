@@ -281,3 +281,29 @@
   line-height: 1.7;
   white-space: pre-wrap;
 }
+
+.engineering-workspace__document-content h1,
+.engineering-workspace__document-content h2,
+.engineering-workspace__document-content h3 {
+  margin: var(--space-4) 0 var(--space-2);
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+}
+
+.engineering-workspace__document-content h1 {
+  font-size: var(--text-2xl);
+}
+
+.engineering-workspace__document-content h2 {
+  font-size: var(--text-xl);
+}
+
+.engineering-workspace__document-content h3 {
+  font-size: var(--text-lg);
+}
+
+.engineering-workspace__document-content p {
+  margin: 0 0 var(--space-3);
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
