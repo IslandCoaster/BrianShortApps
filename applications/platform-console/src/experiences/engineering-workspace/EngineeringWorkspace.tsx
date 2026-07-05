@@ -1,16 +1,17 @@
 import "./EngineeringWorkspace.css";
 
-import { architectureDocuments, foundationDocuments, workspaceTruths } from "./engineeringWorkspace.experience";
+import { engineeringWorkspaceExperience } from "./engineering-workspace.experience";
 
 export default function EngineeringWorkspace() {
+  const [foundation, architecture, inventory] = engineeringWorkspaceExperience.sections;
+
   return (
     <main className="engineering-workspace">
       <section className="engineering-workspace__intro">
         <p className="engineering-workspace__eyebrow">BrianShortApps Platform</p>
-        <h1 className="engineering-workspace__title">Engineering Workspace</h1>
+        <h1 className="engineering-workspace__title">{engineeringWorkspaceExperience.title}</h1>
         <p className="engineering-workspace__summary">
-          The operating environment for building, governing, and evolving the BrianShortApps
-          ecosystem.
+          {engineeringWorkspaceExperience.description}
         </p>
       </section>
 
@@ -24,34 +25,34 @@ export default function EngineeringWorkspace() {
 
       <section className="engineering-workspace__grid">
         <article className="engineering-workspace__section">
-          <h2>Foundation</h2>
+          <h2>{foundation.title}</h2>
           <ul className="engineering-workspace__list">
-            {foundationDocuments.map((document) => (
-              <li className="engineering-workspace__list-item" key={document}>
-                {document}
+            {foundation.items.map((item) => (
+              <li className="engineering-workspace__list-item" key={item.id}>
+                {item.label}
               </li>
             ))}
           </ul>
         </article>
 
         <article className="engineering-workspace__section">
-          <h2>Architecture</h2>
+          <h2>{architecture.title}</h2>
           <ul className="engineering-workspace__list">
-            {architectureDocuments.map((document) => (
-              <li className="engineering-workspace__list-item" key={document}>
-                {document}
+            {architecture.items.map((item) => (
+              <li className="engineering-workspace__list-item" key={item.id}>
+                {item.label}
               </li>
             ))}
           </ul>
         </article>
 
         <article className="engineering-workspace__section">
-          <h2>Platform Inventory</h2>
+          <h2>{inventory.title}</h2>
           <div className="engineering-workspace__metrics">
-            {workspaceTruths.map((stat) => (
-              <div className="engineering-workspace__metric" key={stat.label}>
-                <span>{stat.value}</span>
-                <p>{stat.label}</p>
+            {inventory.items.map((item) => (
+              <div className="engineering-workspace__metric" key={item.id}>
+                <span>{item.description}</span>
+                <p>{item.label}</p>
               </div>
             ))}
           </div>
