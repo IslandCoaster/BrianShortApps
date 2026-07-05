@@ -1,8 +1,15 @@
+export type KnowledgeDocumentCategory =
+  | "foundation"
+  | "architecture"
+  | "standards"
+  | "adr"
+  | "design";
+
 export type KnowledgeDocument = {
   id: string;
   title: string;
   path: string;
-  category: "foundation" | "architecture" | "standards" | "adr" | "design";
+  category: KnowledgeDocumentCategory;
 };
 
 export const knowledgeDocuments: KnowledgeDocument[] = [
@@ -31,3 +38,15 @@ export const knowledgeDocuments: KnowledgeDocument[] = [
     category: "design",
   },
 ];
+
+export function listKnowledgeDocuments() {
+  return knowledgeDocuments;
+}
+
+export function getKnowledgeDocument(documentId: string) {
+  return knowledgeDocuments.find((document) => document.id === documentId) ?? null;
+}
+
+export function listKnowledgeDocumentsByCategory(category: KnowledgeDocumentCategory) {
+  return knowledgeDocuments.filter((document) => document.category === category);
+}

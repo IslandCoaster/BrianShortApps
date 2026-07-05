@@ -1,5 +1,5 @@
 import { ExperienceRenderer } from "@bsa/experience";
-import { knowledgeDocuments } from "@bsa/knowledge";
+import { getKnowledgeDocument } from "@bsa/knowledge";
 
 import "./EngineeringWorkspace.css";
 import { engineeringWorkspaceExperience } from "./engineering-workspace.experience";
@@ -13,7 +13,7 @@ export default function EngineeringWorkspace({
   selectedKnowledgeId,
   onSelectKnowledge,
 }: EngineeringWorkspaceProps) {
-  const selectedDocument = knowledgeDocuments.find((document) => document.id === selectedKnowledgeId);
+  const selectedDocument = selectedKnowledgeId ? getKnowledgeDocument(selectedKnowledgeId) : null;
 
   return (
     <main className="engineering-workspace">

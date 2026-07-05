@@ -10,8 +10,7 @@ export const engineeringWorkspaceExperience: Experience = {
     {
       id: "foundation",
       title: "Foundation",
-      items: knowledgeDocuments
-        .filter((document) => document.category === "foundation")
+      items: listKnowledgeDocumentsByCategory("foundation")
         .map((document) => ({
           id: document.id,
           label: document.title,
@@ -33,8 +32,7 @@ export const engineeringWorkspaceExperience: Experience = {
     {
       id: "design",
       title: "Design System",
-      items: knowledgeDocuments
-        .filter((document) => document.category === "design")
+      items: listKnowledgeDocumentsByCategory("design")
         .map((document) => ({
           id: document.id,
           label: document.title,
