@@ -1,10 +1,10 @@
 import type { MarkdownPreviewBlock } from "@bsa/knowledge";
 
-type KnowledgeContentProps = {
+type MarkdownPreviewRendererProps = {
   blocks: MarkdownPreviewBlock[];
 };
 
-export function KnowledgeContent({ blocks }: KnowledgeContentProps) {
+export function MarkdownPreviewRenderer({ blocks }: MarkdownPreviewRendererProps) {
   return (
     <div className="knowledge-workspace__content">
       {blocks.map((block, index) => {

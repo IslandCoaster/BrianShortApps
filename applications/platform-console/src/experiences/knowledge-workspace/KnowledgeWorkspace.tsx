@@ -1,6 +1,6 @@
 import { createMarkdownPreview, getKnowledgeDocumentContent } from "@bsa/knowledge";
 
-import { KnowledgeContent } from "./components/KnowledgeContent";
+import { MarkdownPreviewRenderer } from "./renderers/MarkdownPreviewRenderer";
 import { KnowledgeEmptyState } from "./components/KnowledgeEmptyState";
 import { KnowledgeHeader } from "./components/KnowledgeHeader";
 import { KnowledgeMetadata } from "./components/KnowledgeMetadata";
@@ -28,7 +28,7 @@ export function KnowledgeWorkspace({
     <section className="knowledge-workspace">
       <KnowledgeHeader document={selectedDocument} onClearSelection={onClearSelection} />
       <KnowledgeMetadata document={selectedDocument} />
-      <KnowledgeContent blocks={selectedDocumentPreview} />
+      <MarkdownPreviewRenderer blocks={selectedDocumentPreview} />
     </section>
   );
 }
