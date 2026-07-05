@@ -1,6 +1,7 @@
 import { createMarkdownPreview, getKnowledgeDocumentContent } from "@bsa/knowledge";
 
 import "./KnowledgeWorkspace.css";
+import { knowledgeWorkspaceExperience } from "./knowledge-workspace.experience";
 
 type KnowledgeWorkspaceProps = {
   selectedKnowledgeId: string | null;
@@ -20,7 +21,7 @@ export function KnowledgeWorkspace({ selectedKnowledgeId }: KnowledgeWorkspacePr
     <section className="knowledge-workspace">
       <div className="knowledge-workspace__header">
         <div>
-          <p className="knowledge-workspace__eyebrow">Live Knowledge</p>
+          <p className="knowledge-workspace__eyebrow">{knowledgeWorkspaceExperience.title}</p>
           <h2>{selectedDocument.title}</h2>
         </div>
         <span className="knowledge-workspace__badge">Repository Source</span>
