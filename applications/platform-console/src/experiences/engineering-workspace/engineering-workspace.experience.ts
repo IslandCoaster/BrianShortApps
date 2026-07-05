@@ -31,6 +31,18 @@ export const engineeringWorkspaceExperience: Experience = {
       ],
     },
     {
+      id: "design",
+      title: "Design System",
+      items: knowledgeDocuments
+        .filter((document) => document.category === "design")
+        .map((document) => ({
+          id: document.id,
+          label: document.title,
+          description: document.path,
+          status: "available",
+        })),
+    },
+    {
       id: "workspace-actions",
       title: "Workspace Actions",
       items: [
