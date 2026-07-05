@@ -100,3 +100,15 @@
   color: var(--text-secondary);
   line-height: 1.7;
 }
+
+.knowledge-workspace--empty {
+  background: var(--surface-panel-muted);
+}
+
+.knowledge-workspace__empty-copy {
+  max-width: 760px;
+  margin: var(--space-6) 0 0;
+  color: var(--text-secondary);
+  font-size: var(--text-base);
+  line-height: 1.7;
+}
