@@ -28,6 +28,16 @@ export const engineeringWorkspaceExperience: Experience = {
       })),
     },
     {
+      id: "standards",
+      title: "Standards",
+      items: listKnowledgeDocumentsByCategory("standards").map((document) => ({
+        id: document.id,
+        label: document.title,
+        description: document.path,
+        status: "available",
+      })),
+    },
+    {
       id: "design",
       title: "Design System",
       items: listKnowledgeDocumentsByCategory("design").map((document) => ({

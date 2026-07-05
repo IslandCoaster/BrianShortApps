@@ -56,6 +56,36 @@ export const knowledgeDocuments: KnowledgeDocument[] = [
     category: "architecture",
   },
   {
+    id: "branch-workflow",
+    title: "Branch Workflow",
+    path: "docs/platform/standards/BranchWorkflow.md",
+    category: "standards",
+  },
+  {
+    id: "definition-of-done",
+    title: "Definition of Done",
+    path: "docs/platform/standards/DefinitionOfDone.md",
+    category: "standards",
+  },
+  {
+    id: "documentation-standards",
+    title: "Documentation Standards",
+    path: "docs/platform/standards/DocumentationStandards.md",
+    category: "standards",
+  },
+  {
+    id: "engineering-lifecycle",
+    title: "Engineering Lifecycle",
+    path: "docs/platform/standards/EngineeringLifecycle.md",
+    category: "standards",
+  },
+  {
+    id: "naming-standards",
+    title: "Naming Standards",
+    path: "docs/platform/standards/NamingStandards.md",
+    category: "standards",
+  },
+  {
     id: "visual-operating-system",
     title: "Visual Operating System",
     path: "packages/design-system/foundations/visual-operating-system/DS-004-VisualOperatingSystem.md",
