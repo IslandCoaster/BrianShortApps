@@ -28,7 +28,7 @@ export function KnowledgeWorkspace({
     <section className="knowledge-workspace">
       <KnowledgeHeader document={selectedDocument} onClearSelection={onClearSelection} />
       <KnowledgeMetadata document={selectedDocument} />
-      <DocumentRenderer blocks={selectedDocumentBlocks} format="markdown" />
+      <DocumentRenderer blocks={selectedDocumentBlocks} format={selectedDocument.format} />
     </section>
   );
 }

@@ -1,7 +1,7 @@
 // @bsa/knowledge
 
 export type { KnowledgeDocument, KnowledgeDocumentCategory } from "./knowledge";
-export type { KnowledgeDocumentContent } from "./knowledgeProvider";
+export type { KnowledgeDocumentContent, KnowledgeDocumentFormat } from "./knowledgeProvider";
 export type { MarkdownDocumentBlock } from "./markdownPreview";
 export type { PlatformInventoryItem } from "./platformInventory";
 

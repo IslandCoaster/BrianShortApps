@@ -5,10 +5,13 @@ import visualOperatingSystemContent from "../..//design-system/foundations/visua
 
 import { getKnowledgeDocument } from "./knowledge";
 
+export type KnowledgeDocumentFormat = "markdown";
+
 export type KnowledgeDocumentContent = {
   id: string;
   title: string;
   path: string;
+  format: KnowledgeDocumentFormat;
   content: string;
 };
 
@@ -30,6 +33,7 @@ export function getKnowledgeDocumentContent(documentId: string): KnowledgeDocume
     id: document.id,
     title: document.title,
     path: document.path,
+    format: "markdown",
     content: knowledgeContentById[document.id] ?? `# ${document.title}
 
 This document is indexed but does not have live content wired yet.
