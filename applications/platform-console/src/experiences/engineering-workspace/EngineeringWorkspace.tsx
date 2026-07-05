@@ -33,9 +33,18 @@ export default function EngineeringWorkspace({
 
       {selectedDocument ? (
         <section className="engineering-workspace__document">
-          <p className="engineering-workspace__document-eyebrow">Selected Knowledge</p>
+          <p className="engineering-workspace__document-eyebrow">Knowledge Preview</p>
           <h2>{selectedDocument.title}</h2>
-          <p>{selectedDocument.path}</p>
+          <dl className="engineering-workspace__document-meta">
+            <div>
+              <dt>Category</dt>
+              <dd>{selectedDocument.category}</dd>
+            </div>
+            <div>
+              <dt>Source</dt>
+              <dd>{selectedDocument.path}</dd>
+            </div>
+          </dl>
         </section>
       ) : null}
 
