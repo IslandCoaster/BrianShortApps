@@ -1,6 +1,7 @@
 // @bsa/knowledge
 
 export type { KnowledgeDocument, KnowledgeDocumentCategory } from "./knowledge";
+export type { PlatformInventoryItem } from "./platformInventory";
 
 export {
   getKnowledgeDocument,
@@ -8,3 +9,5 @@ export {
   listKnowledgeDocuments,
   listKnowledgeDocumentsByCategory,
 } from "./knowledge";
+
+export { listPlatformInventoryItems, platformInventoryItems } from "./platformInventory";

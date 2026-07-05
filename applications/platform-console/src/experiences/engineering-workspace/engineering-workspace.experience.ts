@@ -1,5 +1,5 @@
 import type { Experience } from "@bsa/experience";
-import { listKnowledgeDocumentsByCategory } from "@bsa/knowledge";
+import { listKnowledgeDocumentsByCategory, listPlatformInventoryItems } from "@bsa/knowledge";
 
 export const engineeringWorkspaceExperience: Experience = {
   id: "engineering-workspace",
@@ -69,12 +69,12 @@ export const engineeringWorkspaceExperience: Experience = {
     {
       id: "platform-inventory",
       title: "Platform Inventory",
-      items: [
-        { id: "shared-packages", label: "Shared Packages", description: "7" },
-        { id: "platform-areas", label: "Platform Areas", description: "5" },
-        { id: "product-applications", label: "Product Applications", description: "3" },
-        { id: "engineering-experiences", label: "Engineering Experiences", description: "3" },
-      ],
+      items: listPlatformInventoryItems().map((item) => ({
+        id: item.id,
+        label: item.label,
+        description: item.value,
+        status: "available",
+      })),
     },
   ],
 };
