@@ -127,3 +127,55 @@
     grid-template-columns: 1fr;
   }
 }
+
+.engineering-workspace__experience {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-6);
+  max-width: 1240px;
+}
+
+.engineering-workspace__experience [data-experience-region] {
+  padding: var(--space-8);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-2xl);
+  background: var(--surface-panel);
+  backdrop-filter: blur(16px);
+}
+
+.engineering-workspace__experience [data-experience-region] h2 {
+  margin: 0 0 var(--space-5);
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.engineering-workspace__experience [data-experience-region] ul {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.engineering-workspace__experience [data-experience-item] {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-control);
+  color: var(--text-secondary);
+}
+
+.engineering-workspace__experience [data-experience-item] strong {
+  color: var(--text-primary);
+}
+
+@media (max-width: 900px) {
+  .engineering-workspace__experience {
+    grid-template-columns: 1fr;
+  }
+}
