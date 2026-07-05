@@ -1,10 +1,10 @@
 import type { MarkdownDocumentBlock } from "@bsa/knowledge";
 
-type MarkdownDocumentRendererProps = {
+type MarkdownRendererProps = {
   blocks: MarkdownDocumentBlock[];
 };
 
-export function MarkdownDocumentRenderer({ blocks }: MarkdownDocumentRendererProps) {
+export function MarkdownRenderer({ blocks }: MarkdownRendererProps) {
   return (
     <div className="knowledge-workspace__content">
       {blocks.map((block, index) => {
