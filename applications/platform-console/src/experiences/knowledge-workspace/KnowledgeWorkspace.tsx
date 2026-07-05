@@ -1,7 +1,10 @@
 import { createMarkdownPreview, getKnowledgeDocumentContent } from "@bsa/knowledge";
 
+import { KnowledgeContent } from "./components/KnowledgeContent";
+import { KnowledgeEmptyState } from "./components/KnowledgeEmptyState";
+import { KnowledgeHeader } from "./components/KnowledgeHeader";
+import { KnowledgeMetadata } from "./components/KnowledgeMetadata";
 import "./KnowledgeWorkspace.css";
-import { knowledgeWorkspaceExperience } from "./knowledge-workspace.experience";
 
 type KnowledgeWorkspaceProps = {
   selectedKnowledgeId: string | null;
@@ -18,57 +21,14 @@ export function KnowledgeWorkspace({
     : [];
 
   if (!selectedDocument) {
-    return (
-      <section className="knowledge-workspace knowledge-workspace--empty">
-        <div className="knowledge-workspace__header">
-          <div>
-            <p className="knowledge-workspace__eyebrow">{knowledgeWorkspaceExperience.title}</p>
-            <h2>Select a knowledge document</h2>
-          </div>
-          <span className="knowledge-workspace__badge">Ready</span>
-        </div>
-
-        <p className="knowledge-workspace__empty-copy">
-          Choose a Foundation, Architecture, Standard, Design System, or Architecture Decision item
-          below to render live BrianShortApps knowledge from the repository.
-        </p>
-      </section>
-    );
+    return <KnowledgeEmptyState />;
   }
 
   return (
     <section className="knowledge-workspace">
-      <div className="knowledge-workspace__header">
-        <div>
-          <p className="knowledge-workspace__eyebrow">{knowledgeWorkspaceExperience.title}</p>
-          <h2>{selectedDocument.title}</h2>
-        </div>
-        <div className="knowledge-workspace__header-actions">
-          <span className="knowledge-workspace__badge">Repository Source</span>
-          <button className="knowledge-workspace__clear" type="button" onClick={onClearSelection}>
-            Clear
-          </button>
-        </div>
-      </div>
-
-      <dl className="knowledge-workspace__meta">
-        <div>
-          <dt>Source</dt>
-          <dd>{selectedDocument.path}</dd>
-        </div>
-      </dl>
-
-      <div className="knowledge-workspace__content">
-        {selectedDocumentPreview.map((block, index) => {
-          if (block.type === "heading") {
-            const HeadingTag = `h${block.level}` as "h1" | "h2" | "h3";
-
-            return <HeadingTag key={`${block.text}-${index}`}>{block.text}</HeadingTag>;
-          }
-
-          return <p key={`${block.text}-${index}`}>{block.text}</p>;
-        })}
-      </div>
+      <KnowledgeHeader document={selectedDocument} onClearSelection={onClearSelection} />
+      <KnowledgeMetadata document={selectedDocument} />
+      <KnowledgeContent blocks={selectedDocumentPreview} />
     </section>
   );
 }
