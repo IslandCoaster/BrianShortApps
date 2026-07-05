@@ -1,5 +1,5 @@
 import { ExperienceRenderer } from "@bsa/experience";
-import { getKnowledgeDocument } from "@bsa/knowledge";
+import { getKnowledgeDocumentContent } from "@bsa/knowledge";
 
 import "./EngineeringWorkspace.css";
 import { engineeringWorkspaceExperience } from "./engineering-workspace.experience";
@@ -13,7 +13,7 @@ export default function EngineeringWorkspace({
   selectedKnowledgeId,
   onSelectKnowledge,
 }: EngineeringWorkspaceProps) {
-  const selectedDocument = selectedKnowledgeId ? getKnowledgeDocument(selectedKnowledgeId) : null;
+  const selectedDocument = selectedKnowledgeId ? getKnowledgeDocumentContent(selectedKnowledgeId) : null;
 
   return (
     <main className="engineering-workspace">
@@ -37,14 +37,11 @@ export default function EngineeringWorkspace({
           <h2>{selectedDocument.title}</h2>
           <dl className="engineering-workspace__document-meta">
             <div>
-              <dt>Category</dt>
-              <dd>{selectedDocument.category}</dd>
-            </div>
-            <div>
               <dt>Source</dt>
               <dd>{selectedDocument.path}</dd>
             </div>
           </dl>
+          <pre className="engineering-workspace__document-content">{selectedDocument.content}</pre>
         </section>
       ) : null}
 

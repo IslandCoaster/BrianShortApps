@@ -268,3 +268,16 @@
   color: var(--text-secondary);
   overflow-wrap: anywhere;
 }
+
+.engineering-workspace__document-content {
+  margin: var(--space-6) 0 0;
+  padding: var(--space-6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-control);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
