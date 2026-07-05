@@ -135,3 +135,26 @@
   border-color: var(--border-default);
   color: var(--text-primary);
 }
+
+.knowledge-workspace__list-item {
+  position: relative;
+  padding-left: var(--space-5);
+}
+
+.knowledge-workspace__list-item::before {
+  content: "•";
+  position: absolute;
+  left: var(--space-2);
+  color: var(--color-brand-primary);
+}
+
+.knowledge-workspace__content pre {
+  margin: var(--space-4) 0;
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-base);
+  color: var(--text-secondary);
+  overflow-x: auto;
+  white-space: pre-wrap;
+}

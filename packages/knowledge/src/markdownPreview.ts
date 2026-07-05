@@ -1,4 +1,4 @@
-export type MarkdownPreviewBlock =
+export type MarkdownDocumentBlock =
   | {
       type: "heading";
       level: 1 | 2 | 3;
@@ -7,27 +7,68 @@ export type MarkdownPreviewBlock =
   | {
       type: "paragraph";
       text: string;
+    }
+  | {
+      type: "list-item";
+      text: string;
+    }
+  | {
+      type: "code";
+      text: string;
     };
 
-export function createMarkdownPreview(content: string): MarkdownPreviewBlock[] {
-  return content
-    .split(/\n+/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .slice(0, 12)
-    .map((line): MarkdownPreviewBlock => {
-      if (line.startsWith("### ")) {
-        return { type: "heading", level: 3, text: line.replace(/^### /, "") };
+export function createMarkdownDocumentBlocks(content: string): MarkdownDocumentBlock[] {
+  const lines = content.split("\n");
+  const blocks: MarkdownDocumentBlock[] = [];
+  let codeBuffer: string[] = [];
+  let isCodeBlock = false;
+
+  for (const rawLine of lines) {
+    const line = rawLine.trimEnd();
+
+    if (line.startsWith("```")) {
+      if (isCodeBlock) {
+        blocks.push({ type: "code", text: codeBuffer.join("\n") });
+        codeBuffer = [];
       }
 
-      if (line.startsWith("## ")) {
-        return { type: "heading", level: 2, text: line.replace(/^## /, "") };
-      }
+      isCodeBlock = !isCodeBlock;
+      continue;
+    }
 
-      if (line.startsWith("# ")) {
-        return { type: "heading", level: 1, text: line.replace(/^# /, "") };
-      }
+    if (isCodeBlock) {
+      codeBuffer.push(rawLine);
+      continue;
+    }
 
-      return { type: "paragraph", text: line };
-    });
+    const trimmed = line.trim();
+
+    if (!trimmed) {
+      continue;
+    }
+
+    if (trimmed.startsWith("### ")) {
+      blocks.push({ type: "heading", level: 3, text: trimmed.replace(/^### /, "") });
+      continue;
+    }
+
+    if (trimmed.startsWith("## ")) {
+      blocks.push({ type: "heading", level: 2, text: trimmed.replace(/^## /, "") });
+      continue;
+    }
+
+    if (trimmed.startsWith("# ")) {
+      blocks.push({ type: "heading", level: 1, text: trimmed.replace(/^# /, "") });
+      continue;
+    }
+
+    if (trimmed.startsWith("- ")) {
+      blocks.push({ type: "list-item", text: trimmed.replace(/^- /, "") });
+      continue;
+    }
+
+    blocks.push({ type: "paragraph", text: trimmed });
+  }
+
+  return blocks;
 }
