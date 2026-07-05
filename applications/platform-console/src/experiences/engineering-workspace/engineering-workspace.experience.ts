@@ -48,15 +48,6 @@ export const engineeringWorkspaceExperience: Experience = {
       })),
     },
     {
-      id: "workspace-actions",
-      title: "Workspace Actions",
-      items: [
-        { id: "knowledge", label: "Knowledge", status: "available" },
-        { id: "registry", label: "Registry", status: "available" },
-        { id: "diagnostics", label: "Diagnostics", status: "planned" },
-      ],
-    },
-    {
       id: "architecture-decisions",
       title: "Architecture Decisions",
       items: listKnowledgeDocumentsByCategory("adr").map((document) => ({
@@ -75,6 +66,15 @@ export const engineeringWorkspaceExperience: Experience = {
         description: item.value,
         status: "available",
       })),
+    },
+    {
+      id: "workspace-actions",
+      title: "Workspace Actions",
+      items: [
+        { id: "knowledge", label: "Knowledge", status: "available" },
+        { id: "registry", label: "Registry", status: "available" },
+        { id: "diagnostics", label: "Diagnostics", status: "planned" },
+      ],
     },
   ],
 };
