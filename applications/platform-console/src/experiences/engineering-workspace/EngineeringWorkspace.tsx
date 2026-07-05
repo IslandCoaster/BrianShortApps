@@ -1,6 +1,6 @@
 import { ExperienceRenderer } from "@bsa/experience";
-import { createMarkdownPreview, getKnowledgeDocumentContent } from "@bsa/knowledge";
 
+import { KnowledgeWorkspace } from "../knowledge-workspace/KnowledgeWorkspace";
 import "./EngineeringWorkspace.css";
 import { engineeringWorkspaceExperience } from "./engineering-workspace.experience";
 
@@ -13,11 +13,6 @@ export default function EngineeringWorkspace({
   selectedKnowledgeId,
   onSelectKnowledge,
 }: EngineeringWorkspaceProps) {
-  const selectedDocument = selectedKnowledgeId ? getKnowledgeDocumentContent(selectedKnowledgeId) : null;
-  const selectedDocumentPreview = selectedDocument
-    ? createMarkdownPreview(selectedDocument.content)
-    : [];
-
   return (
     <main className="engineering-workspace">
       <section className="engineering-workspace__intro">
@@ -34,34 +29,7 @@ export default function EngineeringWorkspace({
         </p>
       </section>
 
-      {selectedDocument ? (
-        <section className="engineering-workspace__document">
-          <div className="engineering-workspace__document-header">
-            <div>
-              <p className="engineering-workspace__document-eyebrow">Live Knowledge</p>
-              <h2>{selectedDocument.title}</h2>
-            </div>
-            <span className="engineering-workspace__document-badge">Repository Source</span>
-          </div>
-          <dl className="engineering-workspace__document-meta">
-            <div>
-              <dt>Source</dt>
-              <dd>{selectedDocument.path}</dd>
-            </div>
-          </dl>
-          <div className="engineering-workspace__document-content">
-            {selectedDocumentPreview.map((block, index) => {
-              if (block.type === "heading") {
-                const HeadingTag = `h${block.level}` as "h1" | "h2" | "h3";
-
-                return <HeadingTag key={`${block.text}-${index}`}>{block.text}</HeadingTag>;
-              }
-
-              return <p key={`${block.text}-${index}`}>{block.text}</p>;
-            })}
-          </div>
-        </section>
-      ) : null}
+      <KnowledgeWorkspace selectedKnowledgeId={selectedKnowledgeId} />
 
       <ExperienceRenderer
         experience={engineeringWorkspaceExperience}
