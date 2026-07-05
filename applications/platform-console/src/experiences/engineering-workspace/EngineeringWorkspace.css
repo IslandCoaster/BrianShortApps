@@ -226,3 +226,20 @@
   margin: 0;
   color: var(--text-secondary);
 }
+
+.engineering-workspace__experience [data-experience-item] button {
+  align-items: flex-start;
+}
+
+.engineering-workspace__experience [data-experience-item] span {
+  min-width: 0;
+}
+
+.engineering-workspace__experience [data-experience-item] strong {
+  max-width: 58%;
+  overflow-wrap: anywhere;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  line-height: 1.35;
+  text-align: right;
+}

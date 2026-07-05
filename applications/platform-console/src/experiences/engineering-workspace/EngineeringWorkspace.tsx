@@ -31,12 +31,6 @@ export default function EngineeringWorkspace({
         </p>
       </section>
 
-      <ExperienceRenderer
-        experience={engineeringWorkspaceExperience}
-        className="engineering-workspace__experience"
-        onSelectItem={onSelectKnowledge}
-      />
-
       {selectedDocument ? (
         <section className="engineering-workspace__document">
           <p className="engineering-workspace__document-eyebrow">Selected Knowledge</p>
@@ -44,6 +38,12 @@ export default function EngineeringWorkspace({
           <p>{selectedDocument.path}</p>
         </section>
       ) : null}
+
+      <ExperienceRenderer
+        experience={engineeringWorkspaceExperience}
+        className="engineering-workspace__experience"
+        onSelectItem={onSelectKnowledge}
+      />
     </main>
   );
 }
