@@ -1,6 +1,7 @@
 import type { KnowledgeDocumentContent } from "@bsa/knowledge";
 import { createMarkdownDocumentBlocks } from "@bsa/knowledge";
 
+import "./DocumentRenderer.css";
 import { MarkdownRenderer } from "./renderers/MarkdownRenderer";
 
 type DocumentRendererProps = {

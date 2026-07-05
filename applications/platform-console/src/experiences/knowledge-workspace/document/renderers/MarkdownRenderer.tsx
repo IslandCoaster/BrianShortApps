@@ -6,7 +6,7 @@ type MarkdownRendererProps = {
 
 export function MarkdownRenderer({ blocks }: MarkdownRendererProps) {
   return (
-    <div className="knowledge-workspace__content">
+    <div className="document-renderer">
       {blocks.map((block, index) => {
         if (block.type === "heading") {
           const HeadingTag = `h${block.level}` as "h1" | "h2" | "h3";
@@ -16,7 +16,7 @@ export function MarkdownRenderer({ blocks }: MarkdownRendererProps) {
 
         if (block.type === "list-item") {
           return (
-            <p className="knowledge-workspace__list-item" key={`${block.text}-${index}`}>
+            <p className="document-renderer__list-item" key={`${block.text}-${index}`}>
               {block.text}
             </p>
           );
