@@ -6,7 +6,7 @@ import { engineeringWorkspaceExperience } from "./engineering-workspace.experien
 
 type EngineeringWorkspaceProps = {
   selectedKnowledgeId: string | null;
-  onSelectKnowledge: (knowledgeId: string) => void;
+  onSelectKnowledge: (knowledgeId: string | null) => void;
 };
 
 export default function EngineeringWorkspace({
@@ -29,7 +29,7 @@ export default function EngineeringWorkspace({
         </p>
       </section>
 
-      <KnowledgeWorkspace selectedKnowledgeId={selectedKnowledgeId} />
+      <KnowledgeWorkspace selectedKnowledgeId={selectedKnowledgeId} onClearSelection={() => onSelectKnowledge(null)} />
 
       <ExperienceRenderer
         experience={engineeringWorkspaceExperience}

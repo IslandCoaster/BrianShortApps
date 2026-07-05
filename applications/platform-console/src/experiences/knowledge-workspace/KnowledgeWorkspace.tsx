@@ -5,9 +5,13 @@ import { knowledgeWorkspaceExperience } from "./knowledge-workspace.experience";
 
 type KnowledgeWorkspaceProps = {
   selectedKnowledgeId: string | null;
+  onClearSelection: () => void;
 };
 
-export function KnowledgeWorkspace({ selectedKnowledgeId }: KnowledgeWorkspaceProps) {
+export function KnowledgeWorkspace({
+  selectedKnowledgeId,
+  onClearSelection,
+}: KnowledgeWorkspaceProps) {
   const selectedDocument = selectedKnowledgeId ? getKnowledgeDocumentContent(selectedKnowledgeId) : null;
   const selectedDocumentPreview = selectedDocument
     ? createMarkdownPreview(selectedDocument.content)
@@ -39,7 +43,12 @@ export function KnowledgeWorkspace({ selectedKnowledgeId }: KnowledgeWorkspacePr
           <p className="knowledge-workspace__eyebrow">{knowledgeWorkspaceExperience.title}</p>
           <h2>{selectedDocument.title}</h2>
         </div>
-        <span className="knowledge-workspace__badge">Repository Source</span>
+        <div className="knowledge-workspace__header-actions">
+          <span className="knowledge-workspace__badge">Repository Source</span>
+          <button className="knowledge-workspace__clear" type="button" onClick={onClearSelection}>
+            Clear
+          </button>
+        </div>
       </div>
 
       <dl className="knowledge-workspace__meta">
