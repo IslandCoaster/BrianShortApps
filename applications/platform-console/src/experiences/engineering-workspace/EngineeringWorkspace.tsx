@@ -3,7 +3,15 @@ import "./EngineeringWorkspace.css";
 import { engineeringWorkspaceExperience } from "./engineering-workspace.experience";
 
 export default function EngineeringWorkspace() {
-  const [foundation, architecture, inventory] = engineeringWorkspaceExperience.sections;
+  const foundation = engineeringWorkspaceExperience.sections.find((section) => section.id === "foundation");
+  const architecture = engineeringWorkspaceExperience.sections.find((section) => section.id === "architecture");
+  const inventory = engineeringWorkspaceExperience.sections.find(
+    (section) => section.id === "platform-inventory",
+  );
+
+  if (!foundation || !architecture || !inventory) {
+    return null;
+  }
 
   return (
     <main className="engineering-workspace">
