@@ -20,13 +20,12 @@ export const engineeringWorkspaceExperience: Experience = {
     {
       id: "architecture",
       title: "Architecture",
-      items: [
-        { id: "repository-architecture", label: "Repository Architecture", status: "available" },
-        { id: "dependency-rules", label: "Dependency Rules", status: "available" },
-        { id: "identity-architecture", label: "Identity Architecture", status: "available" },
-        { id: "registry-architecture", label: "Registry Architecture", status: "available" },
-        { id: "root-diagnostics", label: "Root Diagnostics", status: "planned" },
-      ],
+      items: listKnowledgeDocumentsByCategory("architecture").map((document) => ({
+        id: document.id,
+        label: document.title,
+        description: document.path,
+        status: "available",
+      })),
     },
     {
       id: "design",

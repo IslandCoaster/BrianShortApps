@@ -26,6 +26,36 @@ export const knowledgeDocuments: KnowledgeDocument[] = [
     category: "foundation",
   },
   {
+    id: "repository-architecture",
+    title: "Repository Architecture",
+    path: "docs/platform/architecture/RepositoryArchitecture.md",
+    category: "architecture",
+  },
+  {
+    id: "dependency-rules",
+    title: "Dependency Rules",
+    path: "docs/platform/architecture/DependencyRules.md",
+    category: "architecture",
+  },
+  {
+    id: "identity-architecture",
+    title: "Identity Architecture",
+    path: "docs/platform/architecture/IdentityArchitecture.md",
+    category: "architecture",
+  },
+  {
+    id: "registry-architecture",
+    title: "Registry Architecture",
+    path: "docs/platform/architecture/RegistryArchitecture.md",
+    category: "architecture",
+  },
+  {
+    id: "root-diagnostics",
+    title: "Root Diagnostics",
+    path: "docs/platform/architecture/RootDiagnosticsArchitecture.md",
+    category: "architecture",
+  },
+  {
     id: "visual-operating-system",
     title: "Visual Operating System",
     path: "packages/design-system/foundations/visual-operating-system/DS-004-VisualOperatingSystem.md",
