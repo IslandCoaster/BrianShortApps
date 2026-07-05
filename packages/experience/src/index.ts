@@ -6,3 +6,5 @@ export type {
   ExperienceItemStatus,
   ExperienceRegion,
 } from "./experience";
+
+export { ExperienceRenderer } from "./renderers/react/ExperienceRenderer";
