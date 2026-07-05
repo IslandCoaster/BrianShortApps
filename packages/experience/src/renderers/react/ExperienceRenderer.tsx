@@ -3,9 +3,10 @@ import type { Experience } from "../../experience";
 type ExperienceRendererProps = {
   experience: Experience;
   className?: string;
+  onSelectItem?: (itemId: string) => void;
 };
 
-export function ExperienceRenderer({ experience, className }: ExperienceRendererProps) {
+export function ExperienceRenderer({ experience, className, onSelectItem }: ExperienceRendererProps) {
   return (
     <div className={className}>
       {experience.regions.map((region) => (
@@ -14,8 +15,10 @@ export function ExperienceRenderer({ experience, className }: ExperienceRenderer
           <ul>
             {region.items.map((item) => (
               <li data-experience-item={item.id} key={item.id}>
-                <span>{item.label}</span>
-                {item.description ? <strong>{item.description}</strong> : null}
+                <button type="button" onClick={() => onSelectItem?.(item.id)}>
+                  <span>{item.label}</span>
+                  {item.description ? <strong>{item.description}</strong> : null}
+                </button>
               </li>
             ))}
           </ul>

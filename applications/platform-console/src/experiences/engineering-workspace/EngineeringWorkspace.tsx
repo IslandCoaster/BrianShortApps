@@ -1,9 +1,20 @@
 import { ExperienceRenderer } from "@bsa/experience";
+import { knowledgeDocuments } from "@bsa/knowledge";
 
 import "./EngineeringWorkspace.css";
 import { engineeringWorkspaceExperience } from "./engineering-workspace.experience";
 
-export default function EngineeringWorkspace() {
+type EngineeringWorkspaceProps = {
+  selectedKnowledgeId: string | null;
+  onSelectKnowledge: (knowledgeId: string) => void;
+};
+
+export default function EngineeringWorkspace({
+  selectedKnowledgeId,
+  onSelectKnowledge,
+}: EngineeringWorkspaceProps) {
+  const selectedDocument = knowledgeDocuments.find((document) => document.id === selectedKnowledgeId);
+
   return (
     <main className="engineering-workspace">
       <section className="engineering-workspace__intro">
@@ -23,7 +34,16 @@ export default function EngineeringWorkspace() {
       <ExperienceRenderer
         experience={engineeringWorkspaceExperience}
         className="engineering-workspace__experience"
+        onSelectItem={onSelectKnowledge}
       />
+
+      {selectedDocument ? (
+        <section className="engineering-workspace__document">
+          <p className="engineering-workspace__document-eyebrow">Selected Knowledge</p>
+          <h2>{selectedDocument.title}</h2>
+          <p>{selectedDocument.path}</p>
+        </section>
+      ) : null}
     </main>
   );
 }
