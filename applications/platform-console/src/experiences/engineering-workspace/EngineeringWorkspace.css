@@ -218,3 +218,12 @@
   line-height: 1.35;
   text-align: right;
 }
+
+.engineering-workspace__experience [data-experience-item][data-selected="true"] {
+  border-color: var(--border-focus);
+  background: var(--surface-panel-muted);
+}
+
+.engineering-workspace__experience [data-experience-item][data-selected="true"] button {
+  color: var(--text-primary);
+}

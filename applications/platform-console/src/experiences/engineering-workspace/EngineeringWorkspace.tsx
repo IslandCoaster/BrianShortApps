@@ -35,6 +35,7 @@ export default function EngineeringWorkspace({
         experience={engineeringWorkspaceExperience}
         className="engineering-workspace__experience"
         onSelectItem={onSelectKnowledge}
+        selectedItemId={selectedKnowledgeId}
       />
     </main>
   );
