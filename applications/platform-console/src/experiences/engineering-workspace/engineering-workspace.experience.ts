@@ -1,5 +1,5 @@
 import type { Experience } from "@bsa/experience";
-import { knowledgeDocuments } from "@bsa/knowledge";
+import { listKnowledgeDocumentsByCategory } from "@bsa/knowledge";
 
 export const engineeringWorkspaceExperience: Experience = {
   id: "engineering-workspace",
@@ -10,13 +10,12 @@ export const engineeringWorkspaceExperience: Experience = {
     {
       id: "foundation",
       title: "Foundation",
-      items: listKnowledgeDocumentsByCategory("foundation")
-        .map((document) => ({
-          id: document.id,
-          label: document.title,
-          description: document.path,
-          status: "available",
-        })),
+      items: listKnowledgeDocumentsByCategory("foundation").map((document) => ({
+        id: document.id,
+        label: document.title,
+        description: document.path,
+        status: "available",
+      })),
     },
     {
       id: "architecture",
@@ -32,13 +31,12 @@ export const engineeringWorkspaceExperience: Experience = {
     {
       id: "design",
       title: "Design System",
-      items: listKnowledgeDocumentsByCategory("design")
-        .map((document) => ({
-          id: document.id,
-          label: document.title,
-          description: document.path,
-          status: "available",
-        })),
+      items: listKnowledgeDocumentsByCategory("design").map((document) => ({
+        id: document.id,
+        label: document.title,
+        description: document.path,
+        status: "available",
+      })),
     },
     {
       id: "workspace-actions",
