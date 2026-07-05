@@ -1,12 +1,13 @@
 .document-renderer {
+  max-width: 880px;
   margin: var(--space-6) 0 0;
-  padding: var(--space-6);
+  padding: var(--space-8);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   background: var(--surface-control);
   color: var(--text-secondary);
-  font-size: var(--text-sm);
-  line-height: 1.7;
+  font-size: var(--text-base);
+  line-height: 1.75;
 }
 
 .document-renderer h1,
@@ -56,4 +57,17 @@
   color: var(--text-secondary);
   overflow-x: auto;
   white-space: pre-wrap;
+}
+
+.document-renderer > h1:first-child {
+  margin-top: 0;
+}
+
+.document-renderer > p:first-child {
+  margin-top: 0;
+}
+
+.document-renderer > p + h2,
+.document-renderer > p + h3 {
+  margin-top: var(--space-8);
 }
