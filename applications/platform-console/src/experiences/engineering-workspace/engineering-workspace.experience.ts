@@ -57,6 +57,16 @@ export const engineeringWorkspaceExperience: Experience = {
       ],
     },
     {
+      id: "architecture-decisions",
+      title: "Architecture Decisions",
+      items: listKnowledgeDocumentsByCategory("adr").map((document) => ({
+        id: document.id,
+        label: document.title,
+        description: document.path,
+        status: "available",
+      })),
+    },
+    {
       id: "platform-inventory",
       title: "Platform Inventory",
       items: [

@@ -86,6 +86,24 @@ export const knowledgeDocuments: KnowledgeDocument[] = [
     category: "standards",
   },
   {
+    id: "adr-0001-platform-first-architecture",
+    title: "ADR-0001 Platform-First Architecture",
+    path: "docs/architecture/adr/ADR-0001-platform-first-architecture.md",
+    category: "adr",
+  },
+  {
+    id: "adr-0002-sdk-first-development",
+    title: "ADR-0002 SDK-First Development",
+    path: "docs/architecture/adr/ADR-0002-sdk-first-development.md",
+    category: "adr",
+  },
+  {
+    id: "adr-0003-cross-platform-development",
+    title: "ADR-0003 Cross-Platform Development",
+    path: "docs/architecture/adr/ADR-0003-cross-platform-development.md",
+    category: "adr",
+  },
+  {
     id: "visual-operating-system",
     title: "Visual Operating System",
     path: "packages/design-system/foundations/visual-operating-system/DS-004-VisualOperatingSystem.md",
