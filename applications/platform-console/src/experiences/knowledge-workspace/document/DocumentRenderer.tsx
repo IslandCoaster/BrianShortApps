@@ -1,10 +1,10 @@
-import type { MarkdownDocumentBlock } from "@bsa/knowledge";
+import type { KnowledgeDocumentFormat, MarkdownDocumentBlock } from "@bsa/knowledge";
 
 import { MarkdownRenderer } from "./renderers/MarkdownRenderer";
 
 type DocumentRendererProps = {
   blocks: MarkdownDocumentBlock[];
-  format: "markdown";
+  format: KnowledgeDocumentFormat;
 };
 
 export function DocumentRenderer({ blocks, format }: DocumentRendererProps) {
