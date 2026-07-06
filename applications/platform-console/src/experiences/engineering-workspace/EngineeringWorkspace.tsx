@@ -1,5 +1,6 @@
 import { ExperienceRenderer } from "@bsa/experience";
 
+import type { WorkspaceMode } from "../../workspaces/workspaceModes";
 import { KnowledgeWorkspace } from "../knowledge-workspace/KnowledgeWorkspace";
 import "./EngineeringWorkspace.css";
 import { engineeringWorkspaceExperience } from "./engineering-workspace.experience";
@@ -13,8 +14,10 @@ export default function EngineeringWorkspace({
   selectedKnowledgeId,
   onSelectKnowledge,
 }: EngineeringWorkspaceProps) {
+  const workspaceMode: WorkspaceMode = selectedKnowledgeId ? "reading" : "browse";
+
   return (
-    <main className="engineering-workspace">
+    <main className="engineering-workspace" data-workspace-mode={workspaceMode}>
       <section className="engineering-workspace__intro">
         <p className="engineering-workspace__eyebrow">BrianShortApps Platform</p>
         <h1 className="engineering-workspace__title">{engineeringWorkspaceExperience.title}</h1>
@@ -29,14 +32,20 @@ export default function EngineeringWorkspace({
         </p>
       </section>
 
-      <KnowledgeWorkspace selectedKnowledgeId={selectedKnowledgeId} onClearSelection={() => onSelectKnowledge(null)} />
-
-      <ExperienceRenderer
-        experience={engineeringWorkspaceExperience}
-        className="engineering-workspace__experience"
-        onSelectItem={onSelectKnowledge}
-        selectedItemId={selectedKnowledgeId}
+      <KnowledgeWorkspace
+        selectedKnowledgeId={selectedKnowledgeId}
+        onClearSelection={() => onSelectKnowledge(null)}
+        onSelectKnowledge={onSelectKnowledge}
       />
+
+      {workspaceMode === "browse" ? (
+        <ExperienceRenderer
+          experience={engineeringWorkspaceExperience}
+          className="engineering-workspace__experience"
+          onSelectItem={onSelectKnowledge}
+          selectedItemId={selectedKnowledgeId}
+        />
+      ) : null}
     </main>
   );
 }
