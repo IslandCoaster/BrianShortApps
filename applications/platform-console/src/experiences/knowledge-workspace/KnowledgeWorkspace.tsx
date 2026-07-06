@@ -1,5 +1,6 @@
 import { getKnowledgeDocumentContent } from "@bsa/knowledge";
 
+import { KnowledgeContext } from "./components/KnowledgeContext";
 import { KnowledgeEmptyState } from "./components/KnowledgeEmptyState";
 import { KnowledgeHeader } from "./components/KnowledgeHeader";
 import { KnowledgeMetadata } from "./components/KnowledgeMetadata";
@@ -21,12 +22,13 @@ export function KnowledgeWorkspace({
 }: KnowledgeWorkspaceProps) {
   const selectedDocument = selectedKnowledgeId ? getKnowledgeDocumentContent(selectedKnowledgeId) : null;
 
-  if (!selectedDocument) {
+  if (!selectedDocument || !selectedKnowledgeId) {
     return <KnowledgeEmptyState />;
   }
 
   return (
     <section className="knowledge-workspace">
+      <KnowledgeContext selectedKnowledgeId={selectedKnowledgeId} />
       <KnowledgeHeader document={selectedDocument} onClearSelection={onClearSelection} />
       <KnowledgeMetadata document={selectedDocument} />
       <DocumentRenderer document={selectedDocument} />
