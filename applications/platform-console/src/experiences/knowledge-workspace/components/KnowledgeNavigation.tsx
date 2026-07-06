@@ -1,5 +1,5 @@
 import type { KnowledgeDocument } from "@bsa/knowledge";
-import { getAdjacentKnowledgeDocuments } from "@bsa/knowledge";
+import { getAdjacentKnowledgeDocuments, getKnowledgeCategoryLabel } from "@bsa/knowledge";
 
 type KnowledgeNavigationProps = {
   selectedKnowledgeId: string;
@@ -23,6 +23,7 @@ export function KnowledgeNavigation({
         label="Previous"
         onSelectKnowledge={onSelectKnowledge}
       />
+
       <KnowledgeNavigationButton document={next} label="Next" onSelectKnowledge={onSelectKnowledge} />
     </nav>
   );
@@ -51,6 +52,7 @@ function KnowledgeNavigationButton({
     >
       <span>{label}</span>
       <strong>{document.title}</strong>
+      <em>{getKnowledgeCategoryLabel(document.category)}</em>
     </button>
   );
 }
