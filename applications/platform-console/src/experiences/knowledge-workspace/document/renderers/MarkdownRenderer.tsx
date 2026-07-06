@@ -4,6 +4,13 @@ type MarkdownRendererProps = {
   blocks: MarkdownDocumentBlock[];
 };
 
+function createHeadingId(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 export function MarkdownRenderer({ blocks }: MarkdownRendererProps) {
   return (
     <div className="document-renderer">
@@ -11,7 +18,11 @@ export function MarkdownRenderer({ blocks }: MarkdownRendererProps) {
         if (block.type === "heading") {
           const HeadingTag = `h${block.level}` as "h1" | "h2" | "h3";
 
-          return <HeadingTag key={`${block.text}-${index}`}>{block.text}</HeadingTag>;
+          return (
+            <HeadingTag id={createHeadingId(block.text)} key={`${block.text}-${index}`}>
+              {block.text}
+            </HeadingTag>
+          );
         }
 
         if (block.type === "list-item") {
