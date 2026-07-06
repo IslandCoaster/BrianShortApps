@@ -2,7 +2,6 @@
 
 export type { KnowledgeDocument, KnowledgeDocumentCategory } from "./knowledge";
 export type { KnowledgeDocumentContent, KnowledgeDocumentFormat } from "./knowledgeProvider";
-export type { MarkdownDocumentBlock } from "./markdownPreview";
 export type { PlatformInventoryItem } from "./platformInventory";
 
 export {
@@ -13,7 +12,5 @@ export {
 } from "./knowledge";
 
 export { getKnowledgeDocumentContent } from "./knowledgeProvider";
-
-export { createMarkdownDocumentBlocks } from "./markdownPreview";
 
 export { listPlatformInventoryItems, platformInventoryItems } from "./platformInventory";

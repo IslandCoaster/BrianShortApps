@@ -1,4 +1,4 @@
-import type { MarkdownDocumentBlock } from "@bsa/knowledge";
+import type { MarkdownDocumentBlock } from "../parsers/MarkdownParser";
 
 type MarkdownRendererProps = {
   blocks: MarkdownDocumentBlock[];

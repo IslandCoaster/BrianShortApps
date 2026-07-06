@@ -21,7 +21,7 @@ export type MarkdownDocumentBlock =
       text: string;
     };
 
-export function createMarkdownDocumentBlocks(content: string): MarkdownDocumentBlock[] {
+export function parseMarkdownDocument(content: string): MarkdownDocumentBlock[] {
   const lines = content.split("\n");
   const blocks: MarkdownDocumentBlock[] = [];
   let codeBuffer: string[] = [];
@@ -47,9 +47,7 @@ export function createMarkdownDocumentBlocks(content: string): MarkdownDocumentB
 
     const trimmed = line.trim();
 
-    if (!trimmed) {
-      continue;
-    }
+    if (!trimmed) continue;
 
     if (trimmed.startsWith("### ")) {
       blocks.push({ type: "heading", level: 3, text: trimmed.replace(/^### /, "") });
