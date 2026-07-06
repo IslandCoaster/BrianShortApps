@@ -1,7 +1,9 @@
+import { getActiveWorkspace, listWorkspaces } from "../../workspaces/workspace.registry";
+
 const workspaceStatusItems = [
   { label: "Environment", value: "Development" },
-  { label: "Branch", value: "mc-003-1-platform-foundation" },
-  { label: "Access", value: "BSA-Root" },
+  { label: "Active Workspace", value: getActiveWorkspace()?.label ?? "None" },
+  { label: "Registered Workspaces", value: String(listWorkspaces().length) },
 ];
 
 export function WorkspaceStatus() {

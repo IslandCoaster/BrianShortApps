@@ -199,3 +199,19 @@
   border-color: var(--border-default);
   color: var(--text-primary);
 }
+
+.engineering-navigator__item[data-status="planned"] {
+  opacity: 0.62;
+}
+
+.engineering-navigator__item[data-status="planned"] .engineering-navigator__item-label::after {
+  content: "Planned";
+  margin-left: var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+}
+
+.engineering-navigator__item[data-status="available"]:hover {
+  border-color: var(--border-default);
+}
