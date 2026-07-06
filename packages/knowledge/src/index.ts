@@ -14,3 +14,8 @@ export {
 export { getKnowledgeDocumentContent } from "./knowledgeProvider";
 
 export { listPlatformInventoryItems, platformInventoryItems } from "./platformInventory";
+
+export {
+  getAdjacentKnowledgeDocuments,
+  getRelatedKnowledgeDocuments,
+} from "./knowledgeNavigation";
