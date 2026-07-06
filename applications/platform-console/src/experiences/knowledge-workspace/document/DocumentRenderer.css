@@ -71,3 +71,17 @@
 .document-renderer > p + h3 {
   margin-top: var(--space-8);
 }
+
+.document-renderer blockquote {
+  margin: var(--space-6) 0;
+  padding: var(--space-4) var(--space-5);
+  border-left: 3px solid var(--color-brand-primary);
+  border-radius: var(--radius-md);
+  background: var(--surface-panel-muted);
+  color: var(--text-secondary);
+}
+
+.document-renderer blockquote p,
+.document-renderer blockquote {
+  line-height: 1.7;
+}

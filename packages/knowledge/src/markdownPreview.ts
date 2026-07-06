@@ -15,6 +15,10 @@ export type MarkdownDocumentBlock =
   | {
       type: "code";
       text: string;
+    }
+  | {
+      type: "quote";
+      text: string;
     };
 
 export function createMarkdownDocumentBlocks(content: string): MarkdownDocumentBlock[] {
@@ -64,6 +68,11 @@ export function createMarkdownDocumentBlocks(content: string): MarkdownDocumentB
 
     if (trimmed.startsWith("- ")) {
       blocks.push({ type: "list-item", text: trimmed.replace(/^- /, "") });
+      continue;
+    }
+
+    if (trimmed.startsWith("> ")) {
+      blocks.push({ type: "quote", text: trimmed.replace(/^> /, "") });
       continue;
     }
 

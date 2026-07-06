@@ -26,6 +26,10 @@ export function MarkdownRenderer({ blocks }: MarkdownRendererProps) {
           return <pre key={`${block.text}-${index}`}>{block.text}</pre>;
         }
 
+        if (block.type === "quote") {
+          return <blockquote key={`${block.text}-${index}`}>{block.text}</blockquote>;
+        }
+
         return <p key={`${block.text}-${index}`}>{block.text}</p>;
       })}
     </div>
