@@ -1,5 +1,5 @@
 import type { KnowledgeDocument } from "@bsa/knowledge";
-import { getRelatedKnowledgeDocuments } from "@bsa/knowledge";
+import { getKnowledgeCategoryLabel, getRelatedKnowledgeDocuments } from "@bsa/knowledge";
 
 type KnowledgeRelatedDocumentsProps = {
   selectedKnowledgeId: string;
@@ -45,7 +45,7 @@ function RelatedDocumentButton({ document, onSelectKnowledge }: RelatedDocumentB
       type="button"
       onClick={() => onSelectKnowledge(document.id)}
     >
-      <span>{document.category}</span>
+      <span>{getKnowledgeCategoryLabel(document.category)}</span>
       <strong>{document.title}</strong>
     </button>
   );

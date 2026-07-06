@@ -11,11 +11,16 @@ export {
   listKnowledgeDocumentsByCategory,
 } from "./knowledge";
 
-export { getKnowledgeDocumentContent } from "./knowledgeProvider";
-
-export { listPlatformInventoryItems, platformInventoryItems } from "./platformInventory";
+export {
+  getKnowledgeCategoryLabel,
+  knowledgeCategoryLabels,
+} from "./knowledgeCategories";
 
 export {
   getAdjacentKnowledgeDocuments,
   getRelatedKnowledgeDocuments,
 } from "./knowledgeNavigation";
+
+export { getKnowledgeDocumentContent } from "./knowledgeProvider";
+
+export { listPlatformInventoryItems, platformInventoryItems } from "./platformInventory";
