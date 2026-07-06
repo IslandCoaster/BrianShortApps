@@ -1,25 +1,18 @@
-import type { MarkdownDocumentBlock } from "../parsers/MarkdownParser";
+import type { DocumentModel } from "../models/DocumentModel";
 
 type MarkdownRendererProps = {
-  blocks: MarkdownDocumentBlock[];
+  document: DocumentModel;
 };
 
-function createHeadingId(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
-
-export function MarkdownRenderer({ blocks }: MarkdownRendererProps) {
+export function MarkdownRenderer({ document }: MarkdownRendererProps) {
   return (
     <div className="document-renderer">
-      {blocks.map((block, index) => {
+      {document.blocks.map((block, index) => {
         if (block.type === "heading") {
           const HeadingTag = `h${block.level}` as "h1" | "h2" | "h3";
 
           return (
-            <HeadingTag id={createHeadingId(block.text)} key={`${block.text}-${index}`}>
+            <HeadingTag id={block.id} key={`${block.text}-${index}`}>
               {block.text}
             </HeadingTag>
           );

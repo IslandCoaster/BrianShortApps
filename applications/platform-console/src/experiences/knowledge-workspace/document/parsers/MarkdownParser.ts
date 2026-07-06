@@ -1,29 +1,9 @@
-export type MarkdownDocumentBlock =
-  | {
-      type: "heading";
-      level: 1 | 2 | 3;
-      text: string;
-    }
-  | {
-      type: "paragraph";
-      text: string;
-    }
-  | {
-      type: "list-item";
-      text: string;
-    }
-  | {
-      type: "code";
-      text: string;
-    }
-  | {
-      type: "quote";
-      text: string;
-    };
+import type { DocumentBlock, DocumentModel } from "../models/DocumentModel";
+import { createDocumentHeadingId } from "../models/DocumentModel";
 
-export function parseMarkdownDocument(content: string): MarkdownDocumentBlock[] {
+export function parseMarkdownDocument(title: string, content: string): DocumentModel {
   const lines = content.split("\n");
-  const blocks: MarkdownDocumentBlock[] = [];
+  const blocks: DocumentBlock[] = [];
   let codeBuffer: string[] = [];
   let isCodeBlock = false;
 
@@ -50,17 +30,20 @@ export function parseMarkdownDocument(content: string): MarkdownDocumentBlock[] 
     if (!trimmed) continue;
 
     if (trimmed.startsWith("### ")) {
-      blocks.push({ type: "heading", level: 3, text: trimmed.replace(/^### /, "") });
+      const text = trimmed.replace(/^### /, "");
+      blocks.push({ type: "heading", level: 3, id: createDocumentHeadingId(text), text });
       continue;
     }
 
     if (trimmed.startsWith("## ")) {
-      blocks.push({ type: "heading", level: 2, text: trimmed.replace(/^## /, "") });
+      const text = trimmed.replace(/^## /, "");
+      blocks.push({ type: "heading", level: 2, id: createDocumentHeadingId(text), text });
       continue;
     }
 
     if (trimmed.startsWith("# ")) {
-      blocks.push({ type: "heading", level: 1, text: trimmed.replace(/^# /, "") });
+      const text = trimmed.replace(/^# /, "");
+      blocks.push({ type: "heading", level: 1, id: createDocumentHeadingId(text), text });
       continue;
     }
 
@@ -77,5 +60,18 @@ export function parseMarkdownDocument(content: string): MarkdownDocumentBlock[] 
     blocks.push({ type: "paragraph", text: trimmed });
   }
 
-  return blocks;
+  return {
+    title,
+    format: "markdown",
+    outline: blocks
+      .filter((block): block is Extract<DocumentBlock, { type: "heading" }> => {
+        return block.type === "heading";
+      })
+      .map((block) => ({
+        id: block.id,
+        level: block.level,
+        label: block.text,
+      })),
+    blocks,
+  };
 }
