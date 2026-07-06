@@ -13,7 +13,7 @@ type EngineeringShellProps = {
 export function EngineeringShell({ mode, children }: EngineeringShellProps) {
   return (
     <div className="engineering-shell">
-      <Navigator />
+      <Navigator mode={mode} />
       <section className="engineering-shell__main">
         <WorkspaceHeader mode={mode} />
         <div className="engineering-shell__content">{children}</div>
@@ -21,3 +21,4 @@ export function EngineeringShell({ mode, children }: EngineeringShellProps) {
     </div>
   );
 }
+

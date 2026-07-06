@@ -215,3 +215,26 @@
 .engineering-navigator__item[data-status="available"]:hover {
   border-color: var(--border-default);
 }
+
+.engineering-navigator__mode {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-control);
+}
+
+.engineering-navigator__mode span {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.engineering-navigator__mode strong {
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
