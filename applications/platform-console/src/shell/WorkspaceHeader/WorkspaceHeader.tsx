@@ -1,22 +1,37 @@
 import { getActiveWorkspace } from "../../workspaces/workspace.registry";
+import { getWorkspaceMode } from "../../workspaces/workspaceModes";
 
-export function WorkspaceHeader() {
+type WorkspaceHeaderProps = {
+  mode: "browse" | "reading";
+};
+
+export function WorkspaceHeader({ mode }: WorkspaceHeaderProps) {
   const activeWorkspace = getActiveWorkspace();
+  const workspaceMode = getWorkspaceMode(mode);
   const workspaceActions = activeWorkspace?.actions ?? [];
 
   return (
     <header className="engineering-workspace-header">
       <div>
-        <p>Platform Console</p>
-        <h1>{activeWorkspace?.label ?? "Engineering Workspace"}</h1>
+        <p>{activeWorkspace?.label}</p>
+
+        <h1>{workspaceMode.label}</h1>
+
         <span className="engineering-workspace-header__subtitle">
-          {activeWorkspace?.description ?? "BrianShortApps Operating Environment"}
+          {workspaceMode.description}
         </span>
       </div>
 
-      <div className="engineering-workspace-header__actions" aria-label="Workspace actions">
+      <div
+        className="engineering-workspace-header__actions"
+        aria-label="Workspace actions"
+      >
         {workspaceActions.map((action) => (
-          <button className="engineering-workspace-header__action" key={action.id} type="button">
+          <button
+            className="engineering-workspace-header__action"
+            key={action.id}
+            type="button"
+          >
             {action.label}
           </button>
         ))}
