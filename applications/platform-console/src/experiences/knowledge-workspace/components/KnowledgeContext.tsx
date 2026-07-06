@@ -12,9 +12,12 @@ export function KnowledgeContext({ selectedKnowledgeId }: KnowledgeContextProps)
   }
 
   return (
-    <div className="knowledge-workspace__context">
+    <nav className="knowledge-workspace__context" aria-label="Knowledge breadcrumb">
+      <span>Knowledge</span>
+      <span aria-hidden="true">/</span>
       <span>{getKnowledgeCategoryLabel(document.category)}</span>
+      <span aria-hidden="true">/</span>
       <strong>{document.title}</strong>
-    </div>
+    </nav>
   );
 }
