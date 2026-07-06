@@ -1,12 +1,22 @@
 import { getActiveWorkspace, listWorkspaces } from "../../workspaces/workspace.registry";
+import type { WorkspaceMode } from "../../workspaces/workspaceModes";
+import { getWorkspaceMode } from "../../workspaces/workspaceModes";
 
-const workspaceStatusItems = [
-  { label: "Environment", value: "Development" },
-  { label: "Active Workspace", value: getActiveWorkspace()?.label ?? "None" },
-  { label: "Registered Workspaces", value: String(listWorkspaces().length) },
-];
+type WorkspaceStatusProps = {
+  mode: WorkspaceMode;
+};
 
-export function WorkspaceStatus() {
+export function WorkspaceStatus({ mode }: WorkspaceStatusProps) {
+  const activeWorkspace = getActiveWorkspace();
+  const workspaceMode = getWorkspaceMode(mode);
+
+  const workspaceStatusItems = [
+    { label: "Environment", value: "Development" },
+    { label: "Active Workspace", value: activeWorkspace?.label ?? "None" },
+    { label: "Current Mode", value: workspaceMode.label },
+    { label: "Registered Workspaces", value: String(listWorkspaces().length) },
+  ];
+
   return (
     <section className="workspace-status" aria-label="Workspace status">
       {workspaceStatusItems.map((item) => (
