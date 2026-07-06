@@ -6,6 +6,11 @@ export const workspaceRegistry: WorkspaceDefinition[] = [
     label: "Engineering Workspace",
     description: "The current operating environment.",
     status: "active",
+    actions: [
+      { id: "knowledge", label: "Knowledge", status: "available" },
+      { id: "registry", label: "Registry", status: "available" },
+      { id: "diagnostics", label: "Diagnostics", status: "planned" },
+    ],
   },
   {
     id: "platform",

@@ -1,9 +1,8 @@
 import { getActiveWorkspace } from "../../workspaces/workspace.registry";
 
-const workspaceActions = ["Knowledge", "Registry", "Diagnostics"];
-
 export function WorkspaceHeader() {
   const activeWorkspace = getActiveWorkspace();
+  const workspaceActions = activeWorkspace?.actions ?? [];
 
   return (
     <header className="engineering-workspace-header">
@@ -17,8 +16,8 @@ export function WorkspaceHeader() {
 
       <div className="engineering-workspace-header__actions" aria-label="Workspace actions">
         {workspaceActions.map((action) => (
-          <button className="engineering-workspace-header__action" key={action} type="button">
-            {action}
+          <button className="engineering-workspace-header__action" key={action.id} type="button">
+            {action.label}
           </button>
         ))}
       </div>
