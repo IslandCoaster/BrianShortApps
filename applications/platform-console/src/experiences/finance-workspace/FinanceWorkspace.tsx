@@ -6,6 +6,7 @@ import {
 } from "@bsa/finance";
 
 import "./FinanceWorkspace.css";
+import { FinancialJournalView } from "./FinancialJournalView";
 
 const scenarios = listFinancialScenarios();
 
@@ -14,7 +15,7 @@ export function FinanceWorkspace() {
   const selectedScenario =
     scenarios.find((scenario) => scenario.id === selectedScenarioId) ?? getDefaultFinancialScenario();
 
-  const { scenario, state } = runFinancialScenario(selectedScenario);
+  const { journal, scenario, state } = runFinancialScenario(selectedScenario);
   const latestPaycheck = state.income.paychecks.at(-1);
   const latestStatement = state.obligations.statements.at(-1);
 
@@ -96,6 +97,8 @@ export function FinanceWorkspace() {
           </section>
         ) : null}
       </div>
+
+      <FinancialJournalView journal={journal} />
 
       <section className="finance-workspace__recommendations">
         <p>Recommended Next Actions</p>
