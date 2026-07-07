@@ -26,4 +26,11 @@ export {
   type PaycheckSummary,
 } from "./state/financialState";
 
+export {
+  runFinancialScenario,
+  type FinancialScenario,
+} from "./scenarios/financialScenario";
+
+export { singlePaycheckScenario } from "./scenarios/singlePaycheckScenario";
+
 export { paycheckFixture } from "./fixtures/paycheckFixture";
