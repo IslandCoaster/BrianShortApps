@@ -9,6 +9,7 @@ import { AccountStateView } from "./AccountStateView";
 import "./FinanceWorkspace.css";
 import { FinancialJournalView } from "./FinancialJournalView";
 import { FinancialPositionsView } from "./FinancialPositionsView";
+import { ObligationStateView } from "./ObligationStateView";
 
 const scenarios = listFinancialScenarios();
 
@@ -17,7 +18,7 @@ export function FinanceWorkspace() {
   const selectedScenario =
     scenarios.find((scenario) => scenario.id === selectedScenarioId) ?? getDefaultFinancialScenario();
 
-  const { accountStates, journal, positions, scenario, state } =
+  const { accountStates, journal, obligationStates, positions, scenario, state } =
     runFinancialScenario(selectedScenario);
   const latestPaycheck = state.income.paychecks.at(-1);
   const latestStatement = state.obligations.statements.at(-1);
@@ -129,6 +130,8 @@ export function FinanceWorkspace() {
       </div>
 
       <FinancialPositionsView positions={positions} />
+
+      <ObligationStateView obligationStates={obligationStates} />
 
       <AccountStateView accountStates={accountStates} />
 
