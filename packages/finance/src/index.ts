@@ -58,6 +58,10 @@ export type {
 } from "./positions/financialPositions";
 
 export {
+  generateFinancialRecommendations,
+} from "./recommendations/recommendationEngine";
+
+export {
   createEmptyFinancialState,
   type FinancialRecommendation,
   type FinancialState,

@@ -115,44 +115,8 @@ function applyPaymentCompletedEvent(state: FinancialState, event: FinancialEvent
   };
 }
 
-function generateRecommendations(state: FinancialState) {
-  const recommendations: FinancialState["recommendations"] = [];
-
-  if (state.income.paychecks.length > 0 && state.liquidity.cashAvailable > 0) {
-    recommendations.push({
-      id: "review-cash-position",
-      title: "Review cash position",
-      rationale:
-        "Income has been received and cash is available. Review obligations before allocating remaining funds.",
-      priority: "medium",
-    });
-  }
-
-  if (state.obligations.statements.length > 0 && state.obligations.currentBalanceTotal > 0) {
-    recommendations.push({
-      id: "review-credit-position",
-      title: "Review credit position",
-      rationale:
-        "Current credit balances remain outstanding. Review payment timing and projected statement balances.",
-      priority: "high",
-    });
-  }
-
-  if (state.obligations.payments.length > 0) {
-    recommendations.push({
-      id: "review-payment-impact",
-      title: "Review payment impact",
-      rationale:
-        "A payment has changed the credit position. Confirm the updated current and projected balances.",
-      priority: "low",
-    });
-  }
-
-  return recommendations;
-}
-
 export function calculateFinancialState(journal: FinancialJournal): FinancialState {
-  const state = journal.events.reduce((currentState, event) => {
+  return journal.events.reduce((currentState, event) => {
     if (event.type === "paycheck.received") {
       return applyPaycheckReceivedEvent(currentState, event);
     }
@@ -167,9 +131,4 @@ export function calculateFinancialState(journal: FinancialJournal): FinancialSta
 
     return currentState;
   }, createEmptyFinancialState());
-
-  return {
-    ...state,
-    recommendations: generateRecommendations(state),
-  };
 }
