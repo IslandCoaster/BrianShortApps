@@ -1,9 +1,20 @@
-﻿import { paycheckFixture } from "@bsa/finance";
+﻿import { useState } from "react";
+import {
+  getDefaultFinancialScenario,
+  listFinancialScenarios,
+  runFinancialScenario,
+} from "@bsa/finance";
 
 import "./FinanceWorkspace.css";
 
+const scenarios = listFinancialScenarios();
+
 export function FinanceWorkspace() {
-  const { scenario, state } = paycheckFixture;
+  const [selectedScenarioId, setSelectedScenarioId] = useState(getDefaultFinancialScenario().id);
+  const selectedScenario =
+    scenarios.find((scenario) => scenario.id === selectedScenarioId) ?? getDefaultFinancialScenario();
+
+  const { scenario, state } = runFinancialScenario(selectedScenario);
   const latestPaycheck = state.income.paychecks.at(-1);
 
   return (
@@ -14,6 +25,21 @@ export function FinanceWorkspace() {
         <span>
           Scenario: {scenario.title} - {scenario.description}
         </span>
+      </div>
+
+      <div className="finance-workspace__scenario-picker">
+        <label htmlFor="financial-scenario">Financial Scenario</label>
+        <select
+          id="financial-scenario"
+          value={selectedScenarioId}
+          onChange={(event) => setSelectedScenarioId(event.target.value)}
+        >
+          {scenarios.map((scenarioOption) => (
+            <option key={scenarioOption.id} value={scenarioOption.id}>
+              {scenarioOption.title}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="finance-workspace__metrics">

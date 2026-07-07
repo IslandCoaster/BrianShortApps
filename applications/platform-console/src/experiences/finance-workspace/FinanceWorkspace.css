@@ -85,3 +85,26 @@
     grid-template-columns: 1fr;
   }
 }
+
+.finance-workspace__scenario-picker {
+  display: grid;
+  gap: var(--space-2);
+  max-width: 360px;
+}
+
+.finance-workspace__scenario-picker label {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.finance-workspace__scenario-picker select {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-control);
+  color: var(--text-primary);
+  font: inherit;
+}
