@@ -1,16 +1,28 @@
+export type FinancialRecommendation = {
+  id: string;
+  title: string;
+  rationale: string;
+  priority: "critical" | "high" | "medium" | "low";
+};
+
+export type PaycheckSummary = {
+  id: string;
+  occurredOn: string;
+  netPay: number;
+  grossPay: number;
+  payPeriodStart: string;
+  payPeriodEnd: string;
+};
+
 export type FinancialState = {
   liquidity: {
     cashAvailable: number;
   };
   income: {
     receivedIncome: number;
+    paychecks: PaycheckSummary[];
   };
-  recommendations: {
-    id: string;
-    title: string;
-    rationale: string;
-    priority: "critical" | "high" | "medium" | "low";
-  }[];
+  recommendations: FinancialRecommendation[];
 };
 
 export function createEmptyFinancialState(): FinancialState {
@@ -20,6 +32,7 @@ export function createEmptyFinancialState(): FinancialState {
     },
     income: {
       receivedIncome: 0,
+      paychecks: [],
     },
     recommendations: [],
   };
