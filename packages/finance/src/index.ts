@@ -31,6 +31,13 @@ export {
   type FinancialScenario,
 } from "./scenarios/financialScenario";
 
+export {
+  financialScenarioRegistry,
+  getDefaultFinancialScenario,
+  getFinancialScenario,
+  listFinancialScenarios,
+} from "./scenarios/scenario.registry";
+
 export { singlePaycheckScenario } from "./scenarios/singlePaycheckScenario";
 export { multiPaycheckScenario } from "./scenarios/multiPaycheckScenario";
 

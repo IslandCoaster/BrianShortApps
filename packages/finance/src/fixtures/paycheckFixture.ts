@@ -1,4 +1,4 @@
 import { runFinancialScenario } from "../scenarios/financialScenario";
-import { multiPaycheckScenario } from "../scenarios/multiPaycheckScenario";
+import { getDefaultFinancialScenario } from "../scenarios/scenario.registry";
 
-export const paycheckFixture = runFinancialScenario(multiPaycheckScenario);
+export const paycheckFixture = runFinancialScenario(getDefaultFinancialScenario());
