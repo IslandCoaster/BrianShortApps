@@ -5,6 +5,11 @@ export type {
 } from "./events/financialEvent";
 
 export {
+  createPaycheckReceivedEvent,
+  type PaycheckReceivedInput,
+} from "./events/paycheckReceivedEvent";
+
+export {
   appendFinancialEvent,
   createFinancialJournal,
   type FinancialJournal,
