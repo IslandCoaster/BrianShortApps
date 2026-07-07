@@ -16,6 +16,7 @@ export function FinanceWorkspace() {
 
   const { scenario, state } = runFinancialScenario(selectedScenario);
   const latestPaycheck = state.income.paychecks.at(-1);
+  const latestStatement = state.obligations.statements.at(-1);
 
   return (
     <section className="finance-workspace">
@@ -57,17 +58,44 @@ export function FinanceWorkspace() {
           <span>Paychecks Recorded</span>
           <strong>{state.income.paychecks.length}</strong>
         </article>
+
+        <article>
+          <span>Statement Balance</span>
+          <strong>${state.obligations.statementBalanceTotal.toLocaleString()}</strong>
+        </article>
+
+        <article>
+          <span>Minimum Payments</span>
+          <strong>${state.obligations.minimumPaymentTotal.toLocaleString()}</strong>
+        </article>
+
+        <article>
+          <span>Statements Recorded</span>
+          <strong>{state.obligations.statements.length}</strong>
+        </article>
       </div>
 
-      {latestPaycheck ? (
-        <section className="finance-workspace__paycheck">
-          <p>Latest Paycheck</p>
-          <h3>${latestPaycheck.netPay.toLocaleString()}</h3>
-          <span>
-            Pay period {latestPaycheck.payPeriodStart} through {latestPaycheck.payPeriodEnd}
-          </span>
-        </section>
-      ) : null}
+      <div className="finance-workspace__detail-grid">
+        {latestPaycheck ? (
+          <section className="finance-workspace__paycheck">
+            <p>Latest Paycheck</p>
+            <h3>${latestPaycheck.netPay.toLocaleString()}</h3>
+            <span>
+              Pay period {latestPaycheck.payPeriodStart} through {latestPaycheck.payPeriodEnd}
+            </span>
+          </section>
+        ) : null}
+
+        {latestStatement ? (
+          <section className="finance-workspace__paycheck">
+            <p>Latest Statement</p>
+            <h3>{latestStatement.accountName}</h3>
+            <span>
+              ${latestStatement.statementBalance.toLocaleString()} due {latestStatement.dueDate}
+            </span>
+          </section>
+        ) : null}
+      </div>
 
       <section className="finance-workspace__recommendations">
         <p>Recommended Next Actions</p>
