@@ -2,6 +2,7 @@
 import type { FinancialEvent } from "../events/financialEvent";
 import { calculateFinancialState } from "../engine/financialEngine";
 import { createFinancialJournal } from "../journal/financialJournal";
+import { calculateObligationStates } from "../obligations/obligationStateEngine";
 import { calculateFinancialPositions } from "../positions/positionEngine";
 
 export type FinancialScenario = {
@@ -14,6 +15,7 @@ export type FinancialScenario = {
 export function runFinancialScenario(scenario: FinancialScenario) {
   const journal = createFinancialJournal(scenario.events);
   const accountStates = calculateAccountStates(journal);
+  const obligationStates = calculateObligationStates(journal);
   const state = calculateFinancialState(journal);
   const positions = calculateFinancialPositions(state, accountStates);
 
@@ -21,6 +23,7 @@ export function runFinancialScenario(scenario: FinancialScenario) {
     scenario,
     journal,
     accountStates,
+    obligationStates,
     positions,
     state,
   };

@@ -39,6 +39,15 @@ export {
 } from "./accounts/accountState";
 
 export {
+  calculateObligationStates,
+} from "./obligations/obligationStateEngine";
+
+export {
+  createEmptyObligationState,
+  type ObligationState,
+} from "./obligations/obligationState";
+
+export {
   calculateFinancialPositions,
 } from "./positions/positionEngine";
 
