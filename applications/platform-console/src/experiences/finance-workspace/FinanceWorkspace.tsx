@@ -66,6 +66,16 @@ export function FinanceWorkspace() {
         </article>
 
         <article>
+          <span>Current Balance</span>
+          <strong>${state.obligations.currentBalanceTotal.toLocaleString()}</strong>
+        </article>
+
+        <article>
+          <span>Projected Statement Balance</span>
+          <strong>${state.obligations.projectedStatementBalanceTotal.toLocaleString()}</strong>
+        </article>
+
+        <article>
           <span>Minimum Payments</span>
           <strong>${state.obligations.minimumPaymentTotal.toLocaleString()}</strong>
         </article>
@@ -92,7 +102,8 @@ export function FinanceWorkspace() {
             <p>Latest Statement</p>
             <h3>{latestStatement.accountName}</h3>
             <span>
-              ${latestStatement.statementBalance.toLocaleString()} due {latestStatement.dueDate}
+              Statement ${latestStatement.statementBalance.toLocaleString()} due{" "}
+              {latestStatement.dueDate}
             </span>
           </section>
         ) : null}
