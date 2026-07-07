@@ -3,7 +3,7 @@ import { paycheckFixture } from "@bsa/finance";
 import "./FinanceWorkspace.css";
 
 export function FinanceWorkspace() {
-  const { state } = paycheckFixture;
+  const { scenario, state } = paycheckFixture;
   const latestPaycheck = state.income.paychecks.at(-1);
 
   return (
@@ -12,7 +12,7 @@ export function FinanceWorkspace() {
         <p>Personal Finance</p>
         <h2>Financial Snapshot</h2>
         <span>
-          First vertical slice: paycheck event ? journal ? engine ? state ? snapshot.
+          Scenario: {scenario.title} — {scenario.description}
         </span>
       </div>
 
