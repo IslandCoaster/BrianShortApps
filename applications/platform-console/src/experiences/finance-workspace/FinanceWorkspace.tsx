@@ -18,6 +18,7 @@ export function FinanceWorkspace() {
   const { journal, scenario, state } = runFinancialScenario(selectedScenario);
   const latestPaycheck = state.income.paychecks.at(-1);
   const latestStatement = state.obligations.statements.at(-1);
+  const latestPayment = state.obligations.payments.at(-1);
 
   return (
     <section className="finance-workspace">
@@ -81,6 +82,11 @@ export function FinanceWorkspace() {
         </article>
 
         <article>
+          <span>Payments Completed</span>
+          <strong>{state.obligations.payments.length}</strong>
+        </article>
+
+        <article>
           <span>Statements Recorded</span>
           <strong>{state.obligations.statements.length}</strong>
         </article>
@@ -104,6 +110,16 @@ export function FinanceWorkspace() {
             <span>
               Statement ${latestStatement.statementBalance.toLocaleString()} due{" "}
               {latestStatement.dueDate}
+            </span>
+          </section>
+        ) : null}
+
+        {latestPayment ? (
+          <section className="finance-workspace__paycheck">
+            <p>Latest Payment</p>
+            <h3>${latestPayment.amount.toLocaleString()}</h3>
+            <span>
+              {latestPayment.sourceAccountName} to {latestPayment.destinationAccountName}
             </span>
           </section>
         ) : null}
