@@ -118,32 +118,32 @@ function applyPaymentCompletedEvent(state: FinancialState, event: FinancialEvent
 function generateRecommendations(state: FinancialState) {
   const recommendations: FinancialState["recommendations"] = [];
 
-  if (state.income.paychecks.length > 0) {
+  if (state.income.paychecks.length > 0 && state.liquidity.cashAvailable > 0) {
     recommendations.push({
-      id: "review-paycheck-allocation",
-      title: "Review paycheck allocation",
+      id: "review-cash-position",
+      title: "Review cash position",
       rationale:
-        "A paycheck has been received. Review upcoming obligations before allocating surplus.",
+        "Income has been received and cash is available. Review obligations before allocating remaining funds.",
       priority: "medium",
     });
   }
 
   if (state.obligations.statements.length > 0 && state.obligations.currentBalanceTotal > 0) {
     recommendations.push({
-      id: "review-statement-obligations",
-      title: "Review statement obligations",
+      id: "review-credit-position",
+      title: "Review credit position",
       rationale:
-        "New statements are available. Review balances, due dates, and minimum payments before making allocation decisions.",
+        "Current credit balances remain outstanding. Review payment timing and projected statement balances.",
       priority: "high",
     });
   }
 
   if (state.obligations.payments.length > 0) {
     recommendations.push({
-      id: "review-updated-balances",
-      title: "Review updated balances",
+      id: "review-payment-impact",
+      title: "Review payment impact",
       rationale:
-        "A payment has been completed. Current and projected balances have changed.",
+        "A payment has changed the credit position. Confirm the updated current and projected balances.",
       priority: "low",
     });
   }
