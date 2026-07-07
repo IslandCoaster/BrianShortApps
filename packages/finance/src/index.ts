@@ -34,6 +34,7 @@ export {
   type FinancialRecommendation,
   type FinancialState,
   type PaycheckSummary,
+  type PaymentSummary,
   type StatementSummary,
 } from "./state/financialState";
 

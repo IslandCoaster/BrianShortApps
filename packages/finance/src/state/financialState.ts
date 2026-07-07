@@ -28,6 +28,17 @@ export type StatementSummary = {
   minimumPayment: number;
 };
 
+export type PaymentSummary = {
+  id: string;
+  occurredOn: string;
+  sourceAccountId: string;
+  sourceAccountName: string;
+  destinationAccountId: string;
+  destinationAccountName: string;
+  amount: number;
+  strategy: string;
+};
+
 export type FinancialState = {
   liquidity: {
     cashAvailable: number;
@@ -42,6 +53,7 @@ export type FinancialState = {
     projectedStatementBalanceTotal: number;
     minimumPaymentTotal: number;
     statements: StatementSummary[];
+    payments: PaymentSummary[];
   };
   recommendations: FinancialRecommendation[];
 };
@@ -61,6 +73,7 @@ export function createEmptyFinancialState(): FinancialState {
       projectedStatementBalanceTotal: 0,
       minimumPaymentTotal: 0,
       statements: [],
+      payments: [],
     },
     recommendations: [],
   };

@@ -4,6 +4,7 @@ import {
   createEmptyFinancialState,
   type FinancialState,
   type PaycheckSummary,
+  type PaymentSummary,
   type StatementSummary,
 } from "../state/financialState";
 
@@ -48,6 +49,19 @@ function createStatementSummary(event: FinancialEvent): StatementSummary {
   };
 }
 
+function createPaymentSummary(event: FinancialEvent): PaymentSummary {
+  return {
+    id: event.id,
+    occurredOn: event.occurredOn,
+    sourceAccountId: getMetadataString(event, "sourceAccountId"),
+    sourceAccountName: getMetadataString(event, "sourceAccountName"),
+    destinationAccountId: getMetadataString(event, "destinationAccountId"),
+    destinationAccountName: getMetadataString(event, "destinationAccountName"),
+    amount: event.amount ?? 0,
+    strategy: getMetadataString(event, "strategy"),
+  };
+}
+
 function applyPaycheckReceivedEvent(state: FinancialState, event: FinancialEvent): FinancialState {
   const amount = event.amount ?? 0;
 
@@ -69,12 +83,34 @@ function applyStatementGeneratedEvent(state: FinancialState, event: FinancialEve
   return {
     ...state,
     obligations: {
+      ...state.obligations,
       statementBalanceTotal: state.obligations.statementBalanceTotal + statement.statementBalance,
       currentBalanceTotal: state.obligations.currentBalanceTotal + statement.currentBalance,
       projectedStatementBalanceTotal:
         state.obligations.projectedStatementBalanceTotal + statement.projectedStatementBalance,
       minimumPaymentTotal: state.obligations.minimumPaymentTotal + statement.minimumPayment,
       statements: [...state.obligations.statements, statement],
+    },
+  };
+}
+
+function applyPaymentCompletedEvent(state: FinancialState, event: FinancialEvent): FinancialState {
+  const payment = createPaymentSummary(event);
+  const paymentAmount = payment.amount;
+
+  return {
+    ...state,
+    liquidity: {
+      cashAvailable: state.liquidity.cashAvailable - paymentAmount,
+    },
+    obligations: {
+      ...state.obligations,
+      currentBalanceTotal: Math.max(0, state.obligations.currentBalanceTotal - paymentAmount),
+      projectedStatementBalanceTotal: Math.max(
+        0,
+        state.obligations.projectedStatementBalanceTotal - paymentAmount,
+      ),
+      payments: [...state.obligations.payments, payment],
     },
   };
 }
@@ -92,13 +128,23 @@ function generateRecommendations(state: FinancialState) {
     });
   }
 
-  if (state.obligations.statements.length > 0) {
+  if (state.obligations.statements.length > 0 && state.obligations.currentBalanceTotal > 0) {
     recommendations.push({
       id: "review-statement-obligations",
       title: "Review statement obligations",
       rationale:
         "New statements are available. Review balances, due dates, and minimum payments before making allocation decisions.",
       priority: "high",
+    });
+  }
+
+  if (state.obligations.payments.length > 0) {
+    recommendations.push({
+      id: "review-updated-balances",
+      title: "Review updated balances",
+      rationale:
+        "A payment has been completed. Current and projected balances have changed.",
+      priority: "low",
     });
   }
 
@@ -113,6 +159,10 @@ export function calculateFinancialState(journal: FinancialJournal): FinancialSta
 
     if (event.type === "statement.generated") {
       return applyStatementGeneratedEvent(currentState, event);
+    }
+
+    if (event.type === "payment.completed") {
+      return applyPaymentCompletedEvent(currentState, event);
     }
 
     return currentState;
