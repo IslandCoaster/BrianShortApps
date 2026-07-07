@@ -1,8 +1,9 @@
 import { useState } from "react";
 
+import EngineeringWorkspace from "../experiences/engineering-workspace/EngineeringWorkspace";
+import { FinanceWorkspace } from "../experiences/finance-workspace/FinanceWorkspace";
 import { EngineeringShell } from "../shell/EngineeringShell";
 import type { WorkspaceMode } from "../workspaces/workspaceModes";
-import EngineeringWorkspace from "../experiences/engineering-workspace/EngineeringWorkspace";
 
 export default function App() {
   const [selectedKnowledgeId, setSelectedKnowledgeId] = useState<string | null>(null);
@@ -14,6 +15,7 @@ export default function App() {
         selectedKnowledgeId={selectedKnowledgeId}
         onSelectKnowledge={setSelectedKnowledgeId}
       />
+      <FinanceWorkspace />
     </EngineeringShell>
   );
 }

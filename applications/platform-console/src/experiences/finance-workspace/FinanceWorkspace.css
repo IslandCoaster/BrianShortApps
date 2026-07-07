@@ -1,0 +1,87 @@
+.finance-workspace {
+  display: grid;
+  gap: var(--space-6);
+  max-width: 1240px;
+  margin-top: var(--space-8);
+  padding: var(--space-8);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-2xl);
+  background: var(--surface-panel);
+}
+
+.finance-workspace__header {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.finance-workspace__header p,
+.finance-workspace__paycheck p,
+.finance-workspace__recommendations > p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.finance-workspace__header h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--text-2xl);
+}
+
+.finance-workspace__header span,
+.finance-workspace__paycheck span {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.finance-workspace__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.finance-workspace__metrics article,
+.finance-workspace__paycheck,
+.finance-workspace__recommendations article {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-control);
+}
+
+.finance-workspace__metrics span,
+.finance-workspace__recommendations article span {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.finance-workspace__metrics strong,
+.finance-workspace__paycheck h3,
+.finance-workspace__recommendations h3 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.finance-workspace__recommendations {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.finance-workspace__recommendations p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 900px) {
+  .finance-workspace__metrics {
+    grid-template-columns: 1fr;
+  }
+}
