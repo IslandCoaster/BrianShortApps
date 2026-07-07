@@ -1,4 +1,4 @@
-export type FinancialRecommendation = {
+﻿export type FinancialRecommendation = {
   id: string;
   title: string;
   rationale: string;
@@ -23,6 +23,8 @@ export type StatementSummary = {
   closingDate: string;
   dueDate: string;
   statementBalance: number;
+  currentBalance: number;
+  projectedStatementBalance: number;
   minimumPayment: number;
 };
 
@@ -36,6 +38,8 @@ export type FinancialState = {
   };
   obligations: {
     statementBalanceTotal: number;
+    currentBalanceTotal: number;
+    projectedStatementBalanceTotal: number;
     minimumPaymentTotal: number;
     statements: StatementSummary[];
   };
@@ -53,6 +57,8 @@ export function createEmptyFinancialState(): FinancialState {
     },
     obligations: {
       statementBalanceTotal: 0,
+      currentBalanceTotal: 0,
+      projectedStatementBalanceTotal: 0,
       minimumPaymentTotal: 0,
       statements: [],
     },

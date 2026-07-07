@@ -1,4 +1,4 @@
-import type { FinancialEvent } from "../events/financialEvent";
+﻿import type { FinancialEvent } from "../events/financialEvent";
 import type { FinancialJournal } from "../journal/financialJournal";
 import {
   createEmptyFinancialState,
@@ -31,6 +31,8 @@ function createPaycheckSummary(event: FinancialEvent): PaycheckSummary {
 }
 
 function createStatementSummary(event: FinancialEvent): StatementSummary {
+  const statementBalance = getMetadataNumber(event, "statementBalance");
+
   return {
     id: event.id,
     occurredOn: event.occurredOn,
@@ -39,7 +41,9 @@ function createStatementSummary(event: FinancialEvent): StatementSummary {
     statementDate: getMetadataString(event, "statementDate"),
     closingDate: getMetadataString(event, "closingDate"),
     dueDate: getMetadataString(event, "dueDate"),
-    statementBalance: getMetadataNumber(event, "statementBalance"),
+    statementBalance,
+    currentBalance: statementBalance,
+    projectedStatementBalance: statementBalance,
     minimumPayment: getMetadataNumber(event, "minimumPayment"),
   };
 }
@@ -66,6 +70,9 @@ function applyStatementGeneratedEvent(state: FinancialState, event: FinancialEve
     ...state,
     obligations: {
       statementBalanceTotal: state.obligations.statementBalanceTotal + statement.statementBalance,
+      currentBalanceTotal: state.obligations.currentBalanceTotal + statement.currentBalance,
+      projectedStatementBalanceTotal:
+        state.obligations.projectedStatementBalanceTotal + statement.projectedStatementBalance,
       minimumPaymentTotal: state.obligations.minimumPaymentTotal + statement.minimumPayment,
       statements: [...state.obligations.statements, statement],
     },
