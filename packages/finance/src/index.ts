@@ -39,6 +39,16 @@ export {
 } from "./accounts/accountState";
 
 export {
+  calculateFinancialPositions,
+} from "./positions/positionEngine";
+
+export type {
+  CashPosition,
+  CreditPosition,
+  FinancialPositions,
+} from "./positions/financialPositions";
+
+export {
   createEmptyFinancialState,
   type FinancialRecommendation,
   type FinancialState,
