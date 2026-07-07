@@ -32,5 +32,6 @@ export {
 } from "./scenarios/financialScenario";
 
 export { singlePaycheckScenario } from "./scenarios/singlePaycheckScenario";
+export { multiPaycheckScenario } from "./scenarios/multiPaycheckScenario";
 
 export { paycheckFixture } from "./fixtures/paycheckFixture";
