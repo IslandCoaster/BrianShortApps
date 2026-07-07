@@ -21,5 +21,9 @@ export {
 
 export {
   createEmptyFinancialState,
+  type FinancialRecommendation,
   type FinancialState,
+  type PaycheckSummary,
 } from "./state/financialState";
+
+export { paycheckFixture } from "./fixtures/paycheckFixture";
