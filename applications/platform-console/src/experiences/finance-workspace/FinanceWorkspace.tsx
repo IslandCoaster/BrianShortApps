@@ -1,4 +1,4 @@
-import { paycheckFixture } from "@bsa/finance";
+ï»¿import { paycheckFixture } from "@bsa/finance";
 
 import "./FinanceWorkspace.css";
 
@@ -12,7 +12,7 @@ export function FinanceWorkspace() {
         <p>Personal Finance</p>
         <h2>Financial Snapshot</h2>
         <span>
-          Scenario: {scenario.title} — {scenario.description}
+          Scenario: {scenario.title} - {scenario.description}
         </span>
       </div>
 
