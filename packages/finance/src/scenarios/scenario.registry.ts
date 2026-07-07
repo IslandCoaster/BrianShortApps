@@ -1,10 +1,12 @@
 import type { FinancialScenario } from "./financialScenario";
 import { multiPaycheckScenario } from "./multiPaycheckScenario";
+import { paycheckWithStatementScenario } from "./paycheckWithStatementScenario";
 import { singlePaycheckScenario } from "./singlePaycheckScenario";
 
 export const financialScenarioRegistry: FinancialScenario[] = [
   singlePaycheckScenario,
   multiPaycheckScenario,
+  paycheckWithStatementScenario,
 ];
 
 export function listFinancialScenarios() {
@@ -16,5 +18,5 @@ export function getFinancialScenario(scenarioId: string) {
 }
 
 export function getDefaultFinancialScenario() {
-  return multiPaycheckScenario;
+  return paycheckWithStatementScenario;
 }

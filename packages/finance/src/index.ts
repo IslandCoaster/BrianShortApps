@@ -1,4 +1,4 @@
-export type {
+﻿export type {
   FinancialEvent,
   FinancialEventCategory,
   FinancialEventType,
@@ -46,5 +46,6 @@ export {
 
 export { singlePaycheckScenario } from "./scenarios/singlePaycheckScenario";
 export { multiPaycheckScenario } from "./scenarios/multiPaycheckScenario";
+export { paycheckWithStatementScenario } from "./scenarios/paycheckWithStatementScenario";
 
 export { paycheckFixture } from "./fixtures/paycheckFixture";
