@@ -14,6 +14,18 @@ export type PaycheckSummary = {
   payPeriodEnd: string;
 };
 
+export type StatementSummary = {
+  id: string;
+  occurredOn: string;
+  accountId: string;
+  accountName: string;
+  statementDate: string;
+  closingDate: string;
+  dueDate: string;
+  statementBalance: number;
+  minimumPayment: number;
+};
+
 export type FinancialState = {
   liquidity: {
     cashAvailable: number;
@@ -21,6 +33,11 @@ export type FinancialState = {
   income: {
     receivedIncome: number;
     paychecks: PaycheckSummary[];
+  };
+  obligations: {
+    statementBalanceTotal: number;
+    minimumPaymentTotal: number;
+    statements: StatementSummary[];
   };
   recommendations: FinancialRecommendation[];
 };
@@ -33,6 +50,11 @@ export function createEmptyFinancialState(): FinancialState {
     income: {
       receivedIncome: 0,
       paychecks: [],
+    },
+    obligations: {
+      statementBalanceTotal: 0,
+      minimumPaymentTotal: 0,
+      statements: [],
     },
     recommendations: [],
   };

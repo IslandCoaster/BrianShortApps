@@ -10,6 +10,11 @@ export {
 } from "./events/paycheckReceivedEvent";
 
 export {
+  createStatementGeneratedEvent,
+  type StatementGeneratedInput,
+} from "./events/statementGeneratedEvent";
+
+export {
   appendFinancialEvent,
   createFinancialJournal,
   type FinancialJournal,
@@ -24,6 +29,7 @@ export {
   type FinancialRecommendation,
   type FinancialState,
   type PaycheckSummary,
+  type StatementSummary,
 } from "./state/financialState";
 
 export {

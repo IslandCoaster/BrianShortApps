@@ -7,8 +7,8 @@ export type FinancialEventCategory =
 
 export type FinancialEventType =
   | "paycheck.received"
-  | "transaction.imported"
   | "statement.generated"
+  | "transaction.imported"
   | "payment.completed"
   | "credit-score.updated"
   | "budget.changed"
