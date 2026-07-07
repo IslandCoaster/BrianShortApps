@@ -15,6 +15,11 @@ export {
 } from "./events/statementGeneratedEvent";
 
 export {
+  createPaymentCompletedEvent,
+  type PaymentCompletedInput,
+} from "./events/paymentCompletedEvent";
+
+export {
   appendFinancialEvent,
   createFinancialJournal,
   type FinancialJournal,

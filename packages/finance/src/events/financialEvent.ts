@@ -1,4 +1,4 @@
-export type FinancialEventCategory =
+﻿export type FinancialEventCategory =
   | "income"
   | "spending"
   | "obligation"
@@ -8,8 +8,8 @@ export type FinancialEventCategory =
 export type FinancialEventType =
   | "paycheck.received"
   | "statement.generated"
-  | "transaction.imported"
   | "payment.completed"
+  | "transaction.imported"
   | "credit-score.updated"
   | "budget.changed"
   | "goal.changed";
