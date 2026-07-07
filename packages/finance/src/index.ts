@@ -30,6 +30,15 @@ export {
 } from "./engine/financialEngine";
 
 export {
+  calculateAccountStates,
+} from "./accounts/accountStateEngine";
+
+export {
+  createEmptyAccountState,
+  type AccountState,
+} from "./accounts/accountState";
+
+export {
   createEmptyFinancialState,
   type FinancialRecommendation,
   type FinancialState,
