@@ -33,8 +33,18 @@ export function CreditPositionView({ creditPosition }: CreditPositionViewProps) 
         </article>
 
         <article>
+          <span>Projected Utilization</span>
+          <strong>{creditPosition.projectedUtilizationPercent}%</strong>
+        </article>
+
+        <article>
           <span>Target Utilization</span>
           <strong>{creditPosition.targetUtilizationPercent}%</strong>
+        </article>
+
+        <article>
+          <span>Amount to Target</span>
+          <strong>{formatAmount(creditPosition.amountToTargetUtilization)}</strong>
         </article>
       </div>
     </section>
