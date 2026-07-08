@@ -1,8 +1,4 @@
-﻿export type GracePeriodStatus =
-  | "active"
-  | "lost"
-  | "restored"
-  | "unknown";
+﻿export type GracePeriodStatus = "active" | "lost" | "restored" | "unknown";
 
 export type GracePeriodState = {
   accountId: string;
@@ -16,6 +12,8 @@ export type GracePeriodState = {
   qualifyingPaymentTotal: number;
   requiredPaymentAmount: number;
   remainingAmountToPreserveGracePeriod: number;
+  restorationEligible: boolean;
+  restorationReason: string;
 };
 
 export function createEmptyGracePeriodState(
@@ -34,5 +32,7 @@ export function createEmptyGracePeriodState(
     qualifyingPaymentTotal: 0,
     requiredPaymentAmount: 0,
     remainingAmountToPreserveGracePeriod: 0,
+    restorationEligible: false,
+    restorationReason: "",
   };
 }

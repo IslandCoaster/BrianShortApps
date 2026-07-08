@@ -13,6 +13,7 @@ import { FinancialJournalView } from "./FinancialJournalView";
 import { FinancialPositionsView } from "./FinancialPositionsView";
 import { InterestStateView } from "./InterestStateView";
 import { ObligationStateView } from "./ObligationStateView";
+import { GracePeriodStateView } from "./GracePeriodStateView";
 
 const scenarios = listFinancialScenarios();
 
@@ -28,6 +29,7 @@ export function FinanceWorkspace() {
     accountProfiles,
     accountStates,
     creditPosition,
+    gracePeriodStates,
     interestStates,
     journal,
     obligationStates,
@@ -49,7 +51,6 @@ export function FinanceWorkspace() {
           Scenario: {scenario.title} - {scenario.description}
         </span>
       </div>
-
       <div className="finance-workspace__scenario-picker">
         <label htmlFor="financial-scenario">Financial Scenario</label>
         <select
@@ -64,7 +65,6 @@ export function FinanceWorkspace() {
           ))}
         </select>
       </div>
-
       <div className="finance-workspace__metrics">
         <article>
           <span>Cash Available</span>
@@ -119,7 +119,6 @@ export function FinanceWorkspace() {
           <strong>{state.obligations.statements.length}</strong>
         </article>
       </div>
-
       <div className="finance-workspace__detail-grid">
         {latestPaycheck ? (
           <section className="finance-workspace__paycheck">
@@ -154,21 +153,14 @@ export function FinanceWorkspace() {
           </section>
         ) : null}
       </div>
-
       <CreditPositionView creditPosition={creditPosition} />
-
       <FinancialPositionsView positions={positions} />
-
       <ObligationStateView obligationStates={obligationStates} />
-
       <AccountStateView accountStates={accountStates} />
-
+      <GracePeriodStateView gracePeriodStates={gracePeriodStates} />
       <InterestStateView interestStates={interestStates} />
-
       <AccountProfileView accountProfiles={accountProfiles} />
-
       <FinancialJournalView journal={journal} />
-
       <section className="finance-workspace__recommendations">
         <p>Recommended Next Actions</p>
 

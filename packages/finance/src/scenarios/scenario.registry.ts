@@ -10,6 +10,7 @@ export const financialScenarioRegistry: FinancialScenario[] = [
   multiPaycheckScenario,
   paycheckWithStatementScenario,
   paycheckStatementPaymentScenario,
+  appleCardPaidInFullScenario,
 ];
 
 export function listFinancialScenarios() {

@@ -569,3 +569,8 @@
     text-align: left;
   }
 }
+
+.finance-workspace__grace-period-states {
+  display: grid;
+  gap: var(--space-3);
+}

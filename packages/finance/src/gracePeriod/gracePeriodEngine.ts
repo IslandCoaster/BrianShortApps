@@ -14,8 +14,13 @@ function getMetadataNumber(value: unknown) {
   return typeof value === "number" ? value : 0;
 }
 
-function findAccountProfile(accountProfiles: AccountProfile[], accountId: string) {
-  return accountProfiles.find((profile) => profile.accountId === accountId) ?? null;
+function findAccountProfile(
+  accountProfiles: AccountProfile[],
+  accountId: string,
+) {
+  return (
+    accountProfiles.find((profile) => profile.accountId === accountId) ?? null
+  );
 }
 
 function getPaymentDestinationAccountId(event: FinancialEvent) {
@@ -26,7 +31,10 @@ function getPaymentCreditedAt(event: FinancialEvent) {
   return getMetadataString(event.metadata?.creditedAt) || event.occurredOn;
 }
 
-function isPaymentCreditedByDueDate(event: FinancialEvent, paymentDueDate: string) {
+function isPaymentCreditedByDueDate(
+  event: FinancialEvent,
+  paymentDueDate: string,
+) {
   const creditedAt = getPaymentCreditedAt(event).slice(0, 10);
 
   return creditedAt <= paymentDueDate;
@@ -65,7 +73,9 @@ export function calculateGracePeriodStates(
       const accountId = getMetadataString(event.metadata?.accountId);
       const accountName = getMetadataString(event.metadata?.accountName);
       const paymentDueDate = getMetadataString(event.metadata?.paymentDueDate);
-      const requiredPaymentAmount = getMetadataNumber(event.metadata?.statementBalance);
+      const requiredPaymentAmount = getMetadataNumber(
+        event.metadata?.statementBalance,
+      );
       const profile = findAccountProfile(accountProfiles, accountId);
       const emptyState = createEmptyGracePeriodState(accountId, accountName);
       const qualifyingPaymentTotal = calculateQualifyingPaymentTotal(
@@ -75,9 +85,17 @@ export function calculateGracePeriodStates(
       );
       const remainingAmountToPreserveGracePeriod = Math.max(
         0,
-        Math.round((requiredPaymentAmount - qualifyingPaymentTotal) * 100) / 100,
+        Math.round((requiredPaymentAmount - qualifyingPaymentTotal) * 100) /
+          100,
       );
-      const status = calculateGracePeriodStatus(qualifyingPaymentTotal, requiredPaymentAmount);
+      const restorationEligible = remainingAmountToPreserveGracePeriod <= 0;
+      const restorationReason = restorationEligible
+        ? "Statement balance requirement has been satisfied by qualifying payments."
+        : "Additional qualifying payment is required to satisfy the statement balance requirement.";
+      const status = calculateGracePeriodStatus(
+        qualifyingPaymentTotal,
+        requiredPaymentAmount,
+      );
 
       return {
         ...emptyState,
@@ -93,6 +111,8 @@ export function calculateGracePeriodStates(
         qualifyingPaymentTotal,
         requiredPaymentAmount,
         remainingAmountToPreserveGracePeriod,
+        restorationEligible,
+        restorationReason,
       };
     });
 }
