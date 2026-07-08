@@ -4,7 +4,9 @@
   projectedStatementBalance: number;
   availableCredit: number;
   utilizationPercent: number;
+  projectedUtilizationPercent: number;
   targetUtilizationPercent: number;
+  amountToTargetUtilization: number;
 };
 
 export function createEmptyCreditPosition(): CreditPosition {
@@ -14,6 +16,8 @@ export function createEmptyCreditPosition(): CreditPosition {
     projectedStatementBalance: 0,
     availableCredit: 0,
     utilizationPercent: 0,
+    projectedUtilizationPercent: 0,
     targetUtilizationPercent: 30,
+    amountToTargetUtilization: 0,
   };
 }
