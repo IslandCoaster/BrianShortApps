@@ -30,12 +30,17 @@ export function GracePeriodStateView({ gracePeriodStates }: GracePeriodStateView
               </div>
 
               <div>
-                <span>Payment Due Date</span>
-                <strong>{gracePeriodState.paymentDueDate}</strong>
+                <span>Restoration Eligible</span>
+                <strong>{gracePeriodState.restorationEligible ? "yes" : "no"}</strong>
               </div>
             </div>
 
             <dl>
+              <div>
+                <dt>Payment Due Date</dt>
+                <dd>{gracePeriodState.paymentDueDate}</dd>
+              </div>
+
               <div>
                 <dt>Required</dt>
                 <dd>{formatAmount(gracePeriodState.requiredPaymentAmount)}</dd>
@@ -59,6 +64,11 @@ export function GracePeriodStateView({ gracePeriodStates }: GracePeriodStateView
               <div>
                 <dt>Reason</dt>
                 <dd>{gracePeriodState.reason}</dd>
+              </div>
+
+              <div>
+                <dt>Restoration Reason</dt>
+                <dd>{gracePeriodState.restorationReason}</dd>
               </div>
 
               <div>
