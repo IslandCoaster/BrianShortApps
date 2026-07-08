@@ -1,4 +1,6 @@
-﻿import { createPaymentCompletedEvent } from "../events/paymentCompletedEvent";
+﻿import { appleCardProfile } from "../accountProfiles/appleCardProfile";
+import { createAccountProfileCreatedEvent } from "../events/accountProfileEvents";
+import { createPaymentCompletedEvent } from "../events/paymentCompletedEvent";
 import { createPaycheckReceivedEvent } from "../events/paycheckReceivedEvent";
 import { createStatementGeneratedEvent } from "../events/statementGeneratedEvent";
 import type { FinancialScenario } from "./financialScenario";
@@ -7,8 +9,13 @@ export const paycheckStatementPaymentScenario: FinancialScenario = {
   id: "paycheck-statement-payment",
   title: "Paycheck, Statement, and Payment",
   description:
-    "A paycheck, statement, and payment enter the financial journal and update cash plus current projected balances.",
+    "An Apple Card profile, paycheck, statement, and payment enter the financial journal and update cash plus current projected balances.",
   events: [
+    createAccountProfileCreatedEvent({
+      id: "profile-apple-card-001",
+      occurredOn: "2026-07-01",
+      profile: appleCardProfile,
+    }),
     createPaycheckReceivedEvent({
       id: "paycheck-001",
       occurredOn: "2026-07-07",
@@ -24,23 +31,24 @@ export const paycheckStatementPaymentScenario: FinancialScenario = {
     createStatementGeneratedEvent({
       id: "statement-001",
       occurredOn: "2026-07-08",
-      accountId: "card-chase-freedom",
-      accountName: "Chase Freedom",
-      statementDate: "2026-07-08",
-      closingDate: "2026-07-08",
-      dueDate: "2026-08-02",
-      statementBalance: 942.38,
-      minimumPayment: 35,
-      creditLimit: 2000,
-      interestCharged: 18.44,
+      accountId: "card-apple",
+      accountName: "Apple Card",
+      statementDate: "2026-06-30",
+      closingDate: "2026-06-30",
+      dueDate: "2026-07-31",
+      statementBalance: 6598.1,
+      minimumPayment: 197,
+      creditLimit: 10000,
+      interestCharged: 130.89,
+      notes: "June 2026 Apple Card statement.",
     }),
     createPaymentCompletedEvent({
       id: "payment-001",
       occurredOn: "2026-07-09",
       sourceAccountId: "checking-primary",
       sourceAccountName: "Primary Checking",
-      destinationAccountId: "card-chase-freedom",
-      destinationAccountName: "Chase Freedom",
+      destinationAccountId: "card-apple",
+      destinationAccountName: "Apple Card",
       amount: 500,
       strategy: "manual",
       notes: "Manual payment after statement generated.",
