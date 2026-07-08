@@ -1,7 +1,11 @@
 ﻿import type { AccountState } from "../accounts/accountState";
-import { createEmptyCreditPosition, type CreditPosition } from "./creditPosition";
-
-const TARGET_UTILIZATION_PERCENT = 30;
+import {
+  createEmptyCreditPosition,
+  DEFAULT_IDEAL_UTILIZATION,
+  DEFAULT_OPERATIONAL_TARGET_UTILIZATION,
+  type CreditPosition,
+} from "./creditPosition";
+import { calculateCreditRisk } from "./creditRisk";
 
 function calculateUtilizationPercent(balance: number, creditLimit: number) {
   if (creditLimit <= 0) {
@@ -19,7 +23,7 @@ function calculateAmountToTargetUtilization(
     return 0;
   }
 
-  const targetBalance = creditLimit * (TARGET_UTILIZATION_PERCENT / 100);
+  const targetBalance = creditLimit * (DEFAULT_OPERATIONAL_TARGET_UTILIZATION / 100);
   const amountToTarget = projectedStatementBalance - targetBalance;
 
   return Math.max(0, Math.round(amountToTarget * 100) / 100);
@@ -45,20 +49,25 @@ export function calculateCreditPosition(accountStates: AccountState[]): CreditPo
     return createEmptyCreditPosition();
   }
 
+  const utilizationPercent = calculateUtilizationPercent(currentBalance, totalCreditLimit);
+  const projectedUtilizationPercent = calculateUtilizationPercent(
+    projectedStatementBalance,
+    totalCreditLimit,
+  );
+
   return {
     totalCreditLimit,
     currentBalance,
     projectedStatementBalance,
     availableCredit: Math.max(0, totalCreditLimit - currentBalance),
-    utilizationPercent: calculateUtilizationPercent(currentBalance, totalCreditLimit),
-    projectedUtilizationPercent: calculateUtilizationPercent(
-      projectedStatementBalance,
-      totalCreditLimit,
-    ),
-    targetUtilizationPercent: TARGET_UTILIZATION_PERCENT,
+    utilizationPercent,
+    projectedUtilizationPercent,
+    targetUtilizationPercent: DEFAULT_OPERATIONAL_TARGET_UTILIZATION,
+    idealUtilizationPercent: DEFAULT_IDEAL_UTILIZATION,
     amountToTargetUtilization: calculateAmountToTargetUtilization(
       projectedStatementBalance,
       totalCreditLimit,
     ),
+    risk: calculateCreditRisk(projectedUtilizationPercent),
   };
 }

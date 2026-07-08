@@ -53,8 +53,16 @@ export {
 
 export {
   createEmptyCreditPosition,
+  DEFAULT_IDEAL_UTILIZATION,
+  DEFAULT_OPERATIONAL_TARGET_UTILIZATION,
   type CreditPosition,
 } from "./credit/creditPosition";
+
+export {
+  calculateCreditRisk,
+  type CreditRisk,
+  type CreditRiskLevel,
+} from "./credit/creditRisk";
 
 export {
   calculateFinancialPositions,
