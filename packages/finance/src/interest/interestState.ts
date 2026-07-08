@@ -15,7 +15,10 @@ export type InterestState = {
   calculationMethod: string;
   lifecycleStatus: InterestLifecycleStatus;
   balanceSubjectToInterest: number;
+  statementCycleDays: number;
+  calculatedInterest: number;
   interestCharged: number;
+  interestVariance: number;
   projectedInterest: number;
   interestAvoided: number;
 };
@@ -32,7 +35,10 @@ export function createEmptyInterestState(
     calculationMethod: "unknown",
     lifecycleStatus: "unknown",
     balanceSubjectToInterest: 0,
+    statementCycleDays: 0,
+    calculatedInterest: 0,
     interestCharged: 0,
+    interestVariance: 0,
     projectedInterest: 0,
     interestAvoided: 0,
   };
