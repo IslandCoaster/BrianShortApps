@@ -108,3 +108,11 @@ export {
 } from "./events/accountProfileEvents";
 
 export { calculateActiveAccountProfiles } from "./configuration/accountConfigurationEngine";
+
+export { calculateInterestStates } from "./interest/interestEngine";
+
+export {
+  createEmptyInterestState,
+  type InterestLifecycleStatus,
+  type InterestState,
+} from "./interest/interestState";

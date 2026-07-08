@@ -39,6 +39,7 @@ export const paycheckStatementPaymentScenario: FinancialScenario = {
       statementBalance: 6598.1,
       minimumPayment: 197,
       creditLimit: 10000,
+      balanceSubjectToInterest: 6247.51,
       interestCharged: 130.89,
       notes: "June 2026 Apple Card statement.",
     }),

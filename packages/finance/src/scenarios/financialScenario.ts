@@ -3,6 +3,7 @@ import { calculateActiveAccountProfiles } from "../configuration/accountConfigur
 import { calculateCreditPosition } from "../credit/creditPositionEngine";
 import type { FinancialEvent } from "../events/financialEvent";
 import { calculateFinancialState } from "../engine/financialEngine";
+import { calculateInterestStates } from "../interest/interestEngine";
 import { createFinancialJournal } from "../journal/financialJournal";
 import { calculateObligationStates } from "../obligations/obligationStateEngine";
 import { calculateFinancialPositions } from "../positions/positionEngine";
@@ -21,6 +22,7 @@ export function runFinancialScenario(scenario: FinancialScenario) {
   const accountStates = calculateAccountStates(journal);
   const obligationStates = calculateObligationStates(journal);
   const creditPosition = calculateCreditPosition(accountStates);
+  const interestStates = calculateInterestStates(journal, accountProfiles);
   const stateWithoutRecommendations = calculateFinancialState(journal);
   const positions = calculateFinancialPositions(stateWithoutRecommendations, accountStates);
   const recommendations = generateFinancialRecommendations(
@@ -41,6 +43,7 @@ export function runFinancialScenario(scenario: FinancialScenario) {
     accountStates,
     obligationStates,
     creditPosition,
+    interestStates,
     positions,
     state,
   };

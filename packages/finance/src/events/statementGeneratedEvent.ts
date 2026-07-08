@@ -11,6 +11,7 @@ export type StatementGeneratedInput = {
   statementBalance: number;
   minimumPayment: number;
   creditLimit?: number;
+  balanceSubjectToInterest?: number;
   interestCharged?: number;
   fees?: number;
   notes?: string;
@@ -33,6 +34,7 @@ export function createStatementGeneratedEvent(input: StatementGeneratedInput): F
       statementBalance: input.statementBalance,
       minimumPayment: input.minimumPayment,
       creditLimit: input.creditLimit ?? null,
+      balanceSubjectToInterest: input.balanceSubjectToInterest ?? null,
       interestCharged: input.interestCharged ?? null,
       fees: input.fees ?? null,
       notes: input.notes ?? null,
