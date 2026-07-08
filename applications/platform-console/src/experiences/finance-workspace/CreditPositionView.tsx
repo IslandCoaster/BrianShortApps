@@ -38,8 +38,23 @@ export function CreditPositionView({ creditPosition }: CreditPositionViewProps) 
         </article>
 
         <article>
+          <span>Risk Level</span>
+          <strong>{creditPosition.risk.level}</strong>
+        </article>
+
+        <article>
+          <span>Risk Meaning</span>
+          <strong>{creditPosition.risk.description}</strong>
+        </article>
+
+        <article>
           <span>Target Utilization</span>
           <strong>{creditPosition.targetUtilizationPercent}%</strong>
+        </article>
+
+        <article>
+          <span>Ideal Utilization</span>
+          <strong>{creditPosition.idealUtilizationPercent}%</strong>
         </article>
 
         <article>
