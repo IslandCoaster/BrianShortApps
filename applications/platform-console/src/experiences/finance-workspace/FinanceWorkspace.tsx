@@ -5,6 +5,7 @@ import {
   runFinancialScenario,
 } from "@bsa/finance";
 
+import { AccountProfileView } from "./AccountProfileView";
 import { AccountStateView } from "./AccountStateView";
 import { CreditPositionView } from "./CreditPositionView";
 import "./FinanceWorkspace.css";
@@ -20,6 +21,7 @@ export function FinanceWorkspace() {
     scenarios.find((scenario) => scenario.id === selectedScenarioId) ?? getDefaultFinancialScenario();
 
   const {
+    accountProfiles,
     accountStates,
     creditPosition,
     journal,
@@ -145,6 +147,8 @@ export function FinanceWorkspace() {
       <ObligationStateView obligationStates={obligationStates} />
 
       <AccountStateView accountStates={accountStates} />
+
+      <AccountProfileView accountProfiles={accountProfiles} />
 
       <FinancialJournalView journal={journal} />
 
