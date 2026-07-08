@@ -1,9 +1,11 @@
-﻿import type { ObligationState } from "../obligations/obligationState";
+﻿import type { CreditPosition } from "../credit/creditPosition";
+import type { ObligationState } from "../obligations/obligationState";
 import type { FinancialState } from "../state/financialState";
 
 export function generateFinancialRecommendations(
   state: FinancialState,
   obligationStates: ObligationState[],
+  creditPosition: CreditPosition,
 ): FinancialState["recommendations"] {
   const recommendations: FinancialState["recommendations"] = [];
 
@@ -14,6 +16,15 @@ export function generateFinancialRecommendations(
       rationale:
         "Income has been received and cash is available. Review obligations before allocating remaining funds.",
       priority: "medium",
+    });
+  }
+
+  if (creditPosition.projectedUtilizationPercent > creditPosition.targetUtilizationPercent) {
+    recommendations.push({
+      id: "reduce-projected-utilization",
+      title: "Reduce projected credit utilization",
+      rationale: `Projected utilization is ${creditPosition.projectedUtilizationPercent}%. A payment of $${creditPosition.amountToTargetUtilization.toLocaleString()} would bring projected utilization to the ${creditPosition.targetUtilizationPercent}% target.`,
+      priority: "high",
     });
   }
 

@@ -24,6 +24,7 @@ export function runFinancialScenario(scenario: FinancialScenario) {
   const recommendations = generateFinancialRecommendations(
     stateWithoutRecommendations,
     obligationStates,
+    creditPosition,
   );
 
   const state = {
