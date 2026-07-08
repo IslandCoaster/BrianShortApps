@@ -101,3 +101,10 @@ export type {
 } from "./accountProfiles/accountProfile";
 
 export { appleCardProfile } from "./accountProfiles/appleCardProfile";
+
+export {
+  createAccountProfileCreatedEvent,
+  type AccountProfileCreatedInput,
+} from "./events/accountProfileEvents";
+
+export { calculateActiveAccountProfiles } from "./configuration/accountConfigurationEngine";

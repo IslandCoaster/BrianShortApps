@@ -1,4 +1,5 @@
 ﻿import { calculateAccountStates } from "../accounts/accountStateEngine";
+import { calculateActiveAccountProfiles } from "../configuration/accountConfigurationEngine";
 import { calculateCreditPosition } from "../credit/creditPositionEngine";
 import type { FinancialEvent } from "../events/financialEvent";
 import { calculateFinancialState } from "../engine/financialEngine";
@@ -16,6 +17,7 @@ export type FinancialScenario = {
 
 export function runFinancialScenario(scenario: FinancialScenario) {
   const journal = createFinancialJournal(scenario.events);
+  const accountProfiles = calculateActiveAccountProfiles(journal);
   const accountStates = calculateAccountStates(journal);
   const obligationStates = calculateObligationStates(journal);
   const creditPosition = calculateCreditPosition(accountStates);
@@ -35,6 +37,7 @@ export function runFinancialScenario(scenario: FinancialScenario) {
   return {
     scenario,
     journal,
+    accountProfiles,
     accountStates,
     obligationStates,
     creditPosition,
