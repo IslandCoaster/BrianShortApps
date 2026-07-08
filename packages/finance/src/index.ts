@@ -116,3 +116,11 @@ export {
   type InterestLifecycleStatus,
   type InterestState,
 } from "./interest/interestState";
+
+export { calculateGracePeriodStates } from "./gracePeriod/gracePeriodEngine";
+
+export {
+  createEmptyGracePeriodState,
+  type GracePeriodState,
+  type GracePeriodStatus,
+} from "./gracePeriod/gracePeriodState";
