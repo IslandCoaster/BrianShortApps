@@ -21,7 +21,10 @@ export function generateFinancialRecommendations(
     });
   }
 
-  if (creditPosition.projectedUtilizationPercent > creditPosition.targetUtilizationPercent) {
+  if (
+    creditPosition.projectedUtilizationPercent >
+    creditPosition.targetUtilizationPercent
+  ) {
     recommendations.push({
       id: "reduce-projected-utilization",
       title: "Reduce projected credit utilization",
@@ -31,11 +34,14 @@ export function generateFinancialRecommendations(
   }
 
   gracePeriodStates.forEach((gracePeriod) => {
-    if (gracePeriod.status === "lost" && gracePeriod.remainingAmountToPreserveGracePeriod > 0) {
+    if (
+      gracePeriod.status === "lost" &&
+      gracePeriod.remainingAmountToPreserveGracePeriod > 0
+    ) {
       recommendations.push({
-        id: `preserve-grace-period-${gracePeriod.accountId}`,
-        title: `Preserve ${gracePeriod.accountName} grace period`,
-        rationale: `$${gracePeriod.remainingAmountToPreserveGracePeriod.toLocaleString()} remains to satisfy the statement balance by ${gracePeriod.paymentDueDate}. Payments credited by the account cutoff may preserve the grace period.`,
+        id: `restore-grace-period-${gracePeriod.accountId}`,
+        title: `Restore ${gracePeriod.accountName} grace period eligibility`,
+        rationale: `$${gracePeriod.remainingAmountToPreserveGracePeriod.toLocaleString()} remains to satisfy the statement balance by ${gracePeriod.paymentDueDate}. Payments credited by the account cutoff may restore grace period eligibility.`,
         priority: "high",
       });
     }
