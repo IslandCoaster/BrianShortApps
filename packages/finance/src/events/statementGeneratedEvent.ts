@@ -1,4 +1,4 @@
-import type { FinancialEvent } from "./financialEvent";
+﻿import type { FinancialEvent } from "./financialEvent";
 
 export type StatementGeneratedInput = {
   id: string;
@@ -10,6 +10,7 @@ export type StatementGeneratedInput = {
   dueDate: string;
   statementBalance: number;
   minimumPayment: number;
+  creditLimit?: number;
   interestCharged?: number;
   fees?: number;
   notes?: string;
@@ -31,6 +32,7 @@ export function createStatementGeneratedEvent(input: StatementGeneratedInput): F
       dueDate: input.dueDate,
       statementBalance: input.statementBalance,
       minimumPayment: input.minimumPayment,
+      creditLimit: input.creditLimit ?? null,
       interestCharged: input.interestCharged ?? null,
       fees: input.fees ?? null,
       notes: input.notes ?? null,

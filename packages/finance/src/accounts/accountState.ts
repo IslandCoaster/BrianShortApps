@@ -3,6 +3,7 @@
 export type AccountState = {
   accountId: string;
   accountName: string;
+  creditLimit: number;
   statementBalance: number;
   currentBalance: number;
   projectedStatementBalance: number;
@@ -17,6 +18,7 @@ export function createEmptyAccountState(accountId: string, accountName: string):
   return {
     accountId,
     accountName,
+    creditLimit: 0,
     statementBalance: 0,
     currentBalance: 0,
     projectedStatementBalance: 0,

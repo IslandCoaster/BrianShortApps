@@ -31,6 +31,7 @@ export const paycheckStatementPaymentScenario: FinancialScenario = {
       dueDate: "2026-08-02",
       statementBalance: 942.38,
       minimumPayment: 35,
+      creditLimit: 2000,
       interestCharged: 18.44,
     }),
     createPaymentCompletedEvent({

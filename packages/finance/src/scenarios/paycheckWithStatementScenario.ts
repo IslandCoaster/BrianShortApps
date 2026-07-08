@@ -1,4 +1,4 @@
-import { createPaycheckReceivedEvent } from "../events/paycheckReceivedEvent";
+﻿import { createPaycheckReceivedEvent } from "../events/paycheckReceivedEvent";
 import { createStatementGeneratedEvent } from "../events/statementGeneratedEvent";
 import type { FinancialScenario } from "./financialScenario";
 
@@ -30,6 +30,7 @@ export const paycheckWithStatementScenario: FinancialScenario = {
       dueDate: "2026-08-02",
       statementBalance: 942.38,
       minimumPayment: 35,
+      creditLimit: 2000,
       interestCharged: 18.44,
     }),
   ],

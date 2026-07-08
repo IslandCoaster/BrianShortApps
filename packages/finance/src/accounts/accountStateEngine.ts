@@ -41,9 +41,11 @@ function getAccountNameForEvent(event: FinancialEvent) {
 function applyStatementGeneratedEvent(state: AccountState, event: FinancialEvent): AccountState {
   const statementBalance = getMetadataNumber(event, "statementBalance");
   const minimumPayment = getMetadataNumber(event, "minimumPayment");
+  const creditLimit = getMetadataNumber(event, "creditLimit");
 
   return {
     ...state,
+    creditLimit,
     statementBalance,
     currentBalance: statementBalance,
     projectedStatementBalance: statementBalance,

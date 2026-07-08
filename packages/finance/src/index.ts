@@ -48,12 +48,21 @@ export {
 } from "./obligations/obligationState";
 
 export {
+  calculateCreditPosition,
+} from "./credit/creditPositionEngine";
+
+export {
+  createEmptyCreditPosition,
+  type CreditPosition,
+} from "./credit/creditPosition";
+
+export {
   calculateFinancialPositions,
 } from "./positions/positionEngine";
 
 export type {
   CashPosition,
-  CreditPosition,
+  CreditPosition as LegacyCreditPosition,
   FinancialPositions,
 } from "./positions/financialPositions";
 
