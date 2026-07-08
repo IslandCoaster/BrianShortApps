@@ -42,13 +42,28 @@ export function InterestStateView({ interestStates }: InterestStateViewProps) {
               </div>
 
               <div>
+                <dt>Cycle Days</dt>
+                <dd>{interestState.statementCycleDays}</dd>
+              </div>
+
+              <div>
                 <dt>Balance Subject</dt>
                 <dd>{formatAmount(interestState.balanceSubjectToInterest)}</dd>
               </div>
 
               <div>
-                <dt>Interest Charged</dt>
+                <dt>Calculated Interest</dt>
+                <dd>{formatAmount(interestState.calculatedInterest)}</dd>
+              </div>
+
+              <div>
+                <dt>Statement Interest</dt>
                 <dd>{formatAmount(interestState.interestCharged)}</dd>
+              </div>
+
+              <div>
+                <dt>Variance</dt>
+                <dd>{formatAmount(interestState.interestVariance)}</dd>
               </div>
 
               <div>
