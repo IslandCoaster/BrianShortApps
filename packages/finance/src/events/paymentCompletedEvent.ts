@@ -8,6 +8,7 @@ export type PaymentCompletedInput = {
   destinationAccountId: string;
   destinationAccountName: string;
   amount: number;
+  creditedAt?: string;
   strategy?: "minimum" | "extra" | "scheduled" | "manual" | "automatic";
   notes?: string;
 };
@@ -25,6 +26,7 @@ export function createPaymentCompletedEvent(input: PaymentCompletedInput): Finan
       sourceAccountName: input.sourceAccountName,
       destinationAccountId: input.destinationAccountId,
       destinationAccountName: input.destinationAccountName,
+      creditedAt: input.creditedAt ?? input.occurredOn,
       strategy: input.strategy ?? "manual",
       notes: input.notes ?? null,
     },

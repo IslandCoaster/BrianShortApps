@@ -1,4 +1,8 @@
-﻿export type GracePeriodStatus = "active" | "lost" | "restored" | "unknown";
+﻿export type GracePeriodStatus =
+  | "active"
+  | "lost"
+  | "restored"
+  | "unknown";
 
 export type GracePeriodState = {
   accountId: string;
@@ -7,6 +11,11 @@ export type GracePeriodState = {
   rule: string;
   reason: string;
   evaluatedOn: string;
+  paymentDueDate: string;
+  paymentPostingCutoff: string;
+  qualifyingPaymentTotal: number;
+  requiredPaymentAmount: number;
+  remainingAmountToPreserveGracePeriod: number;
 };
 
 export function createEmptyGracePeriodState(
@@ -20,5 +29,10 @@ export function createEmptyGracePeriodState(
     rule: "",
     reason: "Grace period status has not been evaluated.",
     evaluatedOn: "",
+    paymentDueDate: "",
+    paymentPostingCutoff: "",
+    qualifyingPaymentTotal: 0,
+    requiredPaymentAmount: 0,
+    remainingAmountToPreserveGracePeriod: 0,
   };
 }
