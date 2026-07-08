@@ -392,3 +392,8 @@
     text-align: left;
   }
 }
+
+.finance-workspace__credit-position {
+  display: grid;
+  gap: var(--space-3);
+}

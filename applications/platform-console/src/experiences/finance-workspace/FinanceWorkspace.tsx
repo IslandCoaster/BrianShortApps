@@ -6,6 +6,7 @@ import {
 } from "@bsa/finance";
 
 import { AccountStateView } from "./AccountStateView";
+import { CreditPositionView } from "./CreditPositionView";
 import "./FinanceWorkspace.css";
 import { FinancialJournalView } from "./FinancialJournalView";
 import { FinancialPositionsView } from "./FinancialPositionsView";
@@ -18,8 +19,16 @@ export function FinanceWorkspace() {
   const selectedScenario =
     scenarios.find((scenario) => scenario.id === selectedScenarioId) ?? getDefaultFinancialScenario();
 
-  const { accountStates, journal, obligationStates, positions, scenario, state } =
-    runFinancialScenario(selectedScenario);
+  const {
+    accountStates,
+    creditPosition,
+    journal,
+    obligationStates,
+    positions,
+    scenario,
+    state,
+  } = runFinancialScenario(selectedScenario);
+
   const latestPaycheck = state.income.paychecks.at(-1);
   const latestStatement = state.obligations.statements.at(-1);
   const latestPayment = state.obligations.payments.at(-1);
@@ -128,6 +137,8 @@ export function FinanceWorkspace() {
           </section>
         ) : null}
       </div>
+
+      <CreditPositionView creditPosition={creditPosition} />
 
       <FinancialPositionsView positions={positions} />
 
