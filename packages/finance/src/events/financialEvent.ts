@@ -3,9 +3,14 @@
   | "spending"
   | "obligation"
   | "credit"
-  | "planning";
+  | "planning"
+  | "account-profile";
 
 export type FinancialEventType =
+  | "account-profile.created"
+  | "account-profile.rule-set-updated"
+  | "account-profile.apr-changed"
+  | "account-profile.credit-limit-changed"
   | "paycheck.received"
   | "statement.generated"
   | "payment.completed"
