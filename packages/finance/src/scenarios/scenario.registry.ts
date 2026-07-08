@@ -3,6 +3,7 @@ import { multiPaycheckScenario } from "./multiPaycheckScenario";
 import { paycheckStatementPaymentScenario } from "./paycheckStatementPaymentScenario";
 import { paycheckWithStatementScenario } from "./paycheckWithStatementScenario";
 import { singlePaycheckScenario } from "./singlePaycheckScenario";
+import { appleCardPaidInFullScenario } from "./appleCardPaidInFullScenario";
 
 export const financialScenarioRegistry: FinancialScenario[] = [
   singlePaycheckScenario,
@@ -16,7 +17,10 @@ export function listFinancialScenarios() {
 }
 
 export function getFinancialScenario(scenarioId: string) {
-  return financialScenarioRegistry.find((scenario) => scenario.id === scenarioId) ?? null;
+  return (
+    financialScenarioRegistry.find((scenario) => scenario.id === scenarioId) ??
+    null
+  );
 }
 
 export function getDefaultFinancialScenario() {
