@@ -19,9 +19,10 @@ export type StatementSummary = {
   occurredOn: string;
   accountId: string;
   accountName: string;
-  statementDate: string;
-  closingDate: string;
-  dueDate: string;
+  statementPeriodStart: string;
+  statementPeriodEnd: string;
+  statementClosingDate: string;
+  paymentDueDate: string;
   statementBalance: number;
   currentBalance: number;
   projectedStatementBalance: number;

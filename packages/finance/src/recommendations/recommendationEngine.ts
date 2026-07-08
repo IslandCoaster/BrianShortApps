@@ -19,7 +19,10 @@ export function generateFinancialRecommendations(
     });
   }
 
-  if (creditPosition.projectedUtilizationPercent > creditPosition.targetUtilizationPercent) {
+  if (
+    creditPosition.projectedUtilizationPercent >
+    creditPosition.targetUtilizationPercent
+  ) {
     recommendations.push({
       id: "reduce-projected-utilization",
       title: "Reduce projected credit utilization",
@@ -33,7 +36,7 @@ export function generateFinancialRecommendations(
       recommendations.push({
         id: `review-open-obligation-${obligation.obligationId}`,
         title: `Review ${obligation.accountName} obligation`,
-        rationale: `${obligation.accountName} has an open obligation of $${obligation.remainingAmount.toLocaleString()} due ${obligation.dueDate}.`,
+        rationale: `${obligation.accountName} has an open obligation of $${obligation.remainingAmount.toLocaleString()} due ${obligation.paymentDueDate}.`,
         priority: "high",
       });
     }

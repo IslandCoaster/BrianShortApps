@@ -7,7 +7,7 @@ export type ObligationState = {
   originalAmount: number;
   remainingAmount: number;
   minimumPayment: number;
-  dueDate: string;
+  paymentDueDate: string;
   paymentsApplied: number;
   paymentTotal: number;
   satisfactionPercent: number;
@@ -27,7 +27,7 @@ export function createEmptyObligationState(
     originalAmount: 0,
     remainingAmount: 0,
     minimumPayment: 0,
-    dueDate: "",
+    paymentDueDate: "",
     paymentsApplied: 0,
     paymentTotal: 0,
     satisfactionPercent: 0,

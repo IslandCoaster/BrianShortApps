@@ -39,9 +39,10 @@ function createStatementSummary(event: FinancialEvent): StatementSummary {
     occurredOn: event.occurredOn,
     accountId: getMetadataString(event, "accountId"),
     accountName: getMetadataString(event, "accountName"),
-    statementDate: getMetadataString(event, "statementDate"),
-    closingDate: getMetadataString(event, "closingDate"),
-    dueDate: getMetadataString(event, "dueDate"),
+    statementPeriodStart: getMetadataString(event, "statementPeriodStart"),
+    statementPeriodEnd: getMetadataString(event, "statementPeriodEnd"),
+    statementClosingDate: getMetadataString(event, "statementClosingDate"),
+    paymentDueDate: getMetadataString(event, "paymentDueDate"),
     statementBalance,
     currentBalance: statementBalance,
     projectedStatementBalance: statementBalance,
@@ -62,7 +63,10 @@ function createPaymentSummary(event: FinancialEvent): PaymentSummary {
   };
 }
 
-function applyPaycheckReceivedEvent(state: FinancialState, event: FinancialEvent): FinancialState {
+function applyPaycheckReceivedEvent(
+  state: FinancialState,
+  event: FinancialEvent,
+): FinancialState {
   const amount = event.amount ?? 0;
 
   return {
@@ -77,24 +81,34 @@ function applyPaycheckReceivedEvent(state: FinancialState, event: FinancialEvent
   };
 }
 
-function applyStatementGeneratedEvent(state: FinancialState, event: FinancialEvent): FinancialState {
+function applyStatementGeneratedEvent(
+  state: FinancialState,
+  event: FinancialEvent,
+): FinancialState {
   const statement = createStatementSummary(event);
 
   return {
     ...state,
     obligations: {
       ...state.obligations,
-      statementBalanceTotal: state.obligations.statementBalanceTotal + statement.statementBalance,
-      currentBalanceTotal: state.obligations.currentBalanceTotal + statement.currentBalance,
+      statementBalanceTotal:
+        state.obligations.statementBalanceTotal + statement.statementBalance,
+      currentBalanceTotal:
+        state.obligations.currentBalanceTotal + statement.currentBalance,
       projectedStatementBalanceTotal:
-        state.obligations.projectedStatementBalanceTotal + statement.projectedStatementBalance,
-      minimumPaymentTotal: state.obligations.minimumPaymentTotal + statement.minimumPayment,
+        state.obligations.projectedStatementBalanceTotal +
+        statement.projectedStatementBalance,
+      minimumPaymentTotal:
+        state.obligations.minimumPaymentTotal + statement.minimumPayment,
       statements: [...state.obligations.statements, statement],
     },
   };
 }
 
-function applyPaymentCompletedEvent(state: FinancialState, event: FinancialEvent): FinancialState {
+function applyPaymentCompletedEvent(
+  state: FinancialState,
+  event: FinancialEvent,
+): FinancialState {
   const payment = createPaymentSummary(event);
   const paymentAmount = payment.amount;
 
@@ -105,7 +119,10 @@ function applyPaymentCompletedEvent(state: FinancialState, event: FinancialEvent
     },
     obligations: {
       ...state.obligations,
-      currentBalanceTotal: Math.max(0, state.obligations.currentBalanceTotal - paymentAmount),
+      currentBalanceTotal: Math.max(
+        0,
+        state.obligations.currentBalanceTotal - paymentAmount,
+      ),
       projectedStatementBalanceTotal: Math.max(
         0,
         state.obligations.projectedStatementBalanceTotal - paymentAmount,
@@ -115,7 +132,9 @@ function applyPaymentCompletedEvent(state: FinancialState, event: FinancialEvent
   };
 }
 
-export function calculateFinancialState(journal: FinancialJournal): FinancialState {
+export function calculateFinancialState(
+  journal: FinancialJournal,
+): FinancialState {
   return journal.events.reduce((currentState, event) => {
     if (event.type === "paycheck.received") {
       return applyPaycheckReceivedEvent(currentState, event);

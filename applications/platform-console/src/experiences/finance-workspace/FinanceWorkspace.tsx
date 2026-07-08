@@ -17,9 +17,12 @@ import { ObligationStateView } from "./ObligationStateView";
 const scenarios = listFinancialScenarios();
 
 export function FinanceWorkspace() {
-  const [selectedScenarioId, setSelectedScenarioId] = useState(getDefaultFinancialScenario().id);
+  const [selectedScenarioId, setSelectedScenarioId] = useState(
+    getDefaultFinancialScenario().id,
+  );
   const selectedScenario =
-    scenarios.find((scenario) => scenario.id === selectedScenarioId) ?? getDefaultFinancialScenario();
+    scenarios.find((scenario) => scenario.id === selectedScenarioId) ??
+    getDefaultFinancialScenario();
 
   const {
     accountProfiles,
@@ -80,22 +83,30 @@ export function FinanceWorkspace() {
 
         <article>
           <span>Statement Balance</span>
-          <strong>${state.obligations.statementBalanceTotal.toLocaleString()}</strong>
+          <strong>
+            ${state.obligations.statementBalanceTotal.toLocaleString()}
+          </strong>
         </article>
 
         <article>
           <span>Current Balance</span>
-          <strong>${state.obligations.currentBalanceTotal.toLocaleString()}</strong>
+          <strong>
+            ${state.obligations.currentBalanceTotal.toLocaleString()}
+          </strong>
         </article>
 
         <article>
           <span>Projected Statement Balance</span>
-          <strong>${state.obligations.projectedStatementBalanceTotal.toLocaleString()}</strong>
+          <strong>
+            ${state.obligations.projectedStatementBalanceTotal.toLocaleString()}
+          </strong>
         </article>
 
         <article>
           <span>Minimum Payments</span>
-          <strong>${state.obligations.minimumPaymentTotal.toLocaleString()}</strong>
+          <strong>
+            ${state.obligations.minimumPaymentTotal.toLocaleString()}
+          </strong>
         </article>
 
         <article>
@@ -115,7 +126,8 @@ export function FinanceWorkspace() {
             <p>Latest Paycheck</p>
             <h3>${latestPaycheck.netPay.toLocaleString()}</h3>
             <span>
-              Pay period {latestPaycheck.payPeriodStart} through {latestPaycheck.payPeriodEnd}
+              Pay period {latestPaycheck.payPeriodStart} through{" "}
+              {latestPaycheck.payPeriodEnd}
             </span>
           </section>
         ) : null}
@@ -126,7 +138,7 @@ export function FinanceWorkspace() {
             <h3>{latestStatement.accountName}</h3>
             <span>
               Statement ${latestStatement.statementBalance.toLocaleString()} due{" "}
-              {latestStatement.dueDate}
+              {latestStatement.paymentDueDate}
             </span>
           </section>
         ) : null}
@@ -136,7 +148,8 @@ export function FinanceWorkspace() {
             <p>Latest Payment</p>
             <h3>${latestPayment.amount.toLocaleString()}</h3>
             <span>
-              {latestPayment.sourceAccountName} to {latestPayment.destinationAccountName}
+              {latestPayment.sourceAccountName} to{" "}
+              {latestPayment.destinationAccountName}
             </span>
           </section>
         ) : null}

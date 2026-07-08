@@ -5,9 +5,10 @@ export type StatementGeneratedInput = {
   occurredOn: string;
   accountId: string;
   accountName: string;
-  statementDate: string;
-  closingDate: string;
-  dueDate: string;
+  statementPeriodStart: string;
+  statementPeriodEnd: string;
+  statementClosingDate: string;
+  paymentDueDate: string;
   statementBalance: number;
   minimumPayment: number;
   creditLimit?: number;
@@ -28,9 +29,10 @@ export function createStatementGeneratedEvent(input: StatementGeneratedInput): F
     metadata: {
       accountId: input.accountId,
       accountName: input.accountName,
-      statementDate: input.statementDate,
-      closingDate: input.closingDate,
-      dueDate: input.dueDate,
+      statementPeriodStart: input.statementPeriodStart,
+      statementPeriodEnd: input.statementPeriodEnd,
+      statementClosingDate: input.statementClosingDate,
+      paymentDueDate: input.paymentDueDate,
       statementBalance: input.statementBalance,
       minimumPayment: input.minimumPayment,
       creditLimit: input.creditLimit ?? null,

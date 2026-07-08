@@ -8,7 +8,9 @@ function formatAmount(amount: number) {
   return `$${amount.toLocaleString()}`;
 }
 
-export function ObligationStateView({ obligationStates }: ObligationStateViewProps) {
+export function ObligationStateView({
+  obligationStates,
+}: ObligationStateViewProps) {
   if (obligationStates.length === 0) {
     return null;
   }
@@ -22,11 +24,16 @@ export function ObligationStateView({ obligationStates }: ObligationStateViewPro
 
       <div className="finance-workspace__obligation-list">
         {obligationStates.map((obligation) => (
-          <article className="finance-workspace__obligation" key={obligation.obligationId}>
+          <article
+            className="finance-workspace__obligation"
+            key={obligation.obligationId}
+          >
             <div className="finance-workspace__obligation-main">
               <div>
                 <span>{obligation.accountName}</span>
-                <strong>{formatAmount(obligation.remainingAmount)} remaining</strong>
+                <strong>
+                  {formatAmount(obligation.remainingAmount)} remaining
+                </strong>
               </div>
 
               <div>
@@ -53,7 +60,7 @@ export function ObligationStateView({ obligationStates }: ObligationStateViewPro
 
               <div>
                 <dt>Due</dt>
-                <dd>{obligation.dueDate}</dd>
+                <dd>{obligation.paymentDueDate}</dd>
               </div>
             </dl>
           </article>

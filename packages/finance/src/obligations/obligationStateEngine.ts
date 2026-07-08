@@ -1,6 +1,9 @@
 ﻿import type { FinancialEvent } from "../events/financialEvent";
 import type { FinancialJournal } from "../journal/financialJournal";
-import { createEmptyObligationState, type ObligationState } from "./obligationState";
+import {
+  createEmptyObligationState,
+  type ObligationState,
+} from "./obligationState";
 
 function getMetadataString(event: FinancialEvent, key: string) {
   const value = event.metadata?.[key];
@@ -26,7 +29,10 @@ function getObligationIdForEvent(event: FinancialEvent) {
   return "";
 }
 
-function calculateStatus(remainingAmount: number, originalAmount: number): ObligationState["status"] {
+function calculateStatus(
+  remainingAmount: number,
+  originalAmount: number,
+): ObligationState["status"] {
   if (remainingAmount <= 0) {
     return "satisfied";
   }
@@ -38,12 +44,18 @@ function calculateStatus(remainingAmount: number, originalAmount: number): Oblig
   return "open";
 }
 
-function calculateSatisfactionPercent(originalAmount: number, remainingAmount: number) {
+function calculateSatisfactionPercent(
+  originalAmount: number,
+  remainingAmount: number,
+) {
   if (originalAmount <= 0) {
     return 0;
   }
 
-  return Math.round(((originalAmount - remainingAmount) / originalAmount) * 10000) / 100;
+  return (
+    Math.round(((originalAmount - remainingAmount) / originalAmount) * 10000) /
+    100
+  );
 }
 
 function applyStatementGeneratedEvent(event: FinancialEvent): ObligationState {
@@ -56,12 +68,15 @@ function applyStatementGeneratedEvent(event: FinancialEvent): ObligationState {
     originalAmount,
     remainingAmount: originalAmount,
     minimumPayment: getMetadataNumber(event, "minimumPayment"),
-    dueDate: getMetadataString(event, "dueDate"),
+    paymentDueDate: getMetadataString(event, "paymentDueDate"),
     events: [event],
   };
 }
 
-function applyPaymentCompletedEvent(state: ObligationState, event: FinancialEvent): ObligationState {
+function applyPaymentCompletedEvent(
+  state: ObligationState,
+  event: FinancialEvent,
+): ObligationState {
   const paymentAmount = event.amount ?? 0;
   const remainingAmount = Math.max(0, state.remainingAmount - paymentAmount);
 
@@ -70,13 +85,18 @@ function applyPaymentCompletedEvent(state: ObligationState, event: FinancialEven
     remainingAmount,
     paymentsApplied: state.paymentsApplied + 1,
     paymentTotal: state.paymentTotal + paymentAmount,
-    satisfactionPercent: calculateSatisfactionPercent(state.originalAmount, remainingAmount),
+    satisfactionPercent: calculateSatisfactionPercent(
+      state.originalAmount,
+      remainingAmount,
+    ),
     status: calculateStatus(remainingAmount, state.originalAmount),
     events: [...state.events, event],
   };
 }
 
-export function calculateObligationStates(journal: FinancialJournal): ObligationState[] {
+export function calculateObligationStates(
+  journal: FinancialJournal,
+): ObligationState[] {
   const obligationStateMap = new Map<string, ObligationState>();
 
   journal.events.forEach((event) => {
@@ -94,11 +114,14 @@ export function calculateObligationStates(journal: FinancialJournal): Obligation
         return;
       }
 
-      obligationStateMap.set(obligationId, applyPaymentCompletedEvent(currentState, event));
+      obligationStateMap.set(
+        obligationId,
+        applyPaymentCompletedEvent(currentState, event),
+      );
     }
   });
 
   return Array.from(obligationStateMap.values()).sort((a, b) =>
-    a.dueDate.localeCompare(b.dueDate),
+    a.paymentDueDate.localeCompare(b.paymentDueDate),
   );
 }

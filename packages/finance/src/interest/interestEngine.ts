@@ -10,11 +10,19 @@ function getMetadataNumber(value: unknown) {
   return typeof value === "number" ? value : 0;
 }
 
-function findAccountProfile(accountProfiles: AccountProfile[], accountId: string) {
-  return accountProfiles.find((profile) => profile.accountId === accountId) ?? null;
+function findAccountProfile(
+  accountProfiles: AccountProfile[],
+  accountId: string,
+) {
+  return (
+    accountProfiles.find((profile) => profile.accountId === accountId) ?? null
+  );
 }
 
-function calculateStatementCycleDays(statementDate: string, closingDate: string) {
+function calculateStatementCycleDays(
+  statementDate: string,
+  closingDate: string,
+) {
   if (!statementDate || !closingDate) {
     return 0;
   }
@@ -32,7 +40,8 @@ function calculateDailyInterest(
   statementCycleDays: number,
 ) {
   const dailyRate = aprPercent / 100 / 365;
-  const calculatedInterest = balanceSubjectToInterest * dailyRate * statementCycleDays;
+  const calculatedInterest =
+    balanceSubjectToInterest * dailyRate * statementCycleDays;
 
   return Math.round(calculatedInterest * 100) / 100;
 }
@@ -49,12 +58,23 @@ export function calculateInterestStates(
       const profile = findAccountProfile(accountProfiles, accountId);
       const emptyState = createEmptyInterestState(accountId, accountName);
 
-      const balanceSubjectToInterest = getMetadataNumber(event.metadata?.balanceSubjectToInterest);
-      const interestCharged = getMetadataNumber(event.metadata?.interestCharged);
-      const statementDate = getMetadataString(event.metadata?.statementDate);
-      const closingDate = getMetadataString(event.metadata?.closingDate);
+      const balanceSubjectToInterest = getMetadataNumber(
+        event.metadata?.balanceSubjectToInterest,
+      );
+      const interestCharged = getMetadataNumber(
+        event.metadata?.interestCharged,
+      );
+      const statementPeriodStart = getMetadataString(
+        event.metadata?.statementPeriodStart,
+      );
+      const statementPeriodEnd = getMetadataString(
+        event.metadata?.statementPeriodEnd,
+      );
       const aprPercent = profile?.activeRuleSet.aprPercent ?? 0;
-      const statementCycleDays = calculateStatementCycleDays(statementDate, closingDate);
+      const statementCycleDays = calculateStatementCycleDays(
+        statementPeriodStart,
+        statementPeriodEnd,
+      );
       const calculatedInterest = calculateDailyInterest(
         balanceSubjectToInterest,
         aprPercent,
@@ -65,13 +85,16 @@ export function calculateInterestStates(
         ...emptyState,
         aprPercent,
         isVariableApr: profile?.activeRuleSet.isVariableApr ?? false,
-        calculationMethod: profile?.activeRuleSet.interestCalculationMethod ?? "unknown",
-        lifecycleStatus: interestCharged > 0 ? "interest-charged" : "grace-period-preserved",
+        calculationMethod:
+          profile?.activeRuleSet.interestCalculationMethod ?? "unknown",
+        lifecycleStatus:
+          interestCharged > 0 ? "interest-charged" : "grace-period-preserved",
         balanceSubjectToInterest,
         statementCycleDays,
         calculatedInterest,
         interestCharged,
-        interestVariance: Math.round((interestCharged - calculatedInterest) * 100) / 100,
+        interestVariance:
+          Math.round((interestCharged - calculatedInterest) * 100) / 100,
       };
     });
 }
