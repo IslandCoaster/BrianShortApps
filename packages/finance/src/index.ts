@@ -25,31 +25,23 @@ export {
   type FinancialJournal,
 } from "./journal/financialJournal";
 
-export {
-  calculateFinancialState,
-} from "./engine/financialEngine";
+export { calculateFinancialState } from "./engine/financialEngine";
 
-export {
-  calculateAccountStates,
-} from "./accounts/accountStateEngine";
+export { calculateAccountStates } from "./accounts/accountStateEngine";
 
 export {
   createEmptyAccountState,
   type AccountState,
 } from "./accounts/accountState";
 
-export {
-  calculateObligationStates,
-} from "./obligations/obligationStateEngine";
+export { calculateObligationStates } from "./obligations/obligationStateEngine";
 
 export {
   createEmptyObligationState,
   type ObligationState,
 } from "./obligations/obligationState";
 
-export {
-  calculateCreditPosition,
-} from "./credit/creditPositionEngine";
+export { calculateCreditPosition } from "./credit/creditPositionEngine";
 
 export {
   createEmptyCreditPosition,
@@ -64,9 +56,7 @@ export {
   type CreditRiskLevel,
 } from "./credit/creditRisk";
 
-export {
-  calculateFinancialPositions,
-} from "./positions/positionEngine";
+export { calculateFinancialPositions } from "./positions/positionEngine";
 
 export type {
   CashPosition,
@@ -74,9 +64,7 @@ export type {
   FinancialPositions,
 } from "./positions/financialPositions";
 
-export {
-  generateFinancialRecommendations,
-} from "./recommendations/recommendationEngine";
+export { generateFinancialRecommendations } from "./recommendations/recommendationEngine";
 
 export {
   createEmptyFinancialState,
@@ -105,3 +93,11 @@ export { paycheckWithStatementScenario } from "./scenarios/paycheckWithStatement
 export { paycheckStatementPaymentScenario } from "./scenarios/paycheckStatementPaymentScenario";
 
 export { paycheckFixture } from "./fixtures/paycheckFixture";
+
+export type {
+  AccountProfile,
+  AccountRuleSet,
+  InterestCalculationMethod,
+} from "./accountProfiles/accountProfile";
+
+export { appleCardProfile } from "./accountProfiles/appleCardProfile";
