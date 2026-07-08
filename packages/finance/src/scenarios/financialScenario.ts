@@ -8,6 +8,7 @@ import { createFinancialJournal } from "../journal/financialJournal";
 import { calculateObligationStates } from "../obligations/obligationStateEngine";
 import { calculateFinancialPositions } from "../positions/positionEngine";
 import { generateFinancialRecommendations } from "../recommendations/recommendationEngine";
+import { calculateGracePeriodStates } from "../gracePeriod/gracePeriodEngine";
 
 export type FinancialScenario = {
   id: string;
@@ -19,6 +20,10 @@ export type FinancialScenario = {
 export function runFinancialScenario(scenario: FinancialScenario) {
   const journal = createFinancialJournal(scenario.events);
   const accountProfiles = calculateActiveAccountProfiles(journal);
+  const gracePeriodStates = calculateGracePeriodStates(
+    journal,
+    accountProfiles,
+  );
   const accountStates = calculateAccountStates(journal);
   const obligationStates = calculateObligationStates(journal);
   const creditPosition = calculateCreditPosition(accountStates);
@@ -32,6 +37,7 @@ export function runFinancialScenario(scenario: FinancialScenario) {
     stateWithoutRecommendations,
     obligationStates,
     creditPosition,
+    gracePeriodStates,
   );
 
   const state = {
@@ -43,6 +49,7 @@ export function runFinancialScenario(scenario: FinancialScenario) {
     scenario,
     journal,
     accountProfiles,
+    gracePeriodStates,
     accountStates,
     obligationStates,
     creditPosition,

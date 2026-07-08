@@ -1,4 +1,5 @@
 ﻿import type { CreditPosition } from "../credit/creditPosition";
+import type { GracePeriodState } from "../gracePeriod/gracePeriodState";
 import type { ObligationState } from "../obligations/obligationState";
 import type { FinancialState } from "../state/financialState";
 
@@ -6,6 +7,7 @@ export function generateFinancialRecommendations(
   state: FinancialState,
   obligationStates: ObligationState[],
   creditPosition: CreditPosition,
+  gracePeriodStates: GracePeriodState[],
 ): FinancialState["recommendations"] {
   const recommendations: FinancialState["recommendations"] = [];
 
@@ -19,10 +21,7 @@ export function generateFinancialRecommendations(
     });
   }
 
-  if (
-    creditPosition.projectedUtilizationPercent >
-    creditPosition.targetUtilizationPercent
-  ) {
+  if (creditPosition.projectedUtilizationPercent > creditPosition.targetUtilizationPercent) {
     recommendations.push({
       id: "reduce-projected-utilization",
       title: "Reduce projected credit utilization",
@@ -30,6 +29,27 @@ export function generateFinancialRecommendations(
       priority: "high",
     });
   }
+
+  gracePeriodStates.forEach((gracePeriod) => {
+    if (gracePeriod.status === "lost" && gracePeriod.remainingAmountToPreserveGracePeriod > 0) {
+      recommendations.push({
+        id: `preserve-grace-period-${gracePeriod.accountId}`,
+        title: `Preserve ${gracePeriod.accountName} grace period`,
+        rationale: `$${gracePeriod.remainingAmountToPreserveGracePeriod.toLocaleString()} remains to satisfy the statement balance by ${gracePeriod.paymentDueDate}. Payments credited by the account cutoff may preserve the grace period.`,
+        priority: "high",
+      });
+    }
+
+    if (gracePeriod.status === "active") {
+      recommendations.push({
+        id: `grace-period-active-${gracePeriod.accountId}`,
+        title: `${gracePeriod.accountName} grace period preserved`,
+        rationale:
+          "Qualifying payments have satisfied the statement balance requirement for this cycle.",
+        priority: "low",
+      });
+    }
+  });
 
   obligationStates.forEach((obligation) => {
     if (obligation.status === "open") {
