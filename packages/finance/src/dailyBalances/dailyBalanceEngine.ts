@@ -81,6 +81,29 @@ function sumEventAmounts(events: FinancialEvent[]) {
   return events.reduce((total, event) => total + (event.amount ?? 0), 0);
 }
 
+function getAccountActivityEventsForAccount(
+  journal: FinancialJournal,
+  accountId: string,
+  date: string,
+  activityTypes: string[],
+) {
+  return journal.events.filter((event) => {
+    if (event.type !== "account-activity.recorded") {
+      return false;
+    }
+
+    const eventAccountId = getMetadataString(event.metadata?.accountId);
+    const activityType = getMetadataString(event.metadata?.activityType);
+    const postedDate = getMetadataString(event.metadata?.postedDate);
+
+    return (
+      eventAccountId === accountId &&
+      postedDate === date &&
+      activityTypes.includes(activityType)
+    );
+  });
+}
+
 function createBalancesForStatement(
   journal: FinancialJournal,
   statementEvent: FinancialEvent,
@@ -95,11 +118,27 @@ function createBalancesForStatement(
 
   return createDateRange(statementPeriodStart, statementPeriodEnd).map((date) => {
     const openingBalance = runningBalance;
-    const purchasesTotal = sumEventAmounts(getPurchaseEventsForAccount(journal, accountId, date));
-    const paymentsTotal = sumEventAmounts(getPaymentEventsForAccount(journal, accountId, date));
-    const feesTotal = 0;
-    const interestTotal = 0;
-    const adjustmentsTotal = 0;
+    const purchasesTotal = sumEventAmounts(
+  getAccountActivityEventsForAccount(journal, accountId, date, ["purchase"]),
+);
+
+const paymentsTotal =
+  sumEventAmounts(getPaymentEventsForAccount(journal, accountId, date)) +
+  sumEventAmounts(
+    getAccountActivityEventsForAccount(journal, accountId, date, ["payment"]),
+  );
+
+const feesTotal = sumEventAmounts(
+  getAccountActivityEventsForAccount(journal, accountId, date, ["fee"]),
+);
+
+const interestTotal = sumEventAmounts(
+  getAccountActivityEventsForAccount(journal, accountId, date, ["interest"]),
+);
+
+const adjustmentsTotal = sumEventAmounts(
+  getAccountActivityEventsForAccount(journal, accountId, date, ["adjustment", "refund"]),
+);
     const closingBalance = Math.max(
       0,
       roundCurrency(openingBalance + purchasesTotal + feesTotal + interestTotal + adjustmentsTotal - paymentsTotal),
