@@ -59,24 +59,6 @@ function getPaymentEventsForAccount(
   });
 }
 
-/*function getPurchaseEventsForAccount(
-  journal: FinancialJournal,
-  accountId: string,
-  date: string,
-) {
-  return journal.events.filter((event) => {
-    if (event.type !== "account-activity.recorded") {
-      return false;
-    }
-
-    const eventAccountId = getMetadataString(event.metadata?.accountId);
-    const activityType = getMetadataString(event.metadata?.activityType);
-    const postedDate = getMetadataString(event.metadata?.postedDate);
-
-    return eventAccountId === accountId && postedDate === date && activityType === "purchase";
-  });
-}*/
-
 function sumEventAmounts(events: FinancialEvent[]) {
   return events.reduce((total, event) => total + (event.amount ?? 0), 0);
 }
