@@ -167,7 +167,10 @@ export function FinanceWorkspace() {
       <DailyInterestTimelineView
         dailyInterestTimeline={dailyInterestTimeline}
       />
-      <SimulationView journal={journal} />
+      <SimulationView
+        journal={journal}
+        currentInterestStates={interestStates}
+      />
       <InterestStateView interestStates={interestStates} />
       <AccountProfileView accountProfiles={accountProfiles} />
       <FinancialJournalView journal={journal} />
