@@ -1,4 +1,4 @@
-﻿import type { DailyBalance } from "@bsa/finance";
+import type { DailyBalance } from "@bsa/finance";
 
 type DailyBalanceViewProps = {
   dailyBalances: DailyBalance[];
@@ -6,6 +6,14 @@ type DailyBalanceViewProps = {
 
 function formatAmount(amount: number) {
   return `$${amount.toLocaleString()}`;
+}
+
+function formatLedgerAmount(amount: number, sign: "+" | "-") {
+  if (amount === 0) {
+    return "$0";
+  }
+
+  return `${sign}${formatAmount(Math.abs(amount))}`;
 }
 
 export function DailyBalanceView({ dailyBalances }: DailyBalanceViewProps) {
@@ -27,9 +35,7 @@ export function DailyBalanceView({ dailyBalances }: DailyBalanceViewProps) {
     ...activityBalances,
   ].filter(
     (dailyBalance, index, balances) =>
-      balances.findIndex(
-        (candidate) => candidate.date === dailyBalance.date,
-      ) === index,
+      balances.findIndex((candidate) => candidate.date === dailyBalance.date) === index,
   );
 
   const finalBalance = dailyBalances[dailyBalances.length - 1];
@@ -37,16 +43,13 @@ export function DailyBalanceView({ dailyBalances }: DailyBalanceViewProps) {
   return (
     <section className="finance-workspace__daily-balances">
       <div className="finance-workspace__section-header">
-        <p>Daily Balance</p>
+        <p>Daily Ledger</p>
         <span>{dailyBalances.length} days generated</span>
       </div>
 
       <div className="finance-workspace__interest-state-list">
         {previewBalances.map((dailyBalance) => (
-          <article
-            className="finance-workspace__interest-state"
-            key={dailyBalance.date}
-          >
+          <article className="finance-workspace__interest-state" key={dailyBalance.date}>
             <div className="finance-workspace__interest-state-main">
               <div>
                 <span>{dailyBalance.accountName}</span>
@@ -66,22 +69,32 @@ export function DailyBalanceView({ dailyBalances }: DailyBalanceViewProps) {
               </div>
 
               <div>
-                <dt>Purchases</dt>
-                <dd>{formatAmount(dailyBalance.purchasesTotal)}</dd>
+                <dt>+ Purchases</dt>
+                <dd>{formatLedgerAmount(dailyBalance.purchasesTotal, "+")}</dd>
               </div>
 
               <div>
-                <dt>Payments</dt>
-                <dd>{formatAmount(dailyBalance.paymentsTotal)}</dd>
+                <dt>+ Fees</dt>
+                <dd>{formatLedgerAmount(dailyBalance.feesTotal, "+")}</dd>
+              </div>
+
+              <div>
+                <dt>+ Interest</dt>
+                <dd>{formatLedgerAmount(dailyBalance.interestTotal, "+")}</dd>
               </div>
 
               <div>
                 <dt>Adjustments</dt>
-                <dd>{formatAmount(dailyBalance.adjustmentsTotal)}</dd>
+                <dd>{formatLedgerAmount(dailyBalance.adjustmentsTotal, "+")}</dd>
               </div>
 
               <div>
-                <dt>Closing</dt>
+                <dt>- Payments</dt>
+                <dd>{formatLedgerAmount(dailyBalance.paymentsTotal, "-")}</dd>
+              </div>
+
+              <div>
+                <dt>= Closing</dt>
                 <dd>{formatAmount(dailyBalance.closingBalance)}</dd>
               </div>
             </dl>
@@ -91,8 +104,8 @@ export function DailyBalanceView({ dailyBalances }: DailyBalanceViewProps) {
 
       {finalBalance ? (
         <p className="finance-workspace__daily-balances-summary">
-          Final generated balance: {formatAmount(finalBalance.closingBalance)}{" "}
-          on {finalBalance.date}
+          Final generated balance: {formatAmount(finalBalance.closingBalance)} on{" "}
+          {finalBalance.date}
         </p>
       ) : null}
     </section>
