@@ -80,6 +80,18 @@ export function InterestStateView({ interestStates }: InterestStateViewProps) {
               </div>
 
               <div>
+                <dt>Statement Interest Calculated</dt>
+                <dd>
+                  {formatAmount(interestState.statementInterestCalculated)}
+                </dd>
+              </div>
+
+              <div>
+                <dt>Statement Interest Variance</dt>
+                <dd>{formatAmount(interestState.statementInterestVariance)}</dd>
+              </div>
+
+              <div>
                 <dt>Variance</dt>
                 <dd>{formatAmount(interestState.interestVariance)}</dd>
               </div>

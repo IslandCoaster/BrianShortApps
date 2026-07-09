@@ -159,6 +159,10 @@ const accruedInterestTotal =
         balanceSubjectToInterest,
         aprPercent,
       );
+
+      const statementInterestCalculated = accruedInterestTotal;
+const statementInterestVariance =
+  Math.round((interestCharged - statementInterestCalculated) * 100) / 100;
       const remainingStatementDays = calculateRemainingStatementDays(
         event.occurredOn,
         statementPeriodEnd,
@@ -196,6 +200,8 @@ const accruedInterestTotal =
         projectionReason,
         projectionConfidence,
         accruedInterestTotal,
+        statementInterestCalculated,
+statementInterestVariance,
       };
     });
 }
