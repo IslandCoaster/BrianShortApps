@@ -6,7 +6,7 @@ import type { DailyInterest } from "../interest/dailyInterest";
 import type { GracePeriodState } from "../gracePeriod/gracePeriodState";
 import type { FinancialJournal } from "../journal/financialJournal";
 import type { ObligationState } from "../obligations/obligationState";
-import type { FinancialPositions } from "../positions/position";
+import type { FinancialPositions } from "../positions/financialPositions";
 import type { FinancialState } from "../state/financialState";
 import type { InterestState } from "../interest/interestState";
 
