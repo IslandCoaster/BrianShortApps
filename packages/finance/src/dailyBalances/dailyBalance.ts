@@ -9,7 +9,6 @@ export type DailyBalance = {
   interestTotal: number;
   adjustmentsTotal: number;
   closingBalance: number;
-  accruedInterest: number;
   isGenerated: true;
 };
 

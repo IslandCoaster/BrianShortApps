@@ -149,3 +149,8 @@ export {
   createAccountActivityRecordedEvent,
   type AccountActivityRecordedInput,
 } from "./events/accountActivityEvents";
+
+export {
+  createDailyInterest,
+  type DailyInterest,
+} from "./interest/dailyInterest";

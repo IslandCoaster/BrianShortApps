@@ -2,6 +2,8 @@
 import type { FinancialJournal } from "../journal/financialJournal";
 import { createEmptyInterestState, type InterestState } from "./interestState";
 import type { DailyBalance } from "../dailyBalances/dailyBalance";
+import type { DailyInterest } from "./dailyInterest";
+import { createDailyInterest } from "./dailyInterest";
 
 function getMetadataString(value: unknown) {
   return typeof value === "string" ? value : "";
@@ -44,11 +46,27 @@ function calculateAccruedInterest(closingBalance: number, aprPercent: number) {
 export function calculateDailyInterestAccruals(
   dailyBalances: DailyBalance[],
   aprPercent: number,
-): DailyBalance[] {
-  return dailyBalances.map((dailyBalance) => ({
-    ...dailyBalance,
-    accruedInterest: calculateAccruedInterest(dailyBalance.closingBalance, aprPercent),
-  }));
+): DailyInterest[] {
+  let runningAccruedInterest = 0;
+
+  return dailyBalances.map((dailyBalance) => {
+    const accruedInterest = calculateAccruedInterest(
+      dailyBalance.closingBalance,
+      aprPercent,
+    );
+
+    runningAccruedInterest =
+      Math.round((runningAccruedInterest + accruedInterest) * 100) / 100;
+
+    return createDailyInterest({
+      accountId: dailyBalance.accountId,
+      accountName: dailyBalance.accountName,
+      date: dailyBalance.date,
+      closingBalance: dailyBalance.closingBalance,
+      accruedInterest,
+      runningAccruedInterest,
+    });
+  });
 }
 
 function calculateRemainingStatementDays(
