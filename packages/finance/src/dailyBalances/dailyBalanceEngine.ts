@@ -33,6 +33,10 @@ function createDateRange(startDate: string, endDate: string) {
   return dates;
 }
 
+function roundCurrency(amount: number) {
+  return Math.round(amount * 100) / 100;
+}
+
 function getStatementEvents(journal: FinancialJournal) {
   return journal.events.filter((event) => event.type === "statement.generated");
 }
@@ -47,18 +51,15 @@ function getPaymentEventsForAccount(
       return false;
     }
 
-    const destinationAccountId = getMetadataString(
-      event.metadata?.destinationAccountId,
-    );
-    const creditedAt =
-      getMetadataString(event.metadata?.creditedAt) || event.occurredOn;
+    const destinationAccountId = getMetadataString(event.metadata?.destinationAccountId);
+    const creditedAt = getMetadataString(event.metadata?.creditedAt) || event.occurredOn;
     const creditedDate = creditedAt.slice(0, 10);
 
     return destinationAccountId === accountId && creditedDate === date;
   });
 }
 
-function getTransactionEventsForAccount(
+function getPurchaseEventsForAccount(
   journal: FinancialJournal,
   accountId: string,
   date: string,
@@ -69,7 +70,9 @@ function getTransactionEventsForAccount(
     }
 
     const eventAccountId = getMetadataString(event.metadata?.accountId);
-    return eventAccountId === accountId && event.occurredOn === date;
+    const transactionType = getMetadataString(event.metadata?.transactionType);
+
+    return eventAccountId === accountId && event.occurredOn === date && transactionType === "purchase";
   });
 }
 
@@ -83,51 +86,40 @@ function createBalancesForStatement(
 ): DailyBalance[] {
   const accountId = getMetadataString(statementEvent.metadata?.accountId);
   const accountName = getMetadataString(statementEvent.metadata?.accountName);
-  const statementPeriodStart = getMetadataString(
-    statementEvent.metadata?.statementPeriodStart,
-  );
-  const statementPeriodEnd = getMetadataString(
-    statementEvent.metadata?.statementPeriodEnd,
-  );
-  const startingBalance = getMetadataNumber(
-    statementEvent.metadata?.balanceSubjectToInterest,
-  );
+  const statementPeriodStart = getMetadataString(statementEvent.metadata?.statementPeriodStart);
+  const statementPeriodEnd = getMetadataString(statementEvent.metadata?.paymentDueDate);
+  const startingBalance = getMetadataNumber(statementEvent.metadata?.balanceSubjectToInterest);
 
   let runningBalance = startingBalance;
 
-  return createDateRange(statementPeriodStart, statementPeriodEnd).map(
-    (date) => {
-      const openingBalance = runningBalance;
-      const transactionTotal = sumEventAmounts(
-        getTransactionEventsForAccount(journal, accountId, date),
-      );
-      const paymentTotal = sumEventAmounts(
-        getPaymentEventsForAccount(journal, accountId, date),
-      );
-      const closingBalance = Math.max(
-        0,
-        Math.round((openingBalance + transactionTotal - paymentTotal) * 100) /
-          100,
-      );
+  return createDateRange(statementPeriodStart, statementPeriodEnd).map((date) => {
+    const openingBalance = runningBalance;
+    const purchasesTotal = sumEventAmounts(getPurchaseEventsForAccount(journal, accountId, date));
+    const paymentsTotal = sumEventAmounts(getPaymentEventsForAccount(journal, accountId, date));
+    const feesTotal = 0;
+    const interestTotal = 0;
+    const closingBalance = Math.max(
+      0,
+      roundCurrency(openingBalance + purchasesTotal + feesTotal + interestTotal - paymentsTotal),
+    );
 
-      runningBalance = closingBalance;
+    runningBalance = closingBalance;
 
-      return createDailyBalance({
-        accountId,
-        accountName,
-        date,
-        openingBalance,
-        transactionTotal,
-        paymentTotal,
-        closingBalance,
-      });
-    },
-  );
+    return createDailyBalance({
+      accountId,
+      accountName,
+      date,
+      openingBalance,
+      purchasesTotal,
+      paymentsTotal,
+      feesTotal,
+      interestTotal,
+      closingBalance,
+    });
+  });
 }
 
-export function calculateDailyBalances(
-  journal: FinancialJournal,
-): DailyBalance[] {
+export function calculateDailyBalances(journal: FinancialJournal): DailyBalance[] {
   return getStatementEvents(journal).flatMap((statementEvent) =>
     createBalancesForStatement(journal, statementEvent),
   );

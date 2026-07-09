@@ -3,11 +3,17 @@
   accountName: string;
   date: string;
   openingBalance: number;
-  transactionTotal: number;
-  paymentTotal: number;
+  purchasesTotal: number;
+  paymentsTotal: number;
+  feesTotal: number;
+  interestTotal: number;
   closingBalance: number;
+  isGenerated: true;
 };
 
-export function createDailyBalance(input: DailyBalance): DailyBalance {
-  return input;
+export function createDailyBalance(input: Omit<DailyBalance, "isGenerated">): DailyBalance {
+  return {
+    ...input,
+    isGenerated: true,
+  };
 }
