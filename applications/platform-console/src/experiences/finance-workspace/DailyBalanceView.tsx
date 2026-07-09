@@ -13,8 +13,26 @@ export function DailyBalanceView({ dailyBalances }: DailyBalanceViewProps) {
     return null;
   }
 
-  const previewBalances = dailyBalances.slice(0, 5);
-  const finalBalance = dailyBalances.at(-1);
+  const activityBalances = dailyBalances.filter(
+    (dailyBalance) =>
+      dailyBalance.purchasesTotal !== 0 ||
+      dailyBalance.paymentsTotal !== 0 ||
+      dailyBalance.feesTotal !== 0 ||
+      dailyBalance.interestTotal !== 0 ||
+      dailyBalance.adjustmentsTotal !== 0,
+  );
+
+  const previewBalances = [
+    ...dailyBalances.slice(0, 5),
+    ...activityBalances,
+  ].filter(
+    (dailyBalance, index, balances) =>
+      balances.findIndex(
+        (candidate) => candidate.date === dailyBalance.date,
+      ) === index,
+  );
+
+  const finalBalance = dailyBalances[dailyBalances.length - 1];
 
   return (
     <section className="finance-workspace__daily-balances">
