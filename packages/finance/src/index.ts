@@ -135,3 +135,9 @@ export {
 } from "./dailyBalances/dailyBalance";
 
 export { appleCardMidCycleProjectionScenario } from "./scenarios/appleCardMidCycleProjectionScenario";
+
+export {
+  createAccountActivity,
+  type AccountActivity,
+  type AccountActivityType,
+} from "./accountActivities/accountActivity";
