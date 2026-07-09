@@ -21,6 +21,8 @@ export type InterestState = {
   interestVariance: number;
   projectedInterest: number;
   interestAvoided: number;
+  dailyInterestAccrued: number;
+  remainingStatementDays: number;
 };
 
 export function createEmptyInterestState(
@@ -41,5 +43,7 @@ export function createEmptyInterestState(
     interestVariance: 0,
     projectedInterest: 0,
     interestAvoided: 0,
+    dailyInterestAccrued: 0,
+    remainingStatementDays: 0,
   };
 }

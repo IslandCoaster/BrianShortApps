@@ -22,7 +22,10 @@ export function InterestStateView({ interestStates }: InterestStateViewProps) {
 
       <div className="finance-workspace__interest-state-list">
         {interestStates.map((interestState) => (
-          <article className="finance-workspace__interest-state" key={interestState.accountId}>
+          <article
+            className="finance-workspace__interest-state"
+            key={interestState.accountId}
+          >
             <div className="finance-workspace__interest-state-main">
               <div>
                 <span>{interestState.accountName}</span>
@@ -54,6 +57,16 @@ export function InterestStateView({ interestStates }: InterestStateViewProps) {
               <div>
                 <dt>Calculated Interest</dt>
                 <dd>{formatAmount(interestState.calculatedInterest)}</dd>
+              </div>
+
+              <div>
+                <dt>Daily Interest</dt>
+                <dd>{formatAmount(interestState.dailyInterestAccrued)}</dd>
+              </div>
+
+              <div>
+                <dt>Remaining Days</dt>
+                <dd>{interestState.remainingStatementDays}</dd>
               </div>
 
               <div>

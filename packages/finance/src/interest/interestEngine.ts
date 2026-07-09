@@ -46,6 +46,19 @@ function calculateDailyInterest(
   return Math.round(calculatedInterest * 100) / 100;
 }
 
+function calculateDailyInterestAmount(balance: number, aprPercent: number) {
+  const dailyRate = aprPercent / 100 / 365;
+
+  return Math.round(balance * dailyRate * 100) / 100;
+}
+
+function calculateProjectedInterest(
+  dailyInterest: number,
+  remainingStatementDays: number,
+) {
+  return Math.round(dailyInterest * remainingStatementDays * 100) / 100;
+}
+
 export function calculateInterestStates(
   journal: FinancialJournal,
   accountProfiles: AccountProfile[],
@@ -81,6 +94,16 @@ export function calculateInterestStates(
         statementCycleDays,
       );
 
+      const dailyInterestAccrued = calculateDailyInterestAmount(
+        balanceSubjectToInterest,
+        aprPercent,
+      );
+      const remainingStatementDays = 0;
+      const projectedInterest = calculateProjectedInterest(
+        dailyInterestAccrued,
+        remainingStatementDays,
+      );
+
       return {
         ...emptyState,
         aprPercent,
@@ -95,6 +118,10 @@ export function calculateInterestStates(
         interestCharged,
         interestVariance:
           Math.round((interestCharged - calculatedInterest) * 100) / 100,
+        projectedInterest,
+        interestAvoided: 0,
+        dailyInterestAccrued,
+        remainingStatementDays,
       };
     });
 }
