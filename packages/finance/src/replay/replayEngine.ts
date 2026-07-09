@@ -12,16 +12,29 @@ import type { FinancialJournal } from "../journal/financialJournal";
 import { calculateObligationStates } from "../obligations/obligationStateEngine";
 import { calculateFinancialPositions } from "../positions/positionEngine";
 import { generateFinancialRecommendations } from "../recommendations/recommendationEngine";
-import type { ReplayState } from "./replayState";
+import type { ReplayRequest } from "./replayRequest";
 
-export function replayFinancialJournal(journal: FinancialJournal): ReplayState {
+export function replayFinancialJournal(
+  request: ReplayRequest,
+): ReplayState {
+  const journal: FinancialJournal = {
+    ...request.baseJournal,
+    events: [
+      ...request.baseJournal.events,
+      ...(request.temporaryEvents ?? []),
+    ],
+  };
+
   const accountProfiles = calculateActiveAccountProfiles(journal);
   const dailyBalances = calculateDailyBalances(journal);
   const dailyInterestTimeline = calculateDailyInterestAccruals(
     dailyBalances,
     accountProfiles[0]?.activeRuleSet.aprPercent ?? 0,
   );
-  const gracePeriodStates = calculateGracePeriodStates(journal, accountProfiles);
+  const gracePeriodStates = calculateGracePeriodStates(
+    journal,
+    accountProfiles,
+  );
   const accountStates = calculateAccountStates(journal);
   const obligationStates = calculateObligationStates(journal);
   const creditPosition = calculateCreditPosition(accountStates);
