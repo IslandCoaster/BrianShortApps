@@ -154,3 +154,6 @@ export {
   createDailyInterest,
   type DailyInterest,
 } from "./interest/dailyInterest";
+
+export { replayFinancialJournal } from "./replay/replayEngine";
+export type { ReplayState } from "./replay/replayState";
