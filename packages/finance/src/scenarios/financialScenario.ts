@@ -21,12 +21,13 @@ export type FinancialScenario = {
 
 export function runFinancialScenario(scenario: FinancialScenario) {
   const journal = createFinancialJournal(scenario.events);
+  const accountProfiles = calculateActiveAccountProfiles(journal);
   const dailyBalances = calculateDailyBalances(journal);
   const dailyInterestTimeline = calculateDailyInterestAccruals(
-  dailyBalances,
-  accountProfiles[0]?.activeRuleSet.aprPercent ?? 0,
-);
-  const accountProfiles = calculateActiveAccountProfiles(journal);
+    dailyBalances,
+    accountProfiles[0]?.activeRuleSet.aprPercent ?? 0,
+  );
+
   const gracePeriodStates = calculateGracePeriodStates(
     journal,
     accountProfiles,
