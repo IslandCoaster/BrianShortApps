@@ -141,3 +141,8 @@ export {
   type AccountActivity,
   type AccountActivityType,
 } from "./accountActivities/accountActivity";
+
+export {
+  createAccountActivityRecordedEvent,
+  type AccountActivityRecordedInput,
+} from "./events/accountActivityEvents";

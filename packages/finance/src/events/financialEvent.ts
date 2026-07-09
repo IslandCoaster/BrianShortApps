@@ -11,6 +11,7 @@ export type FinancialEventType =
   | "account-profile.rule-set-updated"
   | "account-profile.apr-changed"
   | "account-profile.credit-limit-changed"
+  | "account-activity.recorded"
   | "paycheck.received"
   | "statement.generated"
   | "payment.completed"
