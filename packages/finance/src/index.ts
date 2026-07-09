@@ -126,3 +126,10 @@ export {
 } from "./gracePeriod/gracePeriodState";
 
 export { appleCardPaidInFullScenario } from "./scenarios/appleCardPaidInFullScenario";
+
+export { calculateDailyBalances } from "./dailyBalances/dailyBalanceEngine";
+
+export {
+  createDailyBalance,
+  type DailyBalance,
+} from "./dailyBalances/dailyBalance";
