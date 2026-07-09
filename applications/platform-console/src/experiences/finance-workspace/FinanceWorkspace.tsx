@@ -15,6 +15,7 @@ import { InterestStateView } from "./InterestStateView";
 import { ObligationStateView } from "./ObligationStateView";
 import { GracePeriodStateView } from "./GracePeriodStateView";
 import { DailyBalanceView } from "./DailyBalanceView";
+import { DailyInterestTimelineView } from "./DailyInterestTimelineView";
 
 const scenarios = listFinancialScenarios();
 
@@ -38,6 +39,7 @@ export function FinanceWorkspace() {
     positions,
     scenario,
     state,
+    dailyInterestTimeline,
   } = runFinancialScenario(selectedScenario);
 
   const latestPaycheck = state.income.paychecks.at(-1);
@@ -161,6 +163,9 @@ export function FinanceWorkspace() {
       <AccountStateView accountStates={accountStates} />
       <GracePeriodStateView gracePeriodStates={gracePeriodStates} />
       <DailyBalanceView dailyBalances={dailyBalances} />
+      <DailyInterestTimelineView
+        dailyInterestTimeline={dailyInterestTimeline}
+      />
       <InterestStateView interestStates={interestStates} />
       <AccountProfileView accountProfiles={accountProfiles} />
       <FinancialJournalView journal={journal} />
