@@ -37,11 +37,20 @@ export function SimulationView({
   }
 
   const projectedInterestAvoided =
-    currentInterestState.projectedInterest - simulatedInterestState.projectedInterest;
+    currentInterestState.projectedInterest -
+    simulatedInterestState.projectedInterest;
 
   const accruedInterestReduction =
-    currentInterestState.accruedInterest - simulatedInterestState.accruedInterest;
+    currentInterestState.accruedInterest -
+    simulatedInterestState.accruedInterest;
 
+  const recommendation =
+    projectedInterestAvoided > 0 ? "Recommended" : "Minimal Financial Benefit";
+
+  const decisionSummary =
+    projectedInterestAvoided > 0
+      ? `A ${formatAmount(simulation.simulatedPaymentAmount)} payment today is projected to reduce interest costs if no additional activity occurs.`
+      : "This payment produces little projected interest reduction under current assumptions.";
   return (
     <section className="finance-workspace__daily-balances">
       <div className="finance-workspace__section-header">
@@ -91,9 +100,32 @@ export function SimulationView({
           <div>
             <dt>Explanation</dt>
             <dd>
-              A {formatAmount(simulation.simulatedPaymentAmount)} payment today is projected
-              to reduce accrued interest by {formatAmount(accruedInterestReduction)} if no
-              additional activity occurs during the remainder of the statement period.
+              A {formatAmount(simulation.simulatedPaymentAmount)} payment today
+              is projected to reduce accrued interest by{" "}
+              {formatAmount(accruedInterestReduction)} if no additional activity
+              occurs during the remainder of the statement period.
+            </dd>
+          </div>
+
+          <div>
+            <dt>Recommendation</dt>
+            <dd>{recommendation}</dd>
+          </div>
+
+          <div>
+            <dt>Decision Summary</dt>
+            <dd>{decisionSummary}</dd>
+          </div>
+
+          <div>
+            <dt>Assumptions</dt>
+            <dd>
+              • No additional purchases
+              <br />
+              • No additional fees
+              <br />
+              • Current APR remains unchanged
+              <br />• Payment is credited today
             </dd>
           </div>
         </dl>
