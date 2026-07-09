@@ -59,7 +59,7 @@ function getPaymentEventsForAccount(
   });
 }
 
-function getPurchaseEventsForAccount(
+/*function getPurchaseEventsForAccount(
   journal: FinancialJournal,
   accountId: string,
   date: string,
@@ -75,7 +75,7 @@ function getPurchaseEventsForAccount(
 
     return eventAccountId === accountId && postedDate === date && activityType === "purchase";
   });
-}
+}*/
 
 function sumEventAmounts(events: FinancialEvent[]) {
   return events.reduce((total, event) => total + (event.amount ?? 0), 0);
