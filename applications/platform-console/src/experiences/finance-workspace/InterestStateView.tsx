@@ -83,6 +83,15 @@ export function InterestStateView({ interestStates }: InterestStateViewProps) {
                 <dt>Projected Interest</dt>
                 <dd>{formatAmount(interestState.projectedInterest)}</dd>
               </div>
+              <div>
+                <dt>Projection</dt>
+                <dd>{interestState.projectionConfidence}</dd>
+              </div>
+
+              <div>
+                <dt>Projection Reason</dt>
+                <dd>{interestState.projectionReason}</dd>
+              </div>
             </dl>
           </article>
         ))}

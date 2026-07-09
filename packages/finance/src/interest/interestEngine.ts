@@ -124,6 +124,13 @@ export function calculateInterestStates(
         dailyInterestAccrued,
         remainingStatementDays,
       );
+      const projectionReason =
+        remainingStatementDays > 0
+          ? `Projection assumes no additional financial activity over the remaining ${remainingStatementDays} statement days.`
+          : "Statement period has completed.";
+
+      const projectionConfidence =
+        remainingStatementDays > 0 ? "forecast" : "measured";
 
       return {
         ...emptyState,
@@ -143,6 +150,8 @@ export function calculateInterestStates(
         interestAvoided: 0,
         dailyInterestAccrued,
         remainingStatementDays,
+        projectionReason,
+        projectionConfidence,
       };
     });
 }
