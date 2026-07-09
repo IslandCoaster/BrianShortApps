@@ -109,7 +109,10 @@ export {
 
 export { calculateActiveAccountProfiles } from "./configuration/accountConfigurationEngine";
 
-export { calculateInterestStates } from "./interest/interestEngine";
+export {
+  calculateDailyInterestAccruals,
+  calculateInterestStates,
+} from "./interest/interestEngine";
 
 export {
   createEmptyInterestState,

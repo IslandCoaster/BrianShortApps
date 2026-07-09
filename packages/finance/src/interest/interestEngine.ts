@@ -1,6 +1,7 @@
 ﻿import type { AccountProfile } from "../accountProfiles/accountProfile";
 import type { FinancialJournal } from "../journal/financialJournal";
 import { createEmptyInterestState, type InterestState } from "./interestState";
+import type { DailyBalance } from "../dailyBalances/dailyBalance";
 
 function getMetadataString(value: unknown) {
   return typeof value === "string" ? value : "";
@@ -32,6 +33,22 @@ function calculateStatementCycleDays(
   const millisecondsPerDay = 24 * 60 * 60 * 1000;
 
   return Math.round((end.getTime() - start.getTime()) / millisecondsPerDay) + 1;
+}
+
+function calculateAccruedInterest(closingBalance: number, aprPercent: number) {
+  const dailyRate = aprPercent / 100 / 365;
+
+  return Math.round(closingBalance * dailyRate * 100) / 100;
+}
+
+export function calculateDailyInterestAccruals(
+  dailyBalances: DailyBalance[],
+  aprPercent: number,
+): DailyBalance[] {
+  return dailyBalances.map((dailyBalance) => ({
+    ...dailyBalance,
+    accruedInterest: calculateAccruedInterest(dailyBalance.closingBalance, aprPercent),
+  }));
 }
 
 function calculateRemainingStatementDays(
