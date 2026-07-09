@@ -35,7 +35,11 @@ export function runFinancialScenario(scenario: FinancialScenario) {
   const accountStates = calculateAccountStates(journal);
   const obligationStates = calculateObligationStates(journal);
   const creditPosition = calculateCreditPosition(accountStates);
-  const interestStates = calculateInterestStates(journal, accountProfiles);
+  const interestStates = calculateInterestStates(
+  journal,
+  accountProfiles,
+  dailyInterestTimeline,
+);
   const stateWithoutRecommendations = calculateFinancialState(journal);
   const positions = calculateFinancialPositions(
     stateWithoutRecommendations,

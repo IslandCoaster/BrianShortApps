@@ -25,6 +25,7 @@ export type InterestState = {
   remainingStatementDays: number;
   projectionReason: string;
   projectionConfidence: "measured" | "estimated" | "forecast";
+  accruedInterestTotal: number;
 };
 
 export function createEmptyInterestState(
@@ -49,5 +50,6 @@ export function createEmptyInterestState(
     interestAvoided: 0,
     dailyInterestAccrued: 0,
     remainingStatementDays: 0,
+    accruedInterestTotal: 0,
   };
 }

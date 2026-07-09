@@ -115,11 +115,19 @@ function calculateProjectedInterest(
 export function calculateInterestStates(
   journal: FinancialJournal,
   accountProfiles: AccountProfile[],
+  dailyInterestTimeline: DailyInterest[],
 ): InterestState[] {
   return journal.events
     .filter((event) => event.type === "statement.generated")
     .map((event) => {
       const accountId = getMetadataString(event.metadata?.accountId);
+
+      const accountDailyInterest = dailyInterestTimeline.filter(
+  (dailyInterest) => dailyInterest.accountId === accountId,
+);
+
+const accruedInterestTotal =
+  accountDailyInterest[accountDailyInterest.length - 1]?.runningAccruedInterest ?? 0;
       const accountName = getMetadataString(event.metadata?.accountName);
       const profile = findAccountProfile(accountProfiles, accountId);
       const emptyState = createEmptyInterestState(accountId, accountName);
@@ -187,6 +195,7 @@ export function calculateInterestStates(
         remainingStatementDays,
         projectionReason,
         projectionConfidence,
+        accruedInterestTotal,
       };
     });
 }

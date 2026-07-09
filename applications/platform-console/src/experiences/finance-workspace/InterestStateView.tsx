@@ -65,6 +65,11 @@ export function InterestStateView({ interestStates }: InterestStateViewProps) {
               </div>
 
               <div>
+                <dt>Accrued Interest Total</dt>
+                <dd>{formatAmount(interestState.accruedInterestTotal)}</dd>
+              </div>
+
+              <div>
                 <dt>Remaining Days</dt>
                 <dd>{interestState.remainingStatementDays}</dd>
               </div>
