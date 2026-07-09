@@ -34,6 +34,24 @@ function calculateStatementCycleDays(
   return Math.round((end.getTime() - start.getTime()) / millisecondsPerDay) + 1;
 }
 
+function calculateRemainingStatementDays(
+  evaluatedOn: string,
+  statementPeriodEnd: string,
+) {
+  if (!evaluatedOn || !statementPeriodEnd) {
+    return 0;
+  }
+
+  const start = new Date(`${evaluatedOn.slice(0, 10)}T00:00:00Z`);
+  const end = new Date(`${statementPeriodEnd}T00:00:00Z`);
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+  const days = Math.round(
+    (end.getTime() - start.getTime()) / millisecondsPerDay,
+  );
+
+  return Math.max(0, days);
+}
+
 function calculateDailyInterest(
   balanceSubjectToInterest: number,
   aprPercent: number,
@@ -98,7 +116,10 @@ export function calculateInterestStates(
         balanceSubjectToInterest,
         aprPercent,
       );
-      const remainingStatementDays = 0;
+      const remainingStatementDays = calculateRemainingStatementDays(
+        event.occurredOn,
+        statementPeriodEnd,
+      );
       const projectedInterest = calculateProjectedInterest(
         dailyInterestAccrued,
         remainingStatementDays,
