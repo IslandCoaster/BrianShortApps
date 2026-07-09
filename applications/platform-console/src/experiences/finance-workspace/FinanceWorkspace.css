@@ -574,3 +574,14 @@
   display: grid;
   gap: var(--space-3);
 }
+
+.finance-workspace__daily-balances {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.finance-workspace__daily-balances-summary {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
