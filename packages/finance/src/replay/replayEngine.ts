@@ -13,6 +13,7 @@ import { calculateObligationStates } from "../obligations/obligationStateEngine"
 import { calculateFinancialPositions } from "../positions/positionEngine";
 import { generateFinancialRecommendations } from "../recommendations/recommendationEngine";
 import type { ReplayRequest } from "./replayRequest";
+import type { ReplayState } from "./replayState";
 
 export function replayFinancialJournal(
   request: ReplayRequest,
