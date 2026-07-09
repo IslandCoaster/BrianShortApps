@@ -58,6 +58,11 @@ export function DailyBalanceView({ dailyBalances }: DailyBalanceViewProps) {
               </div>
 
               <div>
+                <dt>Adjustments</dt>
+                <dd>{formatAmount(dailyBalance.adjustmentsTotal)}</dd>
+              </div>
+
+              <div>
                 <dt>Closing</dt>
                 <dd>{formatAmount(dailyBalance.closingBalance)}</dd>
               </div>

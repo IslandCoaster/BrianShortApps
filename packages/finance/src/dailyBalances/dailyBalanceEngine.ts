@@ -98,9 +98,10 @@ function createBalancesForStatement(
     const paymentsTotal = sumEventAmounts(getPaymentEventsForAccount(journal, accountId, date));
     const feesTotal = 0;
     const interestTotal = 0;
+    const adjustmentsTotal = 0;
     const closingBalance = Math.max(
       0,
-      roundCurrency(openingBalance + purchasesTotal + feesTotal + interestTotal - paymentsTotal),
+      roundCurrency(openingBalance + purchasesTotal + feesTotal + interestTotal + adjustmentsTotal - paymentsTotal),
     );
 
     runningBalance = closingBalance;
@@ -113,6 +114,7 @@ function createBalancesForStatement(
       purchasesTotal,
       paymentsTotal,
       feesTotal,
+      adjustmentsTotal,
       interestTotal,
       closingBalance,
     });
