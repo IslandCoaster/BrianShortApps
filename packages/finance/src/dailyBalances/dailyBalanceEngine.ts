@@ -139,6 +139,7 @@ const adjustmentsTotal = sumEventAmounts(
       adjustmentsTotal,
       interestTotal,
       closingBalance,
+      accruedInterest: 0,
     });
   });
 }

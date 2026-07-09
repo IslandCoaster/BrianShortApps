@@ -1,4 +1,4 @@
-﻿export type DailyBalance = {
+export type DailyBalance = {
   accountId: string;
   accountName: string;
   date: string;
@@ -9,6 +9,7 @@
   interestTotal: number;
   adjustmentsTotal: number;
   closingBalance: number;
+  accruedInterest: number;
   isGenerated: true;
 };
 
