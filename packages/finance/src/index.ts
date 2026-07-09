@@ -158,3 +158,9 @@ export {
 export { replayFinancialJournal } from "./replay/replayEngine";
 export type { ReplayState } from "./replay/replayState";
 export type { ReplayRequest } from "./replay/replayRequest";
+
+export {
+  simulatePayment,
+  type PaymentSimulationInput,
+  type PaymentSimulationResult,
+} from "./simulation/paymentSimulation";
