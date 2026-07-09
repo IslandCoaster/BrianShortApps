@@ -133,3 +133,5 @@ export {
   createDailyBalance,
   type DailyBalance,
 } from "./dailyBalances/dailyBalance";
+
+export { appleCardMidCycleProjectionScenario } from "./scenarios/appleCardMidCycleProjectionScenario";

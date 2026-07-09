@@ -4,6 +4,7 @@ import { paycheckStatementPaymentScenario } from "./paycheckStatementPaymentScen
 import { paycheckWithStatementScenario } from "./paycheckWithStatementScenario";
 import { singlePaycheckScenario } from "./singlePaycheckScenario";
 import { appleCardPaidInFullScenario } from "./appleCardPaidInFullScenario";
+import { appleCardMidCycleProjectionScenario } from "./appleCardMidCycleProjectionScenario";
 
 export const financialScenarioRegistry: FinancialScenario[] = [
   singlePaycheckScenario,
@@ -11,6 +12,7 @@ export const financialScenarioRegistry: FinancialScenario[] = [
   paycheckWithStatementScenario,
   paycheckStatementPaymentScenario,
   appleCardPaidInFullScenario,
+  appleCardMidCycleProjectionScenario,
 ];
 
 export function listFinancialScenarios() {
