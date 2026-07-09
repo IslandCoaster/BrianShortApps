@@ -16,6 +16,7 @@ import { ObligationStateView } from "./ObligationStateView";
 import { GracePeriodStateView } from "./GracePeriodStateView";
 import { DailyBalanceView } from "./DailyBalanceView";
 import { DailyInterestTimelineView } from "./DailyInterestTimelineView";
+import { SimulationView } from "./SimulationView";
 
 const scenarios = listFinancialScenarios();
 
@@ -166,6 +167,7 @@ export function FinanceWorkspace() {
       <DailyInterestTimelineView
         dailyInterestTimeline={dailyInterestTimeline}
       />
+      <SimulationView journal={journal} />
       <InterestStateView interestStates={interestStates} />
       <AccountProfileView accountProfiles={accountProfiles} />
       <FinancialJournalView journal={journal} />
