@@ -10,6 +10,7 @@ import { calculateFinancialPositions } from "../positions/positionEngine";
 import { generateFinancialRecommendations } from "../recommendations/recommendationEngine";
 import { calculateGracePeriodStates } from "../gracePeriod/gracePeriodEngine";
 import { calculateDailyBalances } from "../dailyBalances/dailyBalanceEngine";
+import { calculateDailyInterestAccruals } from "../interest/interestEngine";
 
 export type FinancialScenario = {
   id: string;
@@ -21,6 +22,10 @@ export type FinancialScenario = {
 export function runFinancialScenario(scenario: FinancialScenario) {
   const journal = createFinancialJournal(scenario.events);
   const dailyBalances = calculateDailyBalances(journal);
+  const dailyInterestTimeline = calculateDailyInterestAccruals(
+  dailyBalances,
+  accountProfiles[0]?.activeRuleSet.aprPercent ?? 0,
+);
   const accountProfiles = calculateActiveAccountProfiles(journal);
   const gracePeriodStates = calculateGracePeriodStates(
     journal,
@@ -51,6 +56,7 @@ export function runFinancialScenario(scenario: FinancialScenario) {
     scenario,
     journal,
     dailyBalances,
+    dailyInterestTimeline,
     accountProfiles,
     gracePeriodStates,
     accountStates,
