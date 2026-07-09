@@ -1,5 +1,4 @@
-﻿@'
-export type DailyBalance = {
+﻿export type DailyBalance = {
   accountId: string;
   accountName: string;
   date: string;
@@ -19,4 +18,3 @@ export function createDailyBalance(input: Omit<DailyBalance, "isGenerated">): Da
     isGenerated: true,
   };
 }
-'@ | Set-Content -Encoding utf8 packages/finance/src/dailyBalances/dailyBalance.ts
