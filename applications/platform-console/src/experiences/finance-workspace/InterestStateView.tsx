@@ -80,10 +80,8 @@ export function InterestStateView({ interestStates }: InterestStateViewProps) {
               </div>
 
               <div>
-                <dt>Statement Interest Calculated</dt>
-                <dd>
-                  {formatAmount(interestState.statementInterestCalculated)}
-                </dd>
+                <dt>Accrued Interest</dt>
+                <dd>{formatAmount(interestState.accruedInterest)}</dd>
               </div>
 
               <div>
