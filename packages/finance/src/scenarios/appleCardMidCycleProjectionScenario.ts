@@ -2,6 +2,7 @@
 import { createAccountProfileCreatedEvent } from "../events/accountProfileEvents";
 import { createStatementGeneratedEvent } from "../events/statementGeneratedEvent";
 import type { FinancialScenario } from "./financialScenario";
+import { createAccountActivityRecordedEvent } from "../events/accountActivityEvents";
 
 export const appleCardMidCycleProjectionScenario: FinancialScenario = {
   id: "apple-card-mid-cycle-projection",
@@ -30,5 +31,17 @@ export const appleCardMidCycleProjectionScenario: FinancialScenario = {
       interestCharged: 0,
       notes: "Mid-cycle projection scenario.",
     }),
+    createAccountActivityRecordedEvent({
+  id: "purchase-001",
+  occurredOn: "2026-07-10",
+  accountId: "card-apple",
+  accountName: "Apple Card",
+  activityType: "purchase",
+  postedDate: "2026-07-10",
+  amount: 100,
+  merchant: "Example Merchant",
+  category: "shopping",
+  description: "Example mid-cycle purchase",
+}),
   ],
 };

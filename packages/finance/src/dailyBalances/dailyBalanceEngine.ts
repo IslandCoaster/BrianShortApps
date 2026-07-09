@@ -65,14 +65,15 @@ function getPurchaseEventsForAccount(
   date: string,
 ) {
   return journal.events.filter((event) => {
-    if (event.type !== "transaction.imported") {
+    if (event.type !== "account-activity.recorded") {
       return false;
     }
 
     const eventAccountId = getMetadataString(event.metadata?.accountId);
-    const transactionType = getMetadataString(event.metadata?.transactionType);
+    const activityType = getMetadataString(event.metadata?.activityType);
+    const postedDate = getMetadataString(event.metadata?.postedDate);
 
-    return eventAccountId === accountId && event.occurredOn === date && transactionType === "purchase";
+    return eventAccountId === accountId && postedDate === date && activityType === "purchase";
   });
 }
 
