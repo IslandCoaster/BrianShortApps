@@ -12,6 +12,25 @@ type PaycheckDraft = {
   currentCash: string;
 };
 
+type PaymentPlanItem = {
+  accountId: string;
+  accountName: string;
+  institution: string;
+  dueDate: string;
+  requestedAmount: number;
+  allocatedAmount: number;
+  reason: "past-due" | "required-payment";
+  fullyFunded: boolean;
+};
+
+type PaymentPlan = {
+  availableCash: number;
+  totalAllocated: number;
+  remainingCash: number;
+  unresolvedObligations: number;
+  items: PaymentPlanItem[];
+};
+
 function parseAmount(value: string) {
   const parsed = Number(value);
 
@@ -25,6 +44,86 @@ function formatAmount(amount: number) {
   })}`;
 }
 
+function formatStatus(status: PortfolioAccountSummary["accountStatus"]) {
+  return status
+    .split("-")
+    .map((part) => part[0].toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function createPaymentPlan(
+  accounts: PortfolioAccountSummary[],
+  availableCash: number,
+): PaymentPlan {
+  const eligibleAccounts = accounts
+    .filter(
+      (account) =>
+        account.accountStatus !== "paid-off" &&
+        account.paymentDueDate &&
+        account.minimumPaymentDue !== undefined &&
+        account.minimumPaymentDue > 0,
+    )
+    .sort((left, right) => {
+      if (
+        left.accountStatus === "past-due" &&
+        right.accountStatus !== "past-due"
+      ) {
+        return -1;
+      }
+
+      if (
+        right.accountStatus === "past-due" &&
+        left.accountStatus !== "past-due"
+      ) {
+        return 1;
+      }
+
+      return (left.paymentDueDate ?? "").localeCompare(
+        right.paymentDueDate ?? "",
+      );
+    });
+
+  let remainingCash = availableCash;
+
+  const items = eligibleAccounts.map((account): PaymentPlanItem => {
+    const requestedAmount = account.minimumPaymentDue ?? 0;
+    const allocatedAmount = Math.min(requestedAmount, remainingCash);
+
+    remainingCash -= allocatedAmount;
+
+    return {
+      accountId: account.id,
+      accountName: account.accountName,
+      institution: account.institution,
+      dueDate: account.paymentDueDate as string,
+      requestedAmount,
+      allocatedAmount,
+      reason:
+        account.accountStatus === "past-due" ? "past-due" : "required-payment",
+      fullyFunded: allocatedAmount >= requestedAmount,
+    };
+  });
+
+  const totalAllocated = items.reduce(
+    (total, item) => total + item.allocatedAmount,
+    0,
+  );
+
+  const unresolvedObligations = items.reduce(
+    (total, item) =>
+      total + Math.max(item.requestedAmount - item.allocatedAmount, 0),
+    0,
+  );
+
+  return {
+    availableCash,
+    totalAllocated,
+    remainingCash,
+    unresolvedObligations,
+    items,
+  };
+}
+
 export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
   const [draft, setDraft] = useState<PaycheckDraft>({
     source: "American Airlines",
@@ -32,6 +131,8 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
     netPay: "",
     currentCash: "",
   });
+
+  const [paymentPlan, setPaymentPlan] = useState<PaymentPlan | null>(null);
 
   const availableCash = useMemo(
     () => parseAmount(draft.netPay) + parseAmount(draft.currentCash),
@@ -69,6 +170,10 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
         ? "funded"
         : "shortfall";
 
+  const missingPaymentAmounts = activeObligations.filter(
+    (account) => account.minimumPaymentDue === undefined,
+  );
+
   function updateDraft<K extends keyof PaycheckDraft>(
     field: K,
     value: PaycheckDraft[K],
@@ -77,6 +182,16 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
       ...current,
       [field]: value,
     }));
+
+    setPaymentPlan(null);
+  }
+
+  function handleGeneratePlan() {
+    if (availableCash <= 0) {
+      return;
+    }
+
+    setPaymentPlan(createPaymentPlan(accounts, availableCash));
   }
 
   return (
@@ -209,16 +324,15 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
           {fundingStatus === "shortfall" ? (
             <p className="finance-workspace__funding-message">
               The entered funds are insufficient to cover all known required
-              payments. The next planning step will prioritize the most urgent
-              obligations.
+              payments. The plan will prioritize past-due accounts and then
+              remaining obligations by due date.
             </p>
           ) : null}
 
           {fundingStatus === "funded" ? (
             <p className="finance-workspace__funding-message">
-              All known required payments are covered. Remaining funds can be
-              allocated toward interest reduction, utilization, or emergency
-              cash.
+              All known required payments are covered. Any remaining funds will
+              remain unallocated until optimization rules are introduced.
             </p>
           ) : null}
         </section>
@@ -258,45 +372,60 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
 
               <div>
                 <span>Status</span>
-                <strong>{account.accountStatus}</strong>
+                <strong>{formatStatus(account.accountStatus)}</strong>
               </div>
             </article>
           ))}
         </div>
       </section>
 
+      {missingPaymentAmounts.length > 0 ? (
+        <section className="finance-workspace__planning-warning">
+          <strong>Incomplete obligation data</strong>
+          <p>
+            {missingPaymentAmounts
+              .map((account) => account.accountName)
+              .join(", ")}{" "}
+            {missingPaymentAmounts.length === 1 ? "does" : "do"} not have a
+            required payment entered and will not receive an allocation.
+          </p>
+        </section>
+      ) : null}
+
       <section className="finance-workspace__planning-goals">
         <div className="finance-workspace__section-header">
           <div>
             <p>Planning Goals</p>
-            <span>Optimization controls will be added in PP-004</span>
+            <span>
+              Current plan uses a conservative obligation-first policy
+            </span>
           </div>
         </div>
 
         <div className="finance-workspace__planning-goal-list">
           <label>
-            <input type="checkbox" defaultChecked />
+            <input type="checkbox" checked readOnly />
             Eliminate past-due accounts
           </label>
 
           <label>
-            <input type="checkbox" defaultChecked />
+            <input type="checkbox" checked readOnly />
             Cover all required payments
           </label>
 
           <label>
-            <input type="checkbox" defaultChecked />
+            <input type="checkbox" disabled />
             Minimize projected interest
           </label>
 
           <label>
-            <input type="checkbox" />
+            <input type="checkbox" disabled />
             Reduce credit utilization
           </label>
 
           <label>
-            <input type="checkbox" defaultChecked />
-            Preserve emergency cash
+            <input type="checkbox" checked readOnly />
+            Preserve unallocated cash
           </label>
         </div>
       </section>
@@ -304,12 +433,106 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
       <button
         className="finance-workspace__generate-plan"
         type="button"
-        disabled
+        disabled={availableCash <= 0}
+        onClick={handleGeneratePlan}
       >
-        {remainingFunds > 0
-          ? `Optimize ${formatAmount(remainingFunds)} — Available in PP-003`
-          : "Build Funding Plan — Available in PP-003"}
+        {availableCash > 0
+          ? remainingFunds > 0
+            ? `Build Plan for ${formatAmount(availableCash)}`
+            : "Build Funding Plan"
+          : "Enter Funds to Build Plan"}
       </button>
+
+      {paymentPlan ? (
+        <section className="finance-workspace__payment-plan">
+          <div className="finance-workspace__section-header">
+            <div>
+              <p>Recommended Payment Plan</p>
+              <span>
+                Past-due accounts first, then remaining payments by due date
+              </span>
+            </div>
+
+            <span>
+              {paymentPlan.unresolvedObligations > 0
+                ? `${formatAmount(
+                    paymentPlan.unresolvedObligations,
+                  )} unresolved`
+                : "All known payments funded"}
+            </span>
+          </div>
+
+          <div className="finance-workspace__payment-plan-list">
+            {paymentPlan.items.map((item) => (
+              <article key={item.accountId}>
+                <div>
+                  <strong>{item.accountName}</strong>
+                  <span>{item.institution}</span>
+                </div>
+
+                <div>
+                  <span>Due</span>
+                  <strong>{item.dueDate}</strong>
+                </div>
+
+                <div>
+                  <span>Required</span>
+                  <strong>{formatAmount(item.requestedAmount)}</strong>
+                </div>
+
+                <div>
+                  <span>Allocate</span>
+                  <strong>{formatAmount(item.allocatedAmount)}</strong>
+                </div>
+
+                <div>
+                  <span>Reason</span>
+                  <strong>
+                    {item.reason === "past-due"
+                      ? "Past-due priority"
+                      : "Required payment"}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>Status</span>
+                  <strong>
+                    {item.fullyFunded ? "Funded" : "Partially funded"}
+                  </strong>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="finance-workspace__payment-plan-summary">
+            <article>
+              <span>Available</span>
+              <strong>{formatAmount(paymentPlan.availableCash)}</strong>
+            </article>
+
+            <article>
+              <span>Allocated</span>
+              <strong>{formatAmount(paymentPlan.totalAllocated)}</strong>
+            </article>
+
+            <article>
+              <span>Remaining Cash</span>
+              <strong>{formatAmount(paymentPlan.remainingCash)}</strong>
+            </article>
+
+            <article>
+              <span>Unresolved Obligations</span>
+              <strong>{formatAmount(paymentPlan.unresolvedObligations)}</strong>
+            </article>
+          </div>
+
+          <p className="finance-workspace__payment-plan-explanation">
+            This plan uses only known required payment amounts. It does not yet
+            optimize extra payments for interest, utilization, grace-period
+            preservation, or benefits.
+          </p>
+        </section>
+      ) : null}
     </section>
   );
 }
