@@ -13,6 +13,8 @@ import { FinancialModelLab } from "./FinancialModelLab";
 import { portfolioAccountSnapshots } from "./portfolio.snapshots";
 import type { PortfolioAccountSummary } from "./portfolio.types";
 
+import { PaycheckPlanningView } from "./PaycheckPlanningView";
+
 const scenarios = listFinancialScenarios();
 
 export function FinanceWorkspace() {
@@ -100,6 +102,15 @@ export function FinanceWorkspace() {
           onRemoveAccount={handleRemoveAccount}
         />
       )}
+
+      <PaycheckPlanningView accounts={portfolioAccounts} />
+
+      <FinancialModelLab
+        selectedScenarioId={selectedScenarioId}
+        scenarios={scenarios}
+        onScenarioChange={setSelectedScenarioId}
+        result={scenarioResult}
+      />
 
       <FinancialModelLab
         selectedScenarioId={selectedScenarioId}
