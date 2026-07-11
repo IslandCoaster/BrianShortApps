@@ -20,6 +20,8 @@ import { SimulationView } from "./SimulationView";
 
 import { AccountPortfolioView } from "./AccountPortfolioView";
 import { portfolioAccountSnapshots } from "./portfolio.snapshots";
+import { AccountForm } from "./AccountForm";
+import type { PortfolioAccountSummary } from "./portfolio.types";
 
 const scenarios = listFinancialScenarios();
 
@@ -27,6 +29,40 @@ export function FinanceWorkspace() {
   const [selectedScenarioId, setSelectedScenarioId] = useState(
     getDefaultFinancialScenario().id,
   );
+  const [portfolioAccounts, setPortfolioAccounts] = useState<
+    PortfolioAccountSummary[]
+  >(portfolioAccountSnapshots);
+
+  const [isAddingAccount, setIsAddingAccount] = useState(false);
+
+  const [editingAccount, setEditingAccount] =
+    useState<PortfolioAccountSummary | null>(null);
+
+  function handleSaveAccount(account: PortfolioAccountSummary) {
+    setPortfolioAccounts((current) => {
+      const accountExists = current.some(
+        (existingAccount) => existingAccount.id === account.id,
+      );
+
+      if (accountExists) {
+        return current.map((existingAccount) =>
+          existingAccount.id === account.id ? account : existingAccount,
+        );
+      }
+
+      return [...current, account];
+    });
+
+    setIsAddingAccount(false);
+    setEditingAccount(null);
+  }
+
+  function handleRemoveAccount(accountId: string) {
+    setPortfolioAccounts((current) =>
+      current.filter((account) => account.id !== accountId),
+    );
+  }
+
   const selectedScenario =
     scenarios.find((scenario) => scenario.id === selectedScenarioId) ??
     getDefaultFinancialScenario();
@@ -73,7 +109,29 @@ export function FinanceWorkspace() {
           ))}
         </select>
       </div>
-      <AccountPortfolioView accounts={portfolioAccountSnapshots} />
+      {isAddingAccount || editingAccount ? (
+        <AccountForm
+          account={editingAccount ?? undefined}
+          onCancel={() => {
+            setIsAddingAccount(false);
+            setEditingAccount(null);
+          }}
+          onSubmit={handleSaveAccount}
+        />
+      ) : (
+        <AccountPortfolioView
+          accounts={portfolioAccounts}
+          onAddAccount={() => {
+            setEditingAccount(null);
+            setIsAddingAccount(true);
+          }}
+          onEditAccount={(account) => {
+            setEditingAccount(account);
+            setIsAddingAccount(false);
+          }}
+          onRemoveAccount={handleRemoveAccount}
+        />
+      )}
       <div className="finance-workspace__metrics">
         <article>
           <span>Cash Available</span>
