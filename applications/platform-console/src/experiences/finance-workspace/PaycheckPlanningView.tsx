@@ -51,6 +51,24 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
     [accounts],
   );
 
+  const requiredObligationsTotal = useMemo(
+    () =>
+      activeObligations.reduce(
+        (total, account) => total + (account.minimumPaymentDue ?? 0),
+        0,
+      ),
+    [activeObligations],
+  );
+
+  const remainingFunds = availableCash - requiredObligationsTotal;
+
+  const fundingStatus =
+    availableCash === 0
+      ? "awaiting-input"
+      : remainingFunds >= 0
+        ? "funded"
+        : "shortfall";
+
   function updateDraft<K extends keyof PaycheckDraft>(
     field: K,
     value: PaycheckDraft[K],
@@ -128,9 +146,43 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
           </div>
         </section>
 
-        <section className="finance-workspace__available-cash">
-          <span>Available for Planning</span>
-          <strong>{formatAmount(availableCash)}</strong>
+        <section className="finance-workspace__funding-position">
+          <div className="finance-workspace__funding-position-header">
+            <span>Funding Position</span>
+
+            <span
+              className={`finance-workspace__funding-status finance-workspace__funding-status--${fundingStatus}`}
+            >
+              {fundingStatus === "awaiting-input"
+                ? "Awaiting paycheck"
+                : fundingStatus === "funded"
+                  ? "Obligations covered"
+                  : "Funding shortfall"}
+            </span>
+          </div>
+
+          <div className="finance-workspace__funding-equation">
+            <div>
+              <span>Available for Planning</span>
+              <strong>{formatAmount(availableCash)}</strong>
+            </div>
+
+            <span aria-hidden="true">−</span>
+
+            <div>
+              <span>Required Obligations</span>
+              <strong>{formatAmount(requiredObligationsTotal)}</strong>
+            </div>
+
+            <span aria-hidden="true">=</span>
+
+            <div>
+              <span>
+                {remainingFunds >= 0 ? "Remaining Funds" : "Funding Shortfall"}
+              </span>
+              <strong>{formatAmount(Math.abs(remainingFunds))}</strong>
+            </div>
+          </div>
 
           <dl>
             <div>
@@ -147,7 +199,28 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
               <dt>Paycheck Date</dt>
               <dd>{draft.expectedDate || "Not entered"}</dd>
             </div>
+
+            <div>
+              <dt>Known Payments</dt>
+              <dd>{activeObligations.length}</dd>
+            </div>
           </dl>
+
+          {fundingStatus === "shortfall" ? (
+            <p className="finance-workspace__funding-message">
+              The entered funds are insufficient to cover all known required
+              payments. The next planning step will prioritize the most urgent
+              obligations.
+            </p>
+          ) : null}
+
+          {fundingStatus === "funded" ? (
+            <p className="finance-workspace__funding-message">
+              All known required payments are covered. Remaining funds can be
+              allocated toward interest reduction, utilization, or emergency
+              cash.
+            </p>
+          ) : null}
         </section>
       </div>
 
@@ -233,7 +306,9 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
         type="button"
         disabled
       >
-        Generate Plan — Available in PP-005
+        {remainingFunds > 0
+          ? `Optimize ${formatAmount(remainingFunds)} — Available in PP-003`
+          : "Build Funding Plan — Available in PP-003"}
       </button>
     </section>
   );
