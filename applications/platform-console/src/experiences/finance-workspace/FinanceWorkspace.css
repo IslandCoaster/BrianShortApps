@@ -1274,3 +1274,112 @@
     grid-template-columns: 1fr;
   }
 }
+
+.finance-workspace__strategy-selector {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.finance-workspace__strategy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.finance-workspace__strategy-card {
+  display: grid;
+  gap: var(--space-3);
+  min-height: 160px;
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-control);
+  color: var(--text-primary);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.finance-workspace__strategy-card:hover:not(:disabled) {
+  background: var(--surface-raised);
+}
+
+.finance-workspace__strategy-card--selected {
+  border-color: var(--text-secondary);
+  background: var(--surface-raised);
+}
+
+.finance-workspace__strategy-card:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.finance-workspace__strategy-card > div {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.finance-workspace__strategy-card strong {
+  font-size: var(--text-base);
+}
+
+.finance-workspace__strategy-card p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.finance-workspace__strategy-card small {
+  align-self: end;
+  color: var(--text-muted);
+  font-weight: var(--font-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.finance-workspace__strategy-indicator {
+  color: var(--text-secondary);
+  font-size: var(--text-lg);
+}
+
+.finance-workspace__strategy-summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-base);
+}
+
+.finance-workspace__strategy-summary > span {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.finance-workspace__strategy-summary > strong {
+  color: var(--text-primary);
+}
+
+.finance-workspace__strategy-summary > p {
+  grid-column: 1 / -1;
+  margin: var(--space-2) 0 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+@media (max-width: 950px) {
+  .finance-workspace__strategy-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .finance-workspace__strategy-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,4 +1,9 @@
 import { useMemo, useState } from "react";
+
+import {
+  PaycheckStrategySelector,
+  type FinancialStrategy,
+} from "./PaycheckStrategySelector";
 import type { PortfolioAccountSummary } from "./portfolio.types";
 
 type PaycheckPlanningViewProps = {
@@ -49,6 +54,44 @@ function formatStatus(status: PortfolioAccountSummary["accountStatus"]) {
     .split("-")
     .map((part) => part[0].toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function getStrategyTitle(strategy: FinancialStrategy) {
+  switch (strategy) {
+    case "survival":
+      return "Survival";
+
+    case "balanced":
+      return "Balanced";
+
+    case "debt-elimination":
+      return "Debt Elimination";
+
+    case "interest-reduction":
+      return "Interest Reduction";
+
+    case "reward-optimization":
+      return "Reward Optimization";
+  }
+}
+
+function getStrategyExplanation(strategy: FinancialStrategy) {
+  switch (strategy) {
+    case "balanced":
+      return "The Balanced strategy funds known required obligations while preserving any remaining cash for future financial decisions.";
+
+    case "survival":
+      return "The Survival strategy prioritizes urgent obligations and protects available cash.";
+
+    case "debt-elimination":
+      return "The Debt Elimination strategy directs remaining funds toward reducing debt balances.";
+
+    case "interest-reduction":
+      return "The Interest Reduction strategy prioritizes balances with the greatest projected borrowing cost.";
+
+    case "reward-optimization":
+      return "The Reward Optimization strategy coordinates payment requirements with account benefits and rewards.";
+  }
 }
 
 function createPaymentPlan(
@@ -134,6 +177,9 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
 
   const [paymentPlan, setPaymentPlan] = useState<PaymentPlan | null>(null);
 
+  const [selectedStrategy, setSelectedStrategy] =
+    useState<FinancialStrategy>("balanced");
+
   const availableCash = useMemo(
     () => parseAmount(draft.netPay) + parseAmount(draft.currentCash),
     [draft.currentCash, draft.netPay],
@@ -183,6 +229,11 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
       [field]: value,
     }));
 
+    setPaymentPlan(null);
+  }
+
+  function handleStrategyChange(strategy: FinancialStrategy) {
+    setSelectedStrategy(strategy);
     setPaymentPlan(null);
   }
 
@@ -392,43 +443,10 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
         </section>
       ) : null}
 
-      <section className="finance-workspace__planning-goals">
-        <div className="finance-workspace__section-header">
-          <div>
-            <p>Planning Goals</p>
-            <span>
-              Current plan uses a conservative obligation-first policy
-            </span>
-          </div>
-        </div>
-
-        <div className="finance-workspace__planning-goal-list">
-          <label>
-            <input type="checkbox" checked readOnly />
-            Eliminate past-due accounts
-          </label>
-
-          <label>
-            <input type="checkbox" checked readOnly />
-            Cover all required payments
-          </label>
-
-          <label>
-            <input type="checkbox" disabled />
-            Minimize projected interest
-          </label>
-
-          <label>
-            <input type="checkbox" disabled />
-            Reduce credit utilization
-          </label>
-
-          <label>
-            <input type="checkbox" checked readOnly />
-            Preserve unallocated cash
-          </label>
-        </div>
-      </section>
+      <PaycheckStrategySelector
+        selectedStrategy={selectedStrategy}
+        onStrategyChange={handleStrategyChange}
+      />
 
       <button
         className="finance-workspace__generate-plan"
@@ -438,18 +456,19 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
       >
         {availableCash > 0
           ? remainingFunds > 0
-            ? `Build Plan for ${formatAmount(availableCash)}`
+            ? `Build Funding Plan for ${formatAmount(availableCash)}`
             : "Build Funding Plan"
-          : "Enter Funds to Build Plan"}
+          : "Enter Funds to Build Funding Plan"}
       </button>
 
       {paymentPlan ? (
         <section className="finance-workspace__payment-plan">
           <div className="finance-workspace__section-header">
             <div>
-              <p>Recommended Payment Plan</p>
+              <p>Funding Plan</p>
               <span>
-                Past-due accounts first, then remaining payments by due date
+                {getStrategyTitle(selectedStrategy)} strategy · Past-due
+                accounts first, then remaining payments by due date
               </span>
             </div>
 
@@ -460,6 +479,12 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
                   )} unresolved`
                 : "All known payments funded"}
             </span>
+          </div>
+
+          <div className="finance-workspace__strategy-summary">
+            <span>Active Strategy</span>
+            <strong>{getStrategyTitle(selectedStrategy)}</strong>
+            <p>{getStrategyExplanation(selectedStrategy)}</p>
           </div>
 
           <div className="finance-workspace__payment-plan-list">
