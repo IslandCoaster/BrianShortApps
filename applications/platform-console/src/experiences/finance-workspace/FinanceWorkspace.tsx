@@ -18,6 +18,9 @@ import { DailyBalanceView } from "./DailyBalanceView";
 import { DailyInterestTimelineView } from "./DailyInterestTimelineView";
 import { SimulationView } from "./SimulationView";
 
+import { AccountPortfolioView } from "./AccountPortfolioView";
+import { portfolioAccountSnapshots } from "./portfolio.snapshots";
+
 const scenarios = listFinancialScenarios();
 
 export function FinanceWorkspace() {
@@ -70,6 +73,7 @@ export function FinanceWorkspace() {
           ))}
         </select>
       </div>
+      <AccountPortfolioView accounts={portfolioAccountSnapshots} />
       <div className="finance-workspace__metrics">
         <article>
           <span>Cash Available</span>
