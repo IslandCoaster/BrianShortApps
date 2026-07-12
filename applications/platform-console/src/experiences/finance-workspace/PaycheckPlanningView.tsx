@@ -104,6 +104,7 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
 
   const expectedNetPay = parseAmount(draft.netPay);
   const currentCash = parseAmount(draft.currentCash);
+  const planningDate = getTodayDate();
 
   const fundingSources = useMemo<FundingSource[]>(() => {
     const sources: FundingSource[] = [];
@@ -111,7 +112,7 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
     if (currentCash > 0) {
       sources.push({
         id: "opening-cash",
-        date: getTodayDate(),
+        date: planningDate,
         amount: currentCash,
         type: "opening-cash",
         title: "Opening Cash",
@@ -131,7 +132,13 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
     }
 
     return sources;
-  }, [currentCash, draft.expectedDate, draft.source, expectedNetPay]);
+  }, [
+    currentCash,
+    draft.expectedDate,
+    draft.source,
+    expectedNetPay,
+    planningDate,
+  ]);
 
   const availableCash = useMemo(
     () => fundingSources.reduce((total, source) => total + source.amount, 0),
@@ -153,11 +160,12 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
   const fundingPlanPreview = useMemo(
     () =>
       buildFundingPlan({
+        planningDate,
         accounts,
         fundingSources,
         policy: fundingPolicy,
       }),
-    [accounts, fundingPolicy, fundingSources],
+    [accounts, fundingPolicy, fundingSources, planningDate],
   );
 
   const activeObligations = useMemo(
@@ -215,21 +223,23 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
 
     if (paymentPlan) {
       paymentPlan.items.forEach((item) => {
-        if (item.allocatedAmount <= 0) {
-          return;
-        }
+        item.allocations.forEach((allocation, index) => {
+          if (allocation.amount <= 0) {
+            return;
+          }
 
-        events.push({
-          id: `planned-payment-${item.accountId}`,
-          date: item.dueDate,
-          type: "payment",
-          title: item.accountName,
-          description:
-            item.reason === "past-due"
-              ? "Past-due priority payment"
-              : "Required payment",
-          amount: -item.allocatedAmount,
-          status: item.fullyFunded ? "planned" : "partially-funded",
+          events.push({
+            id: `planned-payment-${item.accountId}-${allocation.paymentDate}-${index}`,
+            date: allocation.paymentDate,
+            type: "payment",
+            title: item.accountName,
+            description:
+              item.reason === "past-due"
+                ? "Past-due priority payment"
+                : "Required payment",
+            amount: -allocation.amount,
+            status: item.fullyFunded ? "planned" : "partially-funded",
+          });
         });
       });
     }
