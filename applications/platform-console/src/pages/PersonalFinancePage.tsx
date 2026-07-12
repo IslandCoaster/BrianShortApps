@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
-import { ProductHero } from "../components/product-hero/ProductHero";
+
 import {
   FinancialHealthBanner,
   type FinancialHealthStatus,
 } from "../components/financial-health-banner/FinancialHealthBanner";
+import { ProductHero } from "../components/product-hero/ProductHero";
 import { ProductQuickActions } from "../components/product-quick-actions/ProductQuickActions";
 
 import { AccountForm } from "../experiences/finance-workspace/AccountForm";
@@ -76,12 +77,14 @@ export function PersonalFinancePage() {
     };
   }, [portfolioAccounts]);
 
+  const hasAccounts = portfolioOverview.activeAccountCount > 0;
+
   const financialHealth = useMemo<{
     status: FinancialHealthStatus;
     title: string;
     description: string;
   }>(() => {
-    if (portfolioOverview.activeAccountCount === 0) {
+    if (!hasAccounts) {
       return {
         status: "incomplete",
         title: "Add an account to begin",
@@ -89,6 +92,7 @@ export function PersonalFinancePage() {
           "Your financial position and funding plan will appear after at least one active account is entered.",
       };
     }
+
     if (portfolioOverview.pastDueAccounts > 0) {
       return {
         status: "attention",
@@ -117,7 +121,7 @@ export function PersonalFinancePage() {
       description:
         "Known dated obligations can be evaluated against your cash reserve and upcoming funding sources.",
     };
-  }, [portfolioOverview]);
+  }, [hasAccounts, portfolioOverview]);
 
   function scrollToSection(sectionId: string) {
     document.getElementById(sectionId)?.scrollIntoView({
@@ -125,6 +129,7 @@ export function PersonalFinancePage() {
       block: "start",
     });
   }
+
   function handleSaveAccount(account: PortfolioAccountSummary) {
     setPortfolioAccounts((current) => {
       const accountExists = current.some(
@@ -159,6 +164,15 @@ export function PersonalFinancePage() {
     setEditingAccount(null);
   }
 
+  function handleOpenAccountForm() {
+    setEditingAccount(null);
+    setIsAddingAccount(true);
+
+    window.requestAnimationFrame(() => {
+      scrollToSection("accounts");
+    });
+  }
+
   return (
     <main className="personal-finance-page">
       <div className="personal-finance-page__container">
@@ -168,6 +182,7 @@ export function PersonalFinancePage() {
           description="Understand your current obligations, protect the cash you need to keep available, and build a timing-aware plan for upcoming payments."
           actions={<Link to="/">Engineering workspace</Link>}
         />
+
         <FinancialHealthBanner
           status={financialHealth.status}
           title={financialHealth.title}
@@ -185,27 +200,20 @@ export function PersonalFinancePage() {
               label: "Add account",
               description: "Enter another account or financial obligation.",
               emphasis: "primary",
-              onClick: () => {
-                setEditingAccount(null);
-                setIsAddingAccount(true);
-
-                window.requestAnimationFrame(() => {
-                  scrollToSection("accounts");
-                });
-              },
+              onClick: handleOpenAccountForm,
             },
             {
               id: "review-obligations",
               label: "Review obligations",
               description: "See upcoming and past-due required payments.",
-              disabled: portfolioOverview.activeAccountCount === 0,
+              disabled: !hasAccounts,
               onClick: () => scrollToSection("obligations"),
             },
             {
               id: "build-funding-plan",
               label: "Build funding plan",
               description: "Enter cash, reserve, and paycheck timing.",
-              disabled: portfolioOverview.activeAccountCount === 0,
+              disabled: !hasAccounts,
               onClick: () => scrollToSection("funding-plan"),
             },
             {
@@ -213,7 +221,7 @@ export function PersonalFinancePage() {
               label: "Update account",
               description:
                 "Select an account below to update its latest information.",
-              disabled: portfolioOverview.activeAccountCount === 0,
+              disabled: !hasAccounts,
               onClick: () => scrollToSection("accounts"),
             },
           ]}
@@ -223,6 +231,7 @@ export function PersonalFinancePage() {
           <div className="personal-finance-page__section-heading">
             <div>
               <h2>Today&apos;s financial position</h2>
+
               <p>
                 A current portfolio summary based on the account information
                 entered for this planning session.
@@ -240,7 +249,9 @@ export function PersonalFinancePage() {
             <article className="personal-finance-page__metric">
               <span>Total balances</span>
               <strong>{formatAmount(portfolioOverview.totalBalance)}</strong>
-              <small>Current balances from the latest account snapshots.</small>
+              <small>
+                Current balances from the latest entered account information.
+              </small>
             </article>
 
             <article className="personal-finance-page__metric">
@@ -254,6 +265,7 @@ export function PersonalFinancePage() {
             <article className="personal-finance-page__metric">
               <span>Past-due accounts</span>
               <strong>{portfolioOverview.pastDueAccounts}</strong>
+
               <small>
                 {portfolioOverview.unknownPaymentAmounts > 0
                   ? `${portfolioOverview.unknownPaymentAmounts} account ${
@@ -270,7 +282,8 @@ export function PersonalFinancePage() {
         <section className="personal-finance-page__section" id="accounts">
           <div className="personal-finance-page__section-heading">
             <div>
-              <h2>Accounts</h2>
+              <h2>Financial accounts</h2>
+
               <p>
                 Maintain the account information used by your financial plan.
               </p>
@@ -285,7 +298,7 @@ export function PersonalFinancePage() {
                   onCancel={handleCancelAccountForm}
                   onSubmit={handleSaveAccount}
                 />
-              ) : (
+              ) : hasAccounts ? (
                 <>
                   <div id="obligations">
                     <UpcomingObligationsView accounts={portfolioAccounts} />
@@ -295,10 +308,7 @@ export function PersonalFinancePage() {
                     accounts={portfolioAccounts}
                     showSummary={false}
                     showUpcomingObligations={false}
-                    onAddAccount={() => {
-                      setEditingAccount(null);
-                      setIsAddingAccount(true);
-                    }}
+                    onAddAccount={handleOpenAccountForm}
                     onEditAccount={(account) => {
                       setIsAddingAccount(false);
                       setEditingAccount(account);
@@ -306,28 +316,44 @@ export function PersonalFinancePage() {
                     onRemoveAccount={handleRemoveAccount}
                   />
                 </>
+              ) : (
+                <div className="personal-finance-page__empty-product">
+                  <strong>Start with your first financial account</strong>
+
+                  <p>
+                    Add a credit card, charge card, store card, or student loan
+                    to begin building your portfolio and funding plan.
+                  </p>
+
+                  <button type="button" onClick={handleOpenAccountForm}>
+                    Add your first account
+                  </button>
+                </div>
               )}
             </section>
           </div>
         </section>
 
-        <section className="personal-finance-page__section" id="funding-plan">
-          <div className="personal-finance-page__section-heading">
-            <div>
-              <h2>Paycheck planning</h2>
-              <p>
-                Protect your reserve and allocate dated income to required
-                obligations.
-              </p>
-            </div>
-          </div>
+        {hasAccounts ? (
+          <section className="personal-finance-page__section" id="funding-plan">
+            <div className="personal-finance-page__section-heading">
+              <div>
+                <h2>Funding plan</h2>
 
-          <div className="personal-finance-page__surface">
-            <section className="finance-workspace finance-workspace--product">
-              <PaycheckPlanningView accounts={portfolioAccounts} />
-            </section>
-          </div>
-        </section>
+                <p>
+                  Combine current cash and dated income into a reserve-aware
+                  payment plan.
+                </p>
+              </div>
+            </div>
+
+            <div className="personal-finance-page__surface">
+              <section className="finance-workspace finance-workspace--product">
+                <PaycheckPlanningView accounts={portfolioAccounts} />
+              </section>
+            </div>
+          </section>
+        ) : null}
       </div>
     </main>
   );
