@@ -97,10 +97,19 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
   const [selectedStrategy, setSelectedStrategy] =
     useState<FinancialStrategy>("balanced");
 
+  const expectedNetPay = parseAmount(draft.netPay);
+  const currentCash = parseAmount(draft.currentCash);
+
   const availableCash = useMemo(
-    () => parseAmount(draft.netPay) + parseAmount(draft.currentCash),
-    [draft.currentCash, draft.netPay],
+    () => expectedNetPay + currentCash,
+    [currentCash, expectedNetPay],
   );
+
+  const paycheckDateRequired = expectedNetPay > 0;
+  const paycheckDateMissing = paycheckDateRequired && !draft.expectedDate;
+
+  const canGeneratePlan = availableCash > 0 && !paycheckDateMissing;
+
   const fundingPolicy = useMemo<FundingPolicy>(
     () => ({
       minimumCashReserve: Math.max(parseAmount(minimumCashReserveInput), 0),
@@ -202,6 +211,7 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
 
     return buildCashFlowTimeline({
       openingCash: parseAmount(draft.currentCash),
+      protectedCash: fundingPlanPreview.position.protectedCash,
       events,
     });
   }, [
@@ -209,6 +219,7 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
     draft.expectedDate,
     draft.netPay,
     draft.source,
+    fundingPlanPreview.position.protectedCash,
     missingPaymentAmounts,
     paymentPlan,
   ]);
@@ -236,7 +247,7 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
   }
 
   function handleGeneratePlan() {
-    if (availableCash <= 0) {
+    if (!canGeneratePlan) {
       return;
     }
 
@@ -258,6 +269,13 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
             <div>
               <p>Upcoming Paycheck</p>
               <span>Enter expected cash available to build a funding plan</span>
+              {paycheckDateMissing ? (
+                <p className="finance-workspace__funding-message">
+                  Enter the expected paycheck date before building the Funding
+                  Plan. Payment timing cannot be evaluated without a dated
+                  income event.
+                </p>
+              ) : null}
             </div>
           </div>
 
@@ -504,16 +522,18 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
       <button
         className="finance-workspace__generate-plan"
         type="button"
-        disabled={availableCash <= 0}
+        disabled={!canGeneratePlan}
         onClick={handleGeneratePlan}
       >
-        {availableCash > 0
-          ? fundingPlanPreview.position.deployableCash > 0
-            ? `Build Funding Plan for ${formatAmount(
-                fundingPlanPreview.position.deployableCash,
-              )}`
-            : "Build Funding Plan"
-          : "Enter Funds to Build Funding Plan"}
+        {availableCash <= 0
+          ? "Enter Funds to Build Funding Plan"
+          : paycheckDateMissing
+            ? "Enter Paycheck Date to Build Funding Plan"
+            : fundingPlanPreview.position.deployableCash > 0
+              ? `Build Funding Plan for ${formatAmount(
+                  fundingPlanPreview.position.deployableCash,
+                )}`
+              : "Build Funding Plan"}
       </button>
 
       {paymentPlan ? (
