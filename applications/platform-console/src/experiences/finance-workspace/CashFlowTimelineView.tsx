@@ -39,13 +39,25 @@ export function CashFlowTimelineView({ timeline }: CashFlowTimelineViewProps) {
           <span>Projected cash movement based on the current Funding Plan</span>
         </div>
 
-        <span>Closing cash {formatCash(timeline.closingCash)}</span>
+        <span>
+          Closing funding buffer {formatCash(timeline.closingDeployableCash)}
+        </span>
       </div>
 
       <div className="finance-workspace__cash-flow-summary">
         <article>
           <span>Opening Cash</span>
           <strong>{formatCash(timeline.openingCash)}</strong>
+        </article>
+
+        <article>
+          <span>Protected Cash</span>
+          <strong>{formatCash(timeline.protectedCash)}</strong>
+        </article>
+
+        <article>
+          <span>Opening Deployable Cash</span>
+          <strong>{formatCash(timeline.openingDeployableCash)}</strong>
         </article>
 
         <article>
@@ -59,8 +71,18 @@ export function CashFlowTimelineView({ timeline }: CashFlowTimelineViewProps) {
         </article>
 
         <article>
-          <span>Lowest Cash Position</span>
-          <strong>{formatCash(timeline.lowestRunningCash)}</strong>
+          <span>Closing Cash</span>
+          <strong>{formatCash(timeline.closingCash)}</strong>
+        </article>
+
+        <article>
+          <span>Closing Funding Buffer</span>
+          <strong>{formatCash(timeline.closingDeployableCash)}</strong>
+        </article>
+
+        <article>
+          <span>Lowest Funding Buffer</span>
+          <strong>{formatCash(timeline.lowestDeployableCash)}</strong>
         </article>
       </div>
 
@@ -74,12 +96,17 @@ export function CashFlowTimelineView({ timeline }: CashFlowTimelineViewProps) {
 
           <div className="finance-workspace__cash-flow-description">
             <span>Opening Position</span>
-            <strong>Current Cash Available</strong>
+            <strong>Current Cash Position</strong>
+
+            <small>
+              {formatCash(timeline.protectedCash)} protected ·{" "}
+              {formatCash(timeline.openingDeployableCash)} deployable
+            </small>
           </div>
 
           <div className="finance-workspace__cash-flow-amount">
             <strong>{formatCash(timeline.openingCash)}</strong>
-            <span>Running cash</span>
+            <span>Total projected cash</span>
           </div>
         </article>
 
@@ -108,7 +135,10 @@ export function CashFlowTimelineView({ timeline }: CashFlowTimelineViewProps) {
                 <strong>{formatAmount(entry.amount)}</strong>
               )}
 
-              <span>Running cash {formatCash(entry.runningCash)}</span>
+              <span>
+                Total cash {formatCash(entry.runningCash)} · Funding buffer{" "}
+                {formatCash(entry.runningDeployableCash)}
+              </span>
             </div>
           </article>
         ))}
@@ -116,9 +146,18 @@ export function CashFlowTimelineView({ timeline }: CashFlowTimelineViewProps) {
 
       {timeline.lowestRunningCash < 0 ? (
         <p className="finance-workspace__cash-flow-warning">
-          This timeline projects a negative cash position of{" "}
+          This timeline projects a negative total cash position of{" "}
           {formatCash(Math.abs(timeline.lowestRunningCash))}. Review the Funding
           Plan before making payments.
+        </p>
+      ) : null}
+
+      {timeline.lowestRunningCash >= 0 && timeline.lowestDeployableCash < 0 ? (
+        <p className="finance-workspace__cash-flow-warning">
+          Planned payments would consume{" "}
+          {formatCash(Math.abs(timeline.lowestDeployableCash))} of protected
+          cash. Reduce allocations or lower the configured reserve before
+          proceeding.
         </p>
       ) : null}
     </section>
