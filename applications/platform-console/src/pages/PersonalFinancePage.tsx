@@ -5,6 +5,7 @@ import {
   FinancialHealthBanner,
   type FinancialHealthStatus,
 } from "../components/financial-health-banner/FinancialHealthBanner";
+import { ProductQuickActions } from "../components/product-quick-actions/ProductQuickActions";
 
 import { AccountForm } from "../experiences/finance-workspace/AccountForm";
 import { AccountPortfolioView } from "../experiences/finance-workspace/AccountPortfolioView";
@@ -118,6 +119,12 @@ export function PersonalFinancePage() {
     };
   }, [portfolioOverview]);
 
+  function scrollToSection(sectionId: string) {
+    document.getElementById(sectionId)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
   function handleSaveAccount(account: PortfolioAccountSummary) {
     setPortfolioAccounts((current) => {
       const accountExists = current.some(
@@ -171,6 +178,47 @@ export function PersonalFinancePage() {
           unknownPaymentAmounts={portfolioOverview.unknownPaymentAmounts}
         />
 
+        <ProductQuickActions
+          actions={[
+            {
+              id: "add-account",
+              label: "Add account",
+              description: "Enter another account or financial obligation.",
+              emphasis: "primary",
+              onClick: () => {
+                setEditingAccount(null);
+                setIsAddingAccount(true);
+
+                window.requestAnimationFrame(() => {
+                  scrollToSection("accounts");
+                });
+              },
+            },
+            {
+              id: "review-obligations",
+              label: "Review obligations",
+              description: "See upcoming and past-due required payments.",
+              disabled: portfolioOverview.activeAccountCount === 0,
+              onClick: () => scrollToSection("obligations"),
+            },
+            {
+              id: "build-funding-plan",
+              label: "Build funding plan",
+              description: "Enter cash, reserve, and paycheck timing.",
+              disabled: portfolioOverview.activeAccountCount === 0,
+              onClick: () => scrollToSection("funding-plan"),
+            },
+            {
+              id: "update-account",
+              label: "Update account",
+              description:
+                "Select an account below to update its latest information.",
+              disabled: portfolioOverview.activeAccountCount === 0,
+              onClick: () => scrollToSection("accounts"),
+            },
+          ]}
+        />
+
         <section className="personal-finance-page__section">
           <div className="personal-finance-page__section-heading">
             <div>
@@ -219,7 +267,7 @@ export function PersonalFinancePage() {
           </div>
         </section>
 
-        <section className="personal-finance-page__section">
+        <section className="personal-finance-page__section" id="accounts">
           <div className="personal-finance-page__section-heading">
             <div>
               <h2>Accounts</h2>
@@ -239,7 +287,9 @@ export function PersonalFinancePage() {
                 />
               ) : (
                 <>
-                  <UpcomingObligationsView accounts={portfolioAccounts} />
+                  <div id="obligations">
+                    <UpcomingObligationsView accounts={portfolioAccounts} />
+                  </div>
 
                   <AccountPortfolioView
                     accounts={portfolioAccounts}
@@ -261,7 +311,7 @@ export function PersonalFinancePage() {
           </div>
         </section>
 
-        <section className="personal-finance-page__section">
+        <section className="personal-finance-page__section" id="funding-plan">
           <div className="personal-finance-page__section-heading">
             <div>
               <h2>Paycheck planning</h2>

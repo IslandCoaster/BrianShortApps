@@ -141,3 +141,9 @@
   color: rgba(235, 241, 250, 0.45);
   cursor: not-allowed;
 }
+
+#accounts,
+#obligations,
+#funding-plan {
+  scroll-margin-top: 24px;
+}

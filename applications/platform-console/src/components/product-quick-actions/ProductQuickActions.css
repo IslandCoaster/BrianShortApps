@@ -1,0 +1,116 @@
+.product-quick-actions {
+  margin-top: 20px;
+  padding: 22px;
+  border: 1px solid rgba(23, 32, 51, 0.08);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(25, 36, 61, 0.05);
+}
+
+.product-quick-actions__header p {
+  margin: 0;
+  color: #172033;
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+.product-quick-actions__header span {
+  display: block;
+  margin-top: 4px;
+  color: #6c788c;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.product-quick-actions__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.product-quick-actions__action {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  min-height: 88px;
+  padding: 15px;
+  border: 1px solid rgba(23, 32, 51, 0.09);
+  border-radius: 14px;
+  background: #f8fafc;
+  color: #172033;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease;
+}
+
+.product-quick-actions__action:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(62, 91, 206, 0.28);
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(25, 36, 61, 0.08);
+}
+
+.product-quick-actions__action--primary {
+  border-color: rgba(62, 91, 206, 0.22);
+  background: linear-gradient(
+    135deg,
+    rgba(236, 241, 255, 0.96),
+    rgba(248, 250, 255, 0.98)
+  );
+}
+
+.product-quick-actions__action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.product-quick-actions__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(62, 91, 206, 0.09);
+}
+
+.product-quick-actions__content {
+  min-width: 0;
+}
+
+.product-quick-actions__content strong {
+  display: block;
+  font-size: 0.92rem;
+}
+
+.product-quick-actions__content small {
+  display: block;
+  margin-top: 5px;
+  color: #748096;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 1000px) {
+  .product-quick-actions__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .product-quick-actions {
+    padding: 18px;
+  }
+
+  .product-quick-actions__grid {
+    grid-template-columns: 1fr;
+  }
+}
