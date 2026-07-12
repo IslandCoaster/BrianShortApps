@@ -4,7 +4,11 @@ import {
   PaycheckStrategySelector,
   type FinancialStrategy,
 } from "./PaycheckStrategySelector";
-import { buildFundingPlan, type PaymentPlan } from "./fundingEngine";
+import {
+  buildFundingPlan,
+  type PaymentFundingStatus,
+  type PaymentPlan,
+} from "./fundingEngine";
 import type { FundingSource } from "./fundingSource";
 import { defaultFundingPolicy, type FundingPolicy } from "./fundingPolicy";
 import type { PortfolioAccountSummary } from "./portfolio.types";
@@ -38,6 +42,38 @@ function formatAmount(amount: number) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
+}
+
+function formatPaymentFundingStatus(status: PaymentFundingStatus) {
+  switch (status) {
+    case "funded-by-due-date":
+      return "Funded by due date";
+
+    case "funded-after-due-date":
+      return "Funded after due date";
+
+    case "partially-funded":
+      return "Partially funded";
+
+    case "unfunded":
+      return "Unfunded";
+  }
+}
+
+function getPaymentTimingExplanation(status: PaymentFundingStatus) {
+  switch (status) {
+    case "funded-by-due-date":
+      return "Sufficient deployable cash is available no later than the required due date.";
+
+    case "funded-after-due-date":
+      return "The full payment can be funded, but sufficient deployable cash becomes available after the required due date.";
+
+    case "partially-funded":
+      return "Only part of the required payment can be funded from the current dated funding sources.";
+
+    case "unfunded":
+      return "No deployable cash is currently available for this required payment.";
+  }
 }
 
 function formatStatus(status: PortfolioAccountSummary["accountStatus"]) {
@@ -203,6 +239,47 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
   const missingPaymentAmounts = activeObligations.filter(
     (account) => account.minimumPaymentDue === undefined,
   );
+
+  const paymentTimingSummary = useMemo(() => {
+    if (!paymentPlan) {
+      return {
+        fundedByDueDate: 0,
+        fundedAfterDueDate: 0,
+        partiallyFunded: 0,
+        unfunded: 0,
+      };
+    }
+
+    return paymentPlan.items.reduce(
+      (summary, item) => {
+        switch (item.fundingStatus) {
+          case "funded-by-due-date":
+            summary.fundedByDueDate += 1;
+            break;
+
+          case "funded-after-due-date":
+            summary.fundedAfterDueDate += 1;
+            break;
+
+          case "partially-funded":
+            summary.partiallyFunded += 1;
+            break;
+
+          case "unfunded":
+            summary.unfunded += 1;
+            break;
+        }
+
+        return summary;
+      },
+      {
+        fundedByDueDate: 0,
+        fundedAfterDueDate: 0,
+        partiallyFunded: 0,
+        unfunded: 0,
+      },
+    );
+  }, [paymentPlan]);
 
   const cashFlowTimeline = useMemo(() => {
     const events: CashFlowEvent[] = [];
@@ -605,7 +682,9 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
                 ? `${formatAmount(
                     paymentPlan.position.unresolvedObligations,
                   )} unresolved`
-                : "All known payments funded"}
+                : paymentTimingSummary.fundedAfterDueDate > 0
+                  ? "Fully funded with timing risk"
+                  : "All known payments funded by due date"}
             </span>
           </div>
 
@@ -614,6 +693,53 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
             <strong>{getStrategyTitle(selectedStrategy)}</strong>
             <p>{getStrategyExplanation(selectedStrategy)}</p>
           </div>
+          <div className="finance-workspace__payment-plan-summary">
+            <article>
+              <span>Funded by Due Date</span>
+              <strong>{paymentTimingSummary.fundedByDueDate}</strong>
+            </article>
+
+            <article>
+              <span>Funded After Due Date</span>
+              <strong>{paymentTimingSummary.fundedAfterDueDate}</strong>
+            </article>
+
+            <article>
+              <span>Partially Funded</span>
+              <strong>{paymentTimingSummary.partiallyFunded}</strong>
+            </article>
+
+            <article>
+              <span>Unfunded</span>
+              <strong>{paymentTimingSummary.unfunded}</strong>
+            </article>
+          </div>
+
+          {paymentTimingSummary.fundedAfterDueDate > 0 ? (
+            <section className="finance-workspace__planning-warning">
+              <strong>Late funding detected</strong>
+              <p>
+                {paymentTimingSummary.fundedAfterDueDate}{" "}
+                {paymentTimingSummary.fundedAfterDueDate === 1
+                  ? "payment is"
+                  : "payments are"}{" "}
+                fully affordable only after the required due date. Review
+                paycheck timing and payment scheduling before proceeding.
+              </p>
+            </section>
+          ) : null}
+
+          {paymentTimingSummary.partiallyFunded > 0 ||
+          paymentTimingSummary.unfunded > 0 ? (
+            <section className="finance-workspace__planning-warning">
+              <strong>Incomplete funding</strong>
+              <p>
+                The current dated funding sources do not fully cover every known
+                required payment. Unresolved amounts remain excluded from
+                scheduled payments.
+              </p>
+            </section>
+          ) : null}
 
           <div className="finance-workspace__payment-plan-list">
             {paymentPlan.items.map((item) => (
@@ -637,6 +763,14 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
                   <span>Allocate</span>
                   <strong>{formatAmount(item.allocatedAmount)}</strong>
                 </div>
+                <div>
+                  <span>Funded by Due Date</span>
+                  <strong>{formatAmount(item.fundedAmountByDueDate)}</strong>
+                </div>
+                <div>
+                  <span>Fully Funded On</span>
+                  <strong>{item.fundedDate ?? "Not fully funded"}</strong>
+                </div>
 
                 <div>
                   <span>Reason</span>
@@ -648,10 +782,14 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
                 </div>
 
                 <div>
-                  <span>Status</span>
+                  <span>Timing Status</span>
                   <strong>
-                    {item.fullyFunded ? "Funded" : "Partially funded"}
+                    {formatPaymentFundingStatus(item.fundingStatus)}
                   </strong>
+
+                  <small>
+                    {getPaymentTimingExplanation(item.fundingStatus)}
+                  </small>
                 </div>
               </article>
             ))}
@@ -702,10 +840,11 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
           </div>
 
           <p className="finance-workspace__payment-plan-explanation">
-            This plan uses only known required payment amounts and allocates
-            only deployable cash. Protected cash remains outside the plan.
-            Interest, utilization, grace-period, and benefit optimization are
-            not yet applied.
+            This plan uses dated funding sources and allocates only deployable
+            cash. Each obligation is evaluated against when its funding becomes
+            available, not only against total cycle cash. Protected cash remains
+            outside the plan. Interest, utilization, grace-period, and benefit
+            optimization are not yet applied.
           </p>
 
           <CashFlowTimelineView timeline={cashFlowTimeline} />
