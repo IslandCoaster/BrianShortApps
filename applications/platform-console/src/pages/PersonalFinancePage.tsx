@@ -1,6 +1,10 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { ProductHero } from "../components/product-hero/ProductHero";
+import {
+  FinancialHealthBanner,
+  type FinancialHealthStatus,
+} from "../components/financial-health-banner/FinancialHealthBanner";
 
 import { AccountForm } from "../experiences/finance-workspace/AccountForm";
 import { AccountPortfolioView } from "../experiences/finance-workspace/AccountPortfolioView";
@@ -53,14 +57,66 @@ export function PersonalFinancePage() {
         account.paymentDueDate && account.minimumPaymentDue === undefined,
     ).length;
 
+    const nextObligationDate = activeAccounts
+      .filter(
+        (account) =>
+          account.paymentDueDate && (account.minimumPaymentDue ?? 0) > 0,
+      )
+      .map((account) => account.paymentDueDate as string)
+      .sort((left, right) => left.localeCompare(right))[0];
+
     return {
       activeAccountCount: activeAccounts.length,
       totalBalance,
       knownRequiredPayments,
       pastDueAccounts,
       unknownPaymentAmounts,
+      nextObligationDate,
     };
   }, [portfolioAccounts]);
+
+  const financialHealth = useMemo<{
+    status: FinancialHealthStatus;
+    title: string;
+    description: string;
+  }>(() => {
+    if (portfolioOverview.activeAccountCount === 0) {
+      return {
+        status: "incomplete",
+        title: "Add an account to begin",
+        description:
+          "Your financial position and funding plan will appear after at least one active account is entered.",
+      };
+    }
+    if (portfolioOverview.pastDueAccounts > 0) {
+      return {
+        status: "attention",
+        title: `${portfolioOverview.pastDueAccounts} ${
+          portfolioOverview.pastDueAccounts === 1
+            ? "account requires"
+            : "accounts require"
+        } attention`,
+        description:
+          "Past-due obligations should be reviewed before allocating cash to later payments.",
+      };
+    }
+
+    if (portfolioOverview.unknownPaymentAmounts > 0) {
+      return {
+        status: "incomplete",
+        title: "Complete your required-payment information",
+        description:
+          "Some dated obligations do not have payment amounts, so the current funding plan cannot include them.",
+      };
+    }
+
+    return {
+      status: "ready",
+      title: "Your account portfolio is ready for planning",
+      description:
+        "Known dated obligations can be evaluated against your cash reserve and upcoming funding sources.",
+    };
+  }, [portfolioOverview]);
 
   function handleSaveAccount(account: PortfolioAccountSummary) {
     setPortfolioAccounts((current) => {
@@ -105,14 +161,23 @@ export function PersonalFinancePage() {
           description="Understand your current obligations, protect the cash you need to keep available, and build a timing-aware plan for upcoming payments."
           actions={<Link to="/">Engineering workspace</Link>}
         />
+        <FinancialHealthBanner
+          status={financialHealth.status}
+          title={financialHealth.title}
+          description={financialHealth.description}
+          knownRequiredPayments={portfolioOverview.knownRequiredPayments}
+          pastDueAccounts={portfolioOverview.pastDueAccounts}
+          nextObligationDate={portfolioOverview.nextObligationDate}
+          unknownPaymentAmounts={portfolioOverview.unknownPaymentAmounts}
+        />
 
         <section className="personal-finance-page__section">
           <div className="personal-finance-page__section-heading">
             <div>
-              <h2>Financial overview</h2>
+              <h2>Today&apos;s financial position</h2>
               <p>
-                A current summary based on the account information in this
-                planning session.
+                A current portfolio summary based on the account information
+                entered for this planning session.
               </p>
             </div>
           </div>
