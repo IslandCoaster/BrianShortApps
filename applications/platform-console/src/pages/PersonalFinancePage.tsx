@@ -1,4 +1,10 @@
 ﻿import { useEffect, useMemo, useState } from "react";
+import {
+  createFinancialLedgerEvent,
+  replayFinancialLedgerEvents,
+  type FinancialLedgerEvent,
+  type FinancialLedgerReplayState,
+} from "@bsa/finance";
 import { Link } from "react-router";
 
 import {
@@ -27,7 +33,11 @@ function formatAmount(amount: number) {
   })}`;
 }
 
-function ReadyPersonalFinancePage() {
+function ReadyPersonalFinancePage({
+  ledgerReplay,
+}: {
+  ledgerReplay: FinancialLedgerReplayState;
+}) {
   const [portfolioAccounts, setPortfolioAccounts] = useState<
     PortfolioAccountSummary[]
   >(portfolioAccountSnapshots);
@@ -243,9 +253,11 @@ function ReadyPersonalFinancePage() {
 
           <div className="personal-finance-page__overview">
             <article className="personal-finance-page__metric">
-              <span>Active accounts</span>
-              <strong>{portfolioOverview.activeAccountCount}</strong>
-              <small>Excludes accounts marked as paid off.</small>
+              <span>Current Cash Position</span>
+              <strong>{formatAmount(ledgerReplay.currentCash)}</strong>
+              <small>
+                Derived from posted operational ledger activity.
+              </small>
             </article>
 
             <article className="personal-finance-page__metric">
@@ -369,6 +381,8 @@ type OperationalSessionState =
     }
   | {
       status: "ready";
+      ledgerEvents: FinancialLedgerEvent[];
+      ledgerReplay: FinancialLedgerReplayState;
     }
   | {
       status: "error";
@@ -414,8 +428,20 @@ export function PersonalFinancePage() {
           return;
         }
 
+        if (ledgerEvents.length === 0) {
+          setSessionState({
+            status: "first-run",
+          });
+
+          return;
+        }
+
+        const ledgerReplay = replayFinancialLedgerEvents(ledgerEvents);
+
         setSessionState({
-          status: ledgerEvents.length === 0 ? "first-run" : "ready",
+          status: "ready",
+          ledgerEvents,
+          ledgerReplay,
         });
       } catch (error) {
         if (!isCurrent) {
@@ -449,7 +475,39 @@ export function PersonalFinancePage() {
   }
 
   if (sessionState.status === "first-run") {
-    return <FirstRunExperience />;
+    return (
+      <FirstRunExperience
+        onEstablishCurrentCashPosition={async (amount) => {
+          const repository = getOperationalFinancialLedgerRepository();
+          const now = new Date();
+
+          const openingCashEvent = createFinancialLedgerEvent({
+            id: crypto.randomUUID(),
+            ledgerCategory: "opening-cash",
+            occurredOn: now.toISOString().slice(0, 10),
+            recordedAt: now.toISOString(),
+            status: "posted",
+            amount,
+            description: "Current Cash Position",
+          });
+
+          const ledgerEvents = [openingCashEvent];
+
+          await repository.save(ledgerEvents);
+
+          const restoredLedgerEvents = await repository.load();
+          const ledgerReplay = replayFinancialLedgerEvents(
+            restoredLedgerEvents,
+          );
+
+          setSessionState({
+            status: "ready",
+            ledgerEvents: restoredLedgerEvents,
+            ledgerReplay,
+          });
+        }}
+      />
+    );
   }
 
   if (sessionState.status === "error") {
@@ -461,6 +519,11 @@ export function PersonalFinancePage() {
     );
   }
 
-  return <ReadyPersonalFinancePage />;
+  return (
+    <ReadyPersonalFinancePage
+      ledgerReplay={sessionState.ledgerReplay}
+    />
+  );
 }
+
 

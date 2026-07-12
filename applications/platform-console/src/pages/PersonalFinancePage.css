@@ -1,4 +1,4 @@
-.personal-finance-page {
+﻿.personal-finance-page {
   min-height: 100vh;
   padding: 32px;
   background:
@@ -200,11 +200,6 @@
 }
 
 .personal-finance-page__first-run-copy,
-.personal-finance-page__first-run-next {
-  display: grid;
-  align-content: start;
-  gap: 12px;
-}
 
 .personal-finance-page__first-run-copy > span {
   color: #63708a;
@@ -227,34 +222,6 @@
   line-height: 1.65;
 }
 
-.personal-finance-page__first-run-next {
-  padding: 22px;
-  border: 1px solid rgba(23, 32, 51, 0.08);
-  border-radius: 16px;
-  background: #f5f7fb;
-}
-
-.personal-finance-page__first-run-next strong {
-  color: #172033;
-}
-
-.personal-finance-page__first-run-next button {
-  min-height: 44px;
-  margin-top: 8px;
-  padding: 10px 16px;
-  border: 1px solid rgba(23, 32, 51, 0.08);
-  border-radius: 10px;
-  background: #dfe4ec;
-  color: #7a8699;
-  font: inherit;
-  font-weight: 700;
-  cursor: not-allowed;
-}
-
-.personal-finance-page__first-run-next small {
-  color: #7a8699;
-  line-height: 1.45;
-}
 
 @media (max-width: 820px) {
   .personal-finance-page__first-run {
@@ -262,3 +229,88 @@
     padding: 24px;
   }
 }
+.personal-finance-page__current-cash-form {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 22px;
+  border: 1px solid rgba(23, 32, 51, 0.08);
+  border-radius: 16px;
+  background: #f5f7fb;
+}
+
+.personal-finance-page__current-cash-form label {
+  color: #172033;
+  font-weight: 700;
+}
+
+.personal-finance-page__currency-input {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(23, 32, 51, 0.14);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.personal-finance-page__currency-input:focus-within {
+  border-color: rgba(77, 108, 255, 0.65);
+  box-shadow: 0 0 0 3px rgba(77, 108, 255, 0.12);
+}
+
+.personal-finance-page__currency-input > span {
+  padding-left: 14px;
+  color: #59667b;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.personal-finance-page__currency-input input {
+  min-width: 0;
+  min-height: 48px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #172033;
+  padding: 10px 14px 10px 8px;
+  font: inherit;
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.personal-finance-page__current-cash-form button {
+  min-height: 44px;
+  margin-top: 4px;
+  padding: 10px 16px;
+  border: 1px solid #172033;
+  border-radius: 10px;
+  background: #172033;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.personal-finance-page__current-cash-form button:hover:not(:disabled) {
+  background: #26324a;
+}
+
+.personal-finance-page__current-cash-form button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.personal-finance-page__current-cash-form small {
+  color: #7a8699;
+  line-height: 1.45;
+}
+
+.personal-finance-page__current-cash-error {
+  margin: 0;
+  color: #a33a3a;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
