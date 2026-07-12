@@ -13,7 +13,7 @@ import type { FundingSource } from "./fundingSource";
 import { defaultFundingPolicy, type FundingPolicy } from "./fundingPolicy";
 import type { PortfolioAccountSummary } from "./portfolio.types";
 
-import { buildCashFlowTimeline, type CashFlowEvent } from "@bsa/finance";
+import { buildFundingTimeline } from "./fundingTimeline";
 import { CashFlowTimelineView } from "./CashFlowTimelineView";
 
 type PaycheckPlanningViewProps = {
@@ -281,73 +281,23 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
     );
   }, [paymentPlan]);
 
-  const cashFlowTimeline = useMemo(() => {
-    const events: CashFlowEvent[] = [];
-
-    fundingSources
-      .filter((source) => source.type === "paycheck")
-      .forEach((source) => {
-        events.push({
-          id: source.id,
-          date: source.date,
-          type: "paycheck",
-          title: source.title,
-          description: source.description,
-          amount: source.amount,
-          status: "planned",
-        });
-      });
-
-    if (paymentPlan) {
-      paymentPlan.items.forEach((item) => {
-        item.allocations.forEach((allocation, index) => {
-          if (allocation.amount <= 0) {
-            return;
-          }
-
-          events.push({
-            id: `planned-payment-${item.accountId}-${allocation.paymentDate}-${index}`,
-            date: allocation.paymentDate,
-            type: "payment",
-            title: item.accountName,
-            description:
-              item.reason === "past-due"
-                ? "Past-due priority payment"
-                : "Required payment",
-            amount: -allocation.amount,
-            status: item.fullyFunded ? "planned" : "partially-funded",
-          });
-        });
-      });
-    }
-
-    missingPaymentAmounts.forEach((account) => {
-      if (!account.paymentDueDate) {
-        return;
-      }
-
-      events.push({
-        id: `unknown-payment-${account.id}`,
-        date: account.paymentDueDate,
-        type: "statement",
-        title: account.accountName,
-        description: "Required payment amount has not been entered",
-        status: "unknown",
-      });
-    });
-
-    return buildCashFlowTimeline({
-      openingCash: currentCash,
-      protectedCash: fundingPlanPreview.position.protectedCash,
-      events,
-    });
-  }, [
-    currentCash,
-    fundingPlanPreview.position.protectedCash,
-    fundingSources,
-    missingPaymentAmounts,
-    paymentPlan,
-  ]);
+  const cashFlowTimeline = useMemo(
+    () =>
+      buildFundingTimeline({
+        openingCash: currentCash,
+        protectedCash: fundingPlanPreview.position.protectedCash,
+        fundingSources,
+        paymentPlan,
+        unknownObligations: missingPaymentAmounts,
+      }),
+    [
+      currentCash,
+      fundingPlanPreview.position.protectedCash,
+      fundingSources,
+      missingPaymentAmounts,
+      paymentPlan,
+    ],
+  );
 
   function updateDraft<K extends keyof PaycheckDraft>(
     field: K,
