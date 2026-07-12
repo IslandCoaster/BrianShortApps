@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 
 import {
@@ -11,6 +11,8 @@ import { ProductQuickActions } from "../components/product-quick-actions/Product
 import { AccountForm } from "../experiences/finance-workspace/AccountForm";
 import { AccountPortfolioView } from "../experiences/finance-workspace/AccountPortfolioView";
 import { PaycheckPlanningView } from "../experiences/finance-workspace/PaycheckPlanningView";
+import { FirstRunExperience } from "../experiences/finance-workspace/FirstRunExperience";
+import { getOperationalFinancialLedgerRepository } from "../experiences/finance-workspace/operationalFinancialLedgerRepository";
 import { UpcomingObligationsView } from "../experiences/finance-workspace/UpcomingObligationsView";
 import { portfolioAccountSnapshots } from "../experiences/finance-workspace/portfolio.snapshots";
 import type { PortfolioAccountSummary } from "../experiences/finance-workspace/portfolio.types";
@@ -25,7 +27,7 @@ function formatAmount(amount: number) {
   })}`;
 }
 
-export function PersonalFinancePage() {
+function ReadyPersonalFinancePage() {
   const [portfolioAccounts, setPortfolioAccounts] = useState<
     PortfolioAccountSummary[]
   >(portfolioAccountSnapshots);
@@ -358,3 +360,107 @@ export function PersonalFinancePage() {
     </main>
   );
 }
+type OperationalSessionState =
+  | {
+      status: "loading";
+    }
+  | {
+      status: "first-run";
+    }
+  | {
+      status: "ready";
+    }
+  | {
+      status: "error";
+      message: string;
+    };
+
+function OperationalSessionMessage({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <main className="personal-finance-page">
+      <div className="personal-finance-page__container">
+        <ProductHero
+          eyebrow="BrianShortApps Personal Finance"
+          title={title}
+          description={description}
+          actions={<Link to="/">Engineering workspace</Link>}
+        />
+      </div>
+    </main>
+  );
+}
+
+export function PersonalFinancePage() {
+  const [sessionState, setSessionState] =
+    useState<OperationalSessionState>({
+      status: "loading",
+    });
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function initializeOperationalSession() {
+      try {
+        const repository = getOperationalFinancialLedgerRepository();
+        const ledgerEvents = await repository.load();
+
+        if (!isCurrent) {
+          return;
+        }
+
+        setSessionState({
+          status: ledgerEvents.length === 0 ? "first-run" : "ready",
+        });
+      } catch (error) {
+        if (!isCurrent) {
+          return;
+        }
+
+        setSessionState({
+          status: "error",
+          message:
+            error instanceof Error
+              ? error.message
+              : "The operational ledger could not be loaded.",
+        });
+      }
+    }
+
+    void initializeOperationalSession();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
+
+  if (sessionState.status === "loading") {
+    return (
+      <OperationalSessionMessage
+        title="Loading Personal Finance"
+        description="Restoring your operational financial history."
+      />
+    );
+  }
+
+  if (sessionState.status === "first-run") {
+    return <FirstRunExperience />;
+  }
+
+  if (sessionState.status === "error") {
+    return (
+      <OperationalSessionMessage
+        title="Personal Finance could not be opened"
+        description={sessionState.message}
+      />
+    );
+  }
+
+  return <ReadyPersonalFinancePage />;
+}
+
