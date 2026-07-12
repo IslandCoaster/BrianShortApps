@@ -5,6 +5,7 @@ import {
   type FinancialStrategy,
 } from "./PaycheckStrategySelector";
 import { buildFundingPlan, type PaymentPlan } from "./fundingEngine";
+import type { FundingSource } from "./fundingSource";
 import { defaultFundingPolicy, type FundingPolicy } from "./fundingPolicy";
 import type { PortfolioAccountSummary } from "./portfolio.types";
 
@@ -26,6 +27,10 @@ function parseAmount(value: string) {
   const parsed = Number(value);
 
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function getTodayDate() {
+  return new Date().toISOString().slice(0, 10);
 }
 
 function formatAmount(amount: number) {
@@ -100,9 +105,37 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
   const expectedNetPay = parseAmount(draft.netPay);
   const currentCash = parseAmount(draft.currentCash);
 
+  const fundingSources = useMemo<FundingSource[]>(() => {
+    const sources: FundingSource[] = [];
+
+    if (currentCash > 0) {
+      sources.push({
+        id: "opening-cash",
+        date: getTodayDate(),
+        amount: currentCash,
+        type: "opening-cash",
+        title: "Opening Cash",
+        description: "Current cash available at the start of planning",
+      });
+    }
+
+    if (draft.expectedDate && expectedNetPay > 0) {
+      sources.push({
+        id: "upcoming-paycheck",
+        date: draft.expectedDate,
+        amount: expectedNetPay,
+        type: "paycheck",
+        title: draft.source || "Upcoming Paycheck",
+        description: "Expected net paycheck",
+      });
+    }
+
+    return sources;
+  }, [currentCash, draft.expectedDate, draft.source, expectedNetPay]);
+
   const availableCash = useMemo(
-    () => expectedNetPay + currentCash,
-    [currentCash, expectedNetPay],
+    () => fundingSources.reduce((total, source) => total + source.amount, 0),
+    [fundingSources],
   );
 
   const paycheckDateRequired = expectedNetPay > 0;
@@ -118,8 +151,13 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
   );
 
   const fundingPlanPreview = useMemo(
-    () => buildFundingPlan(accounts, availableCash, fundingPolicy),
-    [accounts, availableCash, fundingPolicy],
+    () =>
+      buildFundingPlan({
+        accounts,
+        fundingSources,
+        policy: fundingPolicy,
+      }),
+    [accounts, fundingPolicy, fundingSources],
   );
 
   const activeObligations = useMemo(
@@ -161,17 +199,19 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
   const cashFlowTimeline = useMemo(() => {
     const events: CashFlowEvent[] = [];
 
-    if (draft.expectedDate && parseAmount(draft.netPay) > 0) {
-      events.push({
-        id: "upcoming-paycheck",
-        date: draft.expectedDate,
-        type: "paycheck",
-        title: draft.source || "Upcoming Paycheck",
-        description: "Expected net paycheck",
-        amount: parseAmount(draft.netPay),
-        status: "planned",
+    fundingSources
+      .filter((source) => source.type === "paycheck")
+      .forEach((source) => {
+        events.push({
+          id: source.id,
+          date: source.date,
+          type: "paycheck",
+          title: source.title,
+          description: source.description,
+          amount: source.amount,
+          status: "planned",
+        });
       });
-    }
 
     if (paymentPlan) {
       paymentPlan.items.forEach((item) => {
@@ -210,16 +250,14 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
     });
 
     return buildCashFlowTimeline({
-      openingCash: parseAmount(draft.currentCash),
+      openingCash: currentCash,
       protectedCash: fundingPlanPreview.position.protectedCash,
       events,
     });
   }, [
-    draft.currentCash,
-    draft.expectedDate,
-    draft.netPay,
-    draft.source,
+    currentCash,
     fundingPlanPreview.position.protectedCash,
+    fundingSources,
     missingPaymentAmounts,
     paymentPlan,
   ]);
@@ -406,6 +444,11 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
             <div>
               <dt>Expected Net Pay</dt>
               <dd>{formatAmount(parseAmount(draft.netPay))}</dd>
+            </div>
+
+            <div>
+              <dt>Funding Sources</dt>
+              <dd>{fundingSources.length}</dd>
             </div>
 
             <div>

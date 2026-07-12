@@ -1,5 +1,6 @@
 import type { FundingPolicy } from "./fundingPolicy";
 import type { PortfolioAccountSummary } from "./portfolio.types";
+import type { FundingSource } from "./fundingSource";
 
 export type PaymentPlanItem = {
   accountId: string;
@@ -26,16 +27,53 @@ export type PaymentPlan = {
   items: PaymentPlanItem[];
 };
 
+export type FundingPlanRequest = {
+  accounts: PortfolioAccountSummary[];
+  fundingSources: FundingSource[];
+  policy: FundingPolicy;
+};
+
 function normalizeAmount(amount: number) {
   return Number.isFinite(amount) ? Math.max(amount, 0) : 0;
 }
 
-export function buildFundingPlan(
-  accounts: PortfolioAccountSummary[],
-  grossAvailableCash: number,
-  policy: FundingPolicy,
-): PaymentPlan {
-  const normalizedAvailableCash = normalizeAmount(grossAvailableCash);
+function getFundingSourcePriority(source: FundingSource) {
+  switch (source.type) {
+    case "opening-cash":
+      return 0;
+
+    case "paycheck":
+      return 1;
+  }
+}
+
+export function orderFundingSources(
+  fundingSources: FundingSource[],
+): FundingSource[] {
+  return [...fundingSources].sort((left, right) => {
+    const dateComparison = left.date.localeCompare(right.date);
+
+    if (dateComparison !== 0) {
+      return dateComparison;
+    }
+
+    return getFundingSourcePriority(left) - getFundingSourcePriority(right);
+  });
+}
+
+export function getGrossAvailableCash(fundingSources: FundingSource[]): number {
+  return fundingSources.reduce(
+    (total, source) => total + normalizeAmount(source.amount),
+    0,
+  );
+}
+
+export function buildFundingPlan({
+  accounts,
+  fundingSources,
+  policy,
+}: FundingPlanRequest): PaymentPlan {
+  const normalizedAvailableCash = getGrossAvailableCash(fundingSources);
   const requestedReserve = normalizeAmount(policy.minimumCashReserve);
 
   const protectedCash = Math.min(requestedReserve, normalizedAvailableCash);
