@@ -6,6 +6,9 @@ import {
 } from "./PaycheckStrategySelector";
 import type { PortfolioAccountSummary } from "./portfolio.types";
 
+import { buildCashFlowTimeline, type CashFlowEvent } from "@bsa/finance";
+import { CashFlowTimelineView } from "./CashFlowTimelineView";
+
 type PaycheckPlanningViewProps = {
   accounts: PortfolioAccountSummary[];
 };
@@ -219,6 +222,70 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
   const missingPaymentAmounts = activeObligations.filter(
     (account) => account.minimumPaymentDue === undefined,
   );
+
+  const cashFlowTimeline = useMemo(() => {
+    const events: CashFlowEvent[] = [];
+
+    if (draft.expectedDate && parseAmount(draft.netPay) > 0) {
+      events.push({
+        id: "upcoming-paycheck",
+        date: draft.expectedDate,
+        type: "paycheck",
+        title: draft.source || "Upcoming Paycheck",
+        description: "Expected net paycheck",
+        amount: parseAmount(draft.netPay),
+        status: "planned",
+      });
+    }
+
+    if (paymentPlan) {
+      paymentPlan.items.forEach((item) => {
+        if (item.allocatedAmount <= 0) {
+          return;
+        }
+
+        events.push({
+          id: `planned-payment-${item.accountId}`,
+          date: item.dueDate,
+          type: "payment",
+          title: item.accountName,
+          description:
+            item.reason === "past-due"
+              ? "Past-due priority payment"
+              : "Required payment",
+          amount: -item.allocatedAmount,
+          status: item.fullyFunded ? "planned" : "partially-funded",
+        });
+      });
+    }
+
+    missingPaymentAmounts.forEach((account) => {
+      if (!account.paymentDueDate) {
+        return;
+      }
+
+      events.push({
+        id: `unknown-payment-${account.id}`,
+        date: account.paymentDueDate,
+        type: "statement",
+        title: account.accountName,
+        description: "Required payment amount has not been entered",
+        status: "unknown",
+      });
+    });
+
+    return buildCashFlowTimeline({
+      openingCash: parseAmount(draft.currentCash),
+      events,
+    });
+  }, [
+    draft.currentCash,
+    draft.expectedDate,
+    draft.netPay,
+    draft.source,
+    missingPaymentAmounts,
+    paymentPlan,
+  ]);
 
   function updateDraft<K extends keyof PaycheckDraft>(
     field: K,
@@ -556,6 +623,8 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
             optimize extra payments for interest, utilization, grace-period
             preservation, or benefits.
           </p>
+
+          <CashFlowTimelineView timeline={cashFlowTimeline} />
         </section>
       ) : null}
     </section>

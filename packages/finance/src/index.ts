@@ -164,3 +164,5 @@ export {
   type PaymentSimulationInput,
   type PaymentSimulationResult,
 } from "./simulation/paymentSimulation";
+
+export * from "./cashFlow";
