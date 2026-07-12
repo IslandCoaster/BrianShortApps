@@ -4,6 +4,7 @@ import {
   PaycheckStrategySelector,
   type FinancialStrategy,
 } from "./PaycheckStrategySelector";
+import { defaultFundingPolicy, type FundingPolicy } from "./fundingPolicy";
 import type { PortfolioAccountSummary } from "./portfolio.types";
 
 import { buildCashFlowTimeline, type CashFlowEvent } from "@bsa/finance";
@@ -178,6 +179,10 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
     currentCash: "",
   });
 
+  const [minimumCashReserveInput, setMinimumCashReserveInput] = useState(
+    defaultFundingPolicy.minimumCashReserve.toString(),
+  );
+
   const [paymentPlan, setPaymentPlan] = useState<PaymentPlan | null>(null);
 
   const [selectedStrategy, setSelectedStrategy] =
@@ -186,6 +191,12 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
   const availableCash = useMemo(
     () => parseAmount(draft.netPay) + parseAmount(draft.currentCash),
     [draft.currentCash, draft.netPay],
+  );
+  const fundingPolicy = useMemo<FundingPolicy>(
+    () => ({
+      minimumCashReserve: Math.max(parseAmount(minimumCashReserveInput), 0),
+    }),
+    [minimumCashReserveInput],
   );
 
   const activeObligations = useMemo(
@@ -299,6 +310,11 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
     setPaymentPlan(null);
   }
 
+  function updateMinimumCashReserve(value: string) {
+    setMinimumCashReserveInput(value);
+    setPaymentPlan(null);
+  }
+
   function handleStrategyChange(strategy: FinancialStrategy) {
     setSelectedStrategy(strategy);
     setPaymentPlan(null);
@@ -376,6 +392,19 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
                 placeholder="0.00"
               />
             </label>
+            <label>
+              Minimum cash reserve
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={minimumCashReserveInput}
+                onChange={(event) =>
+                  updateMinimumCashReserve(event.target.value)
+                }
+                placeholder="0.00"
+              />
+            </label>
           </div>
         </section>
 
@@ -426,6 +455,11 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
             <div>
               <dt>Current Cash</dt>
               <dd>{formatAmount(parseAmount(draft.currentCash))}</dd>
+            </div>
+
+            <div>
+              <dt>Minimum Cash Reserve</dt>
+              <dd>{formatAmount(fundingPolicy.minimumCashReserve)}</dd>
             </div>
 
             <div>
