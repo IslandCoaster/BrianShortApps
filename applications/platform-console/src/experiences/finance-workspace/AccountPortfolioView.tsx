@@ -5,9 +5,16 @@ import { UpcomingObligationsView } from "./UpcomingObligationsView";
 
 type AccountPortfolioViewProps = {
   accounts: PortfolioAccountSummary[];
+
   onAddAccount: () => void;
+
   onEditAccount: (account: PortfolioAccountSummary) => void;
+
   onRemoveAccount: (accountId: string) => void;
+
+  showSummary?: boolean;
+
+  showUpcomingObligations?: boolean;
 };
 
 export function AccountPortfolioView({
@@ -15,6 +22,9 @@ export function AccountPortfolioView({
   onAddAccount,
   onEditAccount,
   onRemoveAccount,
+
+  showSummary = true,
+  showUpcomingObligations = true,
 }: AccountPortfolioViewProps) {
   return (
     <section className="finance-workspace__portfolio">
@@ -29,9 +39,11 @@ export function AccountPortfolioView({
         </button>
       </div>
 
-      <PortfolioSummaryView accounts={accounts} />
+      {showSummary ? <PortfolioSummaryView accounts={accounts} /> : null}
 
-      <UpcomingObligationsView accounts={accounts} />
+      {showUpcomingObligations ? (
+        <UpcomingObligationsView accounts={accounts} />
+      ) : null}
 
       <PortfolioAccountTable
         accounts={accounts}
