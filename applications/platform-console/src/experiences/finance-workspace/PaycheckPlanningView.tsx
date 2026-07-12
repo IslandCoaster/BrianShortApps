@@ -64,13 +64,13 @@ function getStrategyTitle(strategy: FinancialStrategy) {
 function getStrategyExplanation(strategy: FinancialStrategy) {
   switch (strategy) {
     case "balanced":
-      return "The Balanced strategy funds known required obligations while preserving any remaining cash for future financial decisions.";
+      return "The Balanced strategy protects the configured cash reserve, funds known required obligations from deployable cash, and preserves any funding buffer for future decisions.";
 
     case "survival":
-      return "The Survival strategy prioritizes urgent obligations and protects available cash.";
+      return "The Survival strategy prioritizes urgent obligations while protecting the configured cash reserve.";
 
     case "debt-elimination":
-      return "The Debt Elimination strategy directs remaining funds toward reducing debt balances.";
+      return "The Debt Elimination strategy directs available funding buffer toward reducing outstanding debt balances.";
 
     case "interest-reduction":
       return "The Interest Reduction strategy prioritizes balances with the greatest projected borrowing cost.";
@@ -135,13 +135,13 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
     [activeObligations],
   );
 
-  const remainingFunds =
+  const projectedFundingBuffer =
     fundingPlanPreview.position.deployableCash - requiredObligationsTotal;
 
   const fundingStatus =
     availableCash === 0
       ? "awaiting-input"
-      : remainingFunds >= 0
+      : projectedFundingBuffer >= 0
         ? "funded"
         : "shortfall";
 
@@ -257,7 +257,7 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
           <div className="finance-workspace__section-header">
             <div>
               <p>Upcoming Paycheck</p>
-              <span>Enter the expected funds available for planning</span>
+              <span>Enter expected cash available to build a funding plan</span>
             </div>
           </div>
 
@@ -340,14 +340,34 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
 
           <div className="finance-workspace__funding-equation">
             <div>
-              <span>Available for Planning</span>
-              <strong>{formatAmount(availableCash)}</strong>
+              <span>Gross Available Cash</span>
+              <strong>
+                {formatAmount(fundingPlanPreview.position.grossAvailableCash)}
+              </strong>
             </div>
 
             <span aria-hidden="true">−</span>
 
             <div>
-              <span>Required Obligations</span>
+              <span>Protected Cash</span>
+              <strong>
+                {formatAmount(fundingPlanPreview.position.protectedCash)}
+              </strong>
+            </div>
+
+            <span aria-hidden="true">=</span>
+
+            <div>
+              <span>Deployable Cash</span>
+              <strong>
+                {formatAmount(fundingPlanPreview.position.deployableCash)}
+              </strong>
+            </div>
+
+            <span aria-hidden="true">−</span>
+
+            <div>
+              <span>Known Required Payments</span>
               <strong>{formatAmount(requiredObligationsTotal)}</strong>
             </div>
 
@@ -355,9 +375,12 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
 
             <div>
               <span>
-                {remainingFunds >= 0 ? "Remaining Funds" : "Funding Shortfall"}
+                {projectedFundingBuffer >= 0
+                  ? "Projected Funding Buffer"
+                  : "Funding Shortfall"}
               </span>
-              <strong>{formatAmount(Math.abs(remainingFunds))}</strong>
+
+              <strong>{formatAmount(Math.abs(projectedFundingBuffer))}</strong>
             </div>
           </div>
 
@@ -373,7 +396,7 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
             </div>
 
             <div>
-              <dt>Minimum Cash Reserve</dt>
+              <dt>Configured Reserve</dt>
               <dd>{formatAmount(fundingPolicy.minimumCashReserve)}</dd>
             </div>
 
@@ -402,16 +425,18 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
 
           {fundingStatus === "shortfall" ? (
             <p className="finance-workspace__funding-message">
-              The entered funds are insufficient to cover all known required
-              payments. The plan will prioritize past-due accounts and then
-              remaining obligations by due date.
+              Deployable cash is insufficient to cover all known required
+              payments after protecting the configured reserve. The plan will
+              prioritize past-due accounts and then remaining obligations by due
+              date.
             </p>
           ) : null}
 
           {fundingStatus === "funded" ? (
             <p className="finance-workspace__funding-message">
               All known required payments are covered using deployable cash. The
-              protected reserve will not be allocated by the current strategy.
+              projected funding buffer will remain unallocated, and the
+              protected reserve will not be used by the current strategy.
             </p>
           ) : null}
         </section>
@@ -483,8 +508,10 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
         onClick={handleGeneratePlan}
       >
         {availableCash > 0
-          ? remainingFunds > 0
-            ? `Build Funding Plan for ${formatAmount(availableCash)}`
+          ? fundingPlanPreview.position.deployableCash > 0
+            ? `Build Funding Plan for ${formatAmount(
+                fundingPlanPreview.position.deployableCash,
+              )}`
             : "Build Funding Plan"
           : "Enter Funds to Build Funding Plan"}
       </button>
@@ -559,21 +586,35 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
 
           <div className="finance-workspace__payment-plan-summary">
             <article>
-              <span>Available</span>
+              <span>Gross Available Cash</span>
               <strong>
                 {formatAmount(paymentPlan.position.grossAvailableCash)}
               </strong>
             </article>
 
             <article>
-              <span>Allocated</span>
+              <span>Protected Cash</span>
+              <strong>
+                {formatAmount(paymentPlan.position.protectedCash)}
+              </strong>
+            </article>
+
+            <article>
+              <span>Deployable Cash</span>
+              <strong>
+                {formatAmount(paymentPlan.position.deployableCash)}
+              </strong>
+            </article>
+
+            <article>
+              <span>Allocated Cash</span>
               <strong>
                 {formatAmount(paymentPlan.position.allocatedCash)}
               </strong>
             </article>
 
             <article>
-              <span>Remaining Cash</span>
+              <span>Funding Buffer</span>
               <strong>
                 {formatAmount(paymentPlan.position.fundingBuffer)}
               </strong>
@@ -588,9 +629,10 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
           </div>
 
           <p className="finance-workspace__payment-plan-explanation">
-            This plan uses only known required payment amounts. It does not yet
-            optimize extra payments for interest, utilization, grace-period
-            preservation, or benefits.
+            This plan uses only known required payment amounts and allocates
+            only deployable cash. Protected cash remains outside the plan.
+            Interest, utilization, grace-period, and benefit optimization are
+            not yet applied.
           </p>
 
           <CashFlowTimelineView timeline={cashFlowTimeline} />

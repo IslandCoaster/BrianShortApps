@@ -29,14 +29,14 @@ const strategyOptions: StrategyOption[] = [
     id: "balanced",
     title: "Balanced",
     description:
-      "Fund required obligations first and preserve remaining cash for later decisions.",
+      "Protect the configured cash reserve, fund required obligations, and preserve any funding buffer for future decisions.",
     available: true,
   },
   {
     id: "debt-elimination",
     title: "Debt Elimination",
     description:
-      "Direct remaining funds toward reducing outstanding debt as quickly as possible.",
+      "Direct available funding buffer toward reducing outstanding debt as quickly as possible.",
     available: false,
   },
   {
