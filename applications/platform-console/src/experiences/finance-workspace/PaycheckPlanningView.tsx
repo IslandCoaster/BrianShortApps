@@ -4,6 +4,7 @@ import {
   PaycheckStrategySelector,
   type FinancialStrategy,
 } from "./PaycheckStrategySelector";
+import { buildFundingPlan, type PaymentPlan } from "./fundingEngine";
 import { defaultFundingPolicy, type FundingPolicy } from "./fundingPolicy";
 import type { PortfolioAccountSummary } from "./portfolio.types";
 
@@ -19,25 +20,6 @@ type PaycheckDraft = {
   expectedDate: string;
   netPay: string;
   currentCash: string;
-};
-
-type PaymentPlanItem = {
-  accountId: string;
-  accountName: string;
-  institution: string;
-  dueDate: string;
-  requestedAmount: number;
-  allocatedAmount: number;
-  reason: "past-due" | "required-payment";
-  fullyFunded: boolean;
-};
-
-type PaymentPlan = {
-  availableCash: number;
-  totalAllocated: number;
-  remainingCash: number;
-  unresolvedObligations: number;
-  items: PaymentPlanItem[];
 };
 
 function parseAmount(value: string) {
@@ -98,79 +80,6 @@ function getStrategyExplanation(strategy: FinancialStrategy) {
   }
 }
 
-function createPaymentPlan(
-  accounts: PortfolioAccountSummary[],
-  availableCash: number,
-): PaymentPlan {
-  const eligibleAccounts = accounts
-    .filter(
-      (account) =>
-        account.accountStatus !== "paid-off" &&
-        account.paymentDueDate &&
-        account.minimumPaymentDue !== undefined &&
-        account.minimumPaymentDue > 0,
-    )
-    .sort((left, right) => {
-      if (
-        left.accountStatus === "past-due" &&
-        right.accountStatus !== "past-due"
-      ) {
-        return -1;
-      }
-
-      if (
-        right.accountStatus === "past-due" &&
-        left.accountStatus !== "past-due"
-      ) {
-        return 1;
-      }
-
-      return (left.paymentDueDate ?? "").localeCompare(
-        right.paymentDueDate ?? "",
-      );
-    });
-
-  let remainingCash = availableCash;
-
-  const items = eligibleAccounts.map((account): PaymentPlanItem => {
-    const requestedAmount = account.minimumPaymentDue ?? 0;
-    const allocatedAmount = Math.min(requestedAmount, remainingCash);
-
-    remainingCash -= allocatedAmount;
-
-    return {
-      accountId: account.id,
-      accountName: account.accountName,
-      institution: account.institution,
-      dueDate: account.paymentDueDate as string,
-      requestedAmount,
-      allocatedAmount,
-      reason:
-        account.accountStatus === "past-due" ? "past-due" : "required-payment",
-      fullyFunded: allocatedAmount >= requestedAmount,
-    };
-  });
-
-  const totalAllocated = items.reduce(
-    (total, item) => total + item.allocatedAmount,
-    0,
-  );
-
-  const unresolvedObligations = items.reduce(
-    (total, item) =>
-      total + Math.max(item.requestedAmount - item.allocatedAmount, 0),
-    0,
-  );
-
-  return {
-    availableCash,
-    totalAllocated,
-    remainingCash,
-    unresolvedObligations,
-    items,
-  };
-}
-
 export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
   const [draft, setDraft] = useState<PaycheckDraft>({
     source: "American Airlines",
@@ -199,6 +108,11 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
     [minimumCashReserveInput],
   );
 
+  const fundingPlanPreview = useMemo(
+    () => buildFundingPlan(accounts, availableCash, fundingPolicy),
+    [accounts, availableCash, fundingPolicy],
+  );
+
   const activeObligations = useMemo(
     () =>
       accounts
@@ -221,7 +135,8 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
     [activeObligations],
   );
 
-  const remainingFunds = availableCash - requiredObligationsTotal;
+  const remainingFunds =
+    fundingPlanPreview.position.deployableCash - requiredObligationsTotal;
 
   const fundingStatus =
     availableCash === 0
@@ -325,7 +240,7 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
       return;
     }
 
-    setPaymentPlan(createPaymentPlan(accounts, availableCash));
+    setPaymentPlan(fundingPlanPreview);
   }
 
   return (
@@ -463,6 +378,18 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
             </div>
 
             <div>
+              <dt>Protected Cash</dt>
+              <dd>{formatAmount(fundingPlanPreview.position.protectedCash)}</dd>
+            </div>
+
+            <div>
+              <dt>Deployable Cash</dt>
+              <dd>
+                {formatAmount(fundingPlanPreview.position.deployableCash)}
+              </dd>
+            </div>
+
+            <div>
               <dt>Paycheck Date</dt>
               <dd>{draft.expectedDate || "Not entered"}</dd>
             </div>
@@ -483,8 +410,8 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
 
           {fundingStatus === "funded" ? (
             <p className="finance-workspace__funding-message">
-              All known required payments are covered. Any remaining funds will
-              remain unallocated until optimization rules are introduced.
+              All known required payments are covered using deployable cash. The
+              protected reserve will not be allocated by the current strategy.
             </p>
           ) : null}
         </section>
@@ -574,9 +501,9 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
             </div>
 
             <span>
-              {paymentPlan.unresolvedObligations > 0
+              {paymentPlan.position.unresolvedObligations > 0
                 ? `${formatAmount(
-                    paymentPlan.unresolvedObligations,
+                    paymentPlan.position.unresolvedObligations,
                   )} unresolved`
                 : "All known payments funded"}
             </span>
@@ -633,22 +560,30 @@ export function PaycheckPlanningView({ accounts }: PaycheckPlanningViewProps) {
           <div className="finance-workspace__payment-plan-summary">
             <article>
               <span>Available</span>
-              <strong>{formatAmount(paymentPlan.availableCash)}</strong>
+              <strong>
+                {formatAmount(paymentPlan.position.grossAvailableCash)}
+              </strong>
             </article>
 
             <article>
               <span>Allocated</span>
-              <strong>{formatAmount(paymentPlan.totalAllocated)}</strong>
+              <strong>
+                {formatAmount(paymentPlan.position.allocatedCash)}
+              </strong>
             </article>
 
             <article>
               <span>Remaining Cash</span>
-              <strong>{formatAmount(paymentPlan.remainingCash)}</strong>
+              <strong>
+                {formatAmount(paymentPlan.position.fundingBuffer)}
+              </strong>
             </article>
 
             <article>
               <span>Unresolved Obligations</span>
-              <strong>{formatAmount(paymentPlan.unresolvedObligations)}</strong>
+              <strong>
+                {formatAmount(paymentPlan.position.unresolvedObligations)}
+              </strong>
             </article>
           </div>
 
