@@ -167,3 +167,6 @@ export {
 
 export * from "./cashFlow";
 export * from "./ledger";
+
+export * from "./repositories";
+
