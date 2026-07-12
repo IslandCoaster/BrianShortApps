@@ -1,21 +1,18 @@
-import { useState } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 
-import EngineeringWorkspace from "../experiences/engineering-workspace/EngineeringWorkspace";
-import { FinanceWorkspace } from "../experiences/finance-workspace/FinanceWorkspace";
-import { EngineeringShell } from "../shell/EngineeringShell";
-import type { WorkspaceMode } from "../workspaces/workspaceModes";
+import { PersonalFinancePage } from "../pages/PersonalFinancePage";
+import { EngineeringApp } from "./EngineeringApp";
 
 export default function App() {
-  const [selectedKnowledgeId, setSelectedKnowledgeId] = useState<string | null>(null);
-  const workspaceMode: WorkspaceMode = selectedKnowledgeId === null ? "browse" : "reading";
-
   return (
-    <EngineeringShell mode={workspaceMode}>
-      <EngineeringWorkspace
-        selectedKnowledgeId={selectedKnowledgeId}
-        onSelectKnowledge={setSelectedKnowledgeId}
-      />
-      <FinanceWorkspace />
-    </EngineeringShell>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<EngineeringApp />} />
+
+        <Route path="/personal-finance" element={<PersonalFinancePage />} />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
