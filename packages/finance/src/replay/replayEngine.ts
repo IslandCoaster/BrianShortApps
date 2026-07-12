@@ -9,23 +9,20 @@ import {
   calculateInterestStates,
 } from "../interest/interestEngine";
 import type { FinancialJournal } from "../journal/financialJournal";
+import { replayFinancialLedger } from "../ledger";
 import { calculateObligationStates } from "../obligations/obligationStateEngine";
 import { calculateFinancialPositions } from "../positions/positionEngine";
 import { generateFinancialRecommendations } from "../recommendations/recommendationEngine";
 import type { ReplayRequest } from "./replayRequest";
 import type { ReplayState } from "./replayState";
 
-export function replayFinancialJournal(
-  request: ReplayRequest,
-): ReplayState {
+export function replayFinancialJournal(request: ReplayRequest): ReplayState {
   const journal: FinancialJournal = {
     ...request.baseJournal,
-    events: [
-      ...request.baseJournal.events,
-      ...(request.temporaryEvents ?? []),
-    ],
+    events: [...request.baseJournal.events, ...(request.temporaryEvents ?? [])],
   };
 
+  const ledger = replayFinancialLedger(journal);
   const accountProfiles = calculateActiveAccountProfiles(journal);
   const dailyBalances = calculateDailyBalances(journal);
   const dailyInterestTimeline = calculateDailyInterestAccruals(
@@ -63,6 +60,7 @@ export function replayFinancialJournal(
 
   return {
     journal,
+    ledger,
     dailyBalances,
     dailyInterestTimeline,
     accountProfiles,

@@ -21,3 +21,16 @@ export {
   type FinancialLedgerValidationCode,
   type FinancialLedgerValidationIssue,
 } from "./financialLedgerValidation";
+
+export {
+  replayEmptyFinancialLedger,
+  replayFinancialLedger,
+  replayFinancialLedgerEvents,
+  replayFinancialLedgerWithTemporaryEvents,
+} from "./ledgerReplayEngine";
+
+export {
+  createEmptyFinancialLedgerReplayState,
+  type FinancialLedgerReplayEntry,
+  type FinancialLedgerReplayState,
+} from "./ledgerReplayState";
