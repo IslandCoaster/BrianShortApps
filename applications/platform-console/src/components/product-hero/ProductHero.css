@@ -1,0 +1,121 @@
+.product-hero {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(260px, auto);
+  align-items: start;
+  gap: 32px;
+  padding: 30px;
+  border: 1px solid rgba(23, 32, 51, 0.08);
+  border-radius: 22px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(248, 250, 255, 0.96)
+  );
+  box-shadow: 0 16px 40px rgba(25, 36, 61, 0.07);
+}
+
+.product-hero__content {
+  min-width: 0;
+}
+
+.product-hero__eyebrow {
+  margin: 0 0 8px;
+  color: #53627a;
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.product-hero h1 {
+  margin: 0;
+  color: #172033;
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.product-hero__description {
+  max-width: 720px;
+  margin: 14px 0 0;
+  color: #627087;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.product-hero__support {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 240px;
+}
+
+.product-hero__status {
+  width: 100%;
+}
+
+.product-hero__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+}
+
+.product-hero__actions a,
+.product-hero__actions button {
+  min-height: 40px;
+  padding: 9px 14px;
+  border: 1px solid rgba(23, 32, 51, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #26334a;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.product-hero__actions a:hover,
+.product-hero__actions button:hover {
+  background: #f1f4f9;
+}
+
+@media (max-width: 800px) {
+  .product-hero {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 24px;
+  }
+
+  .product-hero__support {
+    align-items: stretch;
+    min-width: 0;
+  }
+
+  .product-hero__actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 520px) {
+  .product-hero {
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .product-hero__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .product-hero__actions a,
+  .product-hero__actions button {
+    width: 100%;
+    text-align: center;
+  }
+}

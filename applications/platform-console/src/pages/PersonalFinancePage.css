@@ -1,0 +1,143 @@
+.personal-finance-page {
+  min-height: 100vh;
+  padding: 32px;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(77, 108, 255, 0.08),
+      transparent 32rem
+    ),
+    #f5f7fb;
+  color: #172033;
+}
+
+.personal-finance-page__container {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+}
+
+.personal-finance-page__section {
+  margin-top: 28px;
+}
+
+.personal-finance-page__section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 14px;
+}
+
+.personal-finance-page__section-heading h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+}
+
+.personal-finance-page__section-heading p {
+  margin: 5px 0 0;
+  color: #6c788c;
+  line-height: 1.5;
+}
+
+.personal-finance-page__overview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.personal-finance-page__metric {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid rgba(23, 32, 51, 0.08);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(25, 36, 61, 0.05);
+}
+
+.personal-finance-page__metric span {
+  display: block;
+  color: #718096;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.personal-finance-page__metric strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 1.55rem;
+  letter-spacing: -0.03em;
+}
+
+.personal-finance-page__metric small {
+  display: block;
+  margin-top: 7px;
+  color: #7a8699;
+  line-height: 1.4;
+}
+
+.personal-finance-page__surface {
+  overflow: hidden;
+  border: 1px solid rgba(23, 32, 51, 0.12);
+  border-radius: 20px;
+  background: #0d1729;
+  box-shadow: 0 14px 34px rgba(25, 36, 61, 0.1);
+}
+
+.personal-finance-page__surface .finance-workspace--product {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 26px;
+  background: #0d1729;
+  color: #f4f7fc;
+}
+
+@media (max-width: 1000px) {
+  .personal-finance-page__overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .personal-finance-page {
+    padding: 18px;
+  }
+
+  .personal-finance-page__overview {
+    grid-template-columns: 1fr;
+  }
+
+  .personal-finance-page__section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .personal-finance-page__surface .finance-workspace--product {
+    padding: 18px;
+  }
+}
+
+.finance-workspace--product button {
+  font: inherit;
+}
+
+.finance-workspace--product .finance-workspace__generate-plan {
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  background: #f4f7fc;
+  color: #14203a;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.finance-workspace--product .finance-workspace__generate-plan:disabled {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(235, 241, 250, 0.45);
+  cursor: not-allowed;
+}
