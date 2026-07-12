@@ -4,7 +4,8 @@
   | "obligation"
   | "credit"
   | "planning"
-  | "account-profile";
+  | "account-profile"
+  | "ledger";
 
 export type FinancialEventType =
   | "account-profile.created"
@@ -18,7 +19,14 @@ export type FinancialEventType =
   | "transaction.imported"
   | "credit-score.updated"
   | "budget.changed"
-  | "goal.changed";
+  | "goal.changed"
+  | "ledger.opening-cash"
+  | "ledger.income"
+  | "ledger.expense"
+  | "ledger.payment"
+  | "ledger.deposit"
+  | "ledger.adjustment"
+  | "ledger.correction";
 
 export type FinancialEvent = {
   id: string;
