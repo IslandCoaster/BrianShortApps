@@ -131,3 +131,13 @@
     width: 100%;
   }
 }
+
+.operational-account-form__status {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgb(49 89 166 / 25%);
+  border-radius: 0.75rem;
+  background: rgb(49 89 166 / 8%);
+  color: #3159a6;
+  font-weight: 600;
+}

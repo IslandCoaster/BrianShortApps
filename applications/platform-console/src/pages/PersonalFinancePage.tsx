@@ -78,16 +78,21 @@ type ReadyPersonalFinancePageProps = {
   ledgerReplay: FinancialLedgerReplayState;
   accounts: FinancialAccount[];
   obligations: FinancialObligation[];
+  onAccountsChanged: (accounts: FinancialAccount[]) => void;
 };
 
 function ReadyPersonalFinancePage({
   ledgerReplay,
   accounts,
   obligations,
+  onAccountsChanged,
 }: ReadyPersonalFinancePageProps) {
   const [accountIntakeStep, setAccountIntakeStep] = useState<
     "dashboard" | "account-type" | "account-form"
   >("dashboard");
+  const [accountSaveError, setAccountSaveError] = useState("");
+
+  const [isSavingAccount, setIsSavingAccount] = useState(false);
 
   const [selectedAccountType, setSelectedAccountType] = useState<
     FinancialAccount["accountType"] | null
@@ -212,8 +217,90 @@ function ReadyPersonalFinancePage({
     });
   }
 
-  function handleAccountDraft(draft: OperationalAccountDraft) {
-    console.log("Operational account draft:", draft);
+  async function handleAccountDraft(draft: OperationalAccountDraft) {
+    setAccountSaveError("");
+    setIsSavingAccount(true);
+
+    try {
+      const repository = getOperationalFinancialAccountRepository();
+
+      const currentAccounts = await repository.load();
+      const now = new Date().toISOString();
+
+      const commonFields = {
+        id: crypto.randomUUID(),
+        name: draft.name,
+        institutionName: draft.institutionName,
+        status: "active" as const,
+        createdAt: now,
+        updatedAt: now,
+        accountSuffix: draft.accountSuffix,
+        notes: draft.notes,
+      };
+
+      let account: FinancialAccount;
+
+      switch (draft.accountType) {
+        case "checking":
+          account = {
+            ...commonFields,
+            accountType: "checking",
+            currentBalance: draft.currentBalance,
+          };
+          break;
+
+        case "savings":
+          account = {
+            ...commonFields,
+            accountType: "savings",
+            currentBalance: draft.currentBalance,
+          };
+          break;
+
+        case "credit-card":
+          account = {
+            ...commonFields,
+            accountType: "credit-card",
+            currentBalance: draft.currentBalance,
+            creditLimit: draft.creditLimit,
+            minimumPayment: draft.minimumPayment,
+            paymentDueDate: draft.paymentDueDate,
+            statementDate: draft.statementDate,
+            aprPercent: draft.aprPercent,
+          };
+          break;
+
+        case "loan":
+          account = {
+            ...commonFields,
+            accountType: "loan",
+            currentPrincipal: draft.currentPrincipal,
+            originalPrincipal: draft.originalPrincipal,
+            minimumPayment: draft.minimumPayment,
+            paymentDueDate: draft.paymentDueDate,
+            interestRatePercent: draft.interestRatePercent,
+            maturityDate: draft.maturityDate,
+          };
+          break;
+      }
+
+      await repository.save([...currentAccounts, account]);
+
+      const restoredAccounts = await repository.load();
+
+      onAccountsChanged(restoredAccounts);
+
+      setSelectedAccountType(null);
+      setAccountIntakeStep("dashboard");
+    } catch (error) {
+      setAccountSaveError(
+        error instanceof Error
+          ? error.message
+          : "The account could not be saved.",
+      );
+    } finally {
+      setIsSavingAccount(false);
+    }
   }
 
   return (
@@ -362,15 +449,34 @@ function ReadyPersonalFinancePage({
                 />
               ) : accountIntakeStep === "account-form" &&
                 selectedAccountType ? (
-                <OperationalAccountForm
-                  accountType={selectedAccountType}
-                  onBack={() => setAccountIntakeStep("account-type")}
-                  onCancel={() => {
-                    setSelectedAccountType(null);
-                    setAccountIntakeStep("dashboard");
-                  }}
-                  onSubmit={handleAccountDraft}
-                />
+                <>
+                  <OperationalAccountForm
+                    accountType={selectedAccountType}
+                    onBack={() => setAccountIntakeStep("account-type")}
+                    onCancel={() => {
+                      setSelectedAccountType(null);
+                      setAccountIntakeStep("dashboard");
+                      setAccountSaveError("");
+                    }}
+                    onSubmit={(draft) => {
+                      if (!isSavingAccount) {
+                        void handleAccountDraft(draft);
+                      }
+                    }}
+                  />
+
+                  {isSavingAccount ? (
+                    <p className="operational-account-form__status">
+                      Saving operational account…
+                    </p>
+                  ) : null}
+
+                  {accountSaveError ? (
+                    <p className="operational-account-form__error">
+                      {accountSaveError}
+                    </p>
+                  ) : null}
+                </>
               ) : hasAccounts ? (
                 <div className="personal-finance-page__empty-product">
                   <strong>
@@ -382,9 +488,13 @@ function ReadyPersonalFinancePage({
                   </strong>
 
                   <p>
-                    Operational account display and editing will be connected in
-                    a later account workspace slice.
+                    The account was restored from operational storage. The full
+                    account workspace will be added in the next commit.
                   </p>
+
+                  <button type="button" onClick={handleOpenAccountTypeSelector}>
+                    Add another account
+                  </button>
                 </div>
               ) : (
                 <div className="personal-finance-page__empty-product">
@@ -662,6 +772,18 @@ export function PersonalFinancePage() {
       ledgerReplay={sessionState.ledgerReplay}
       accounts={sessionState.accounts}
       obligations={sessionState.obligations}
+      onAccountsChanged={(accounts) => {
+        setSessionState((current) => {
+          if (current.status !== "ready") {
+            return current;
+          }
+
+          return {
+            ...current,
+            accounts,
+          };
+        });
+      }}
     />
   );
 }
