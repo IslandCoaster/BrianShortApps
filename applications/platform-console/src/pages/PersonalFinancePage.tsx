@@ -25,6 +25,7 @@ import { getOperationalFinancialObligationRepository } from "../experiences/fina
 
 import "../experiences/finance-workspace/FinanceWorkspace.css";
 import "./PersonalFinancePage.css";
+import { OperationalAccountTypeSelector } from "../experiences/finance-workspace/OperationalAccountTypeSelector";
 
 function formatAmount(amount: number) {
   return `$${amount.toLocaleString(undefined, {
@@ -80,6 +81,9 @@ function ReadyPersonalFinancePage({
   accounts,
   obligations,
 }: ReadyPersonalFinancePageProps) {
+  const [accountIntakeStep, setAccountIntakeStep] = useState<
+    "dashboard" | "account-type"
+  >("dashboard");
   const operationalOverview = useMemo(() => {
     const activeAccounts = accounts.filter(isOperationalAccountActive);
 
@@ -191,6 +195,14 @@ function ReadyPersonalFinancePage({
     });
   }
 
+  function handleOpenAccountTypeSelector() {
+    setAccountIntakeStep("account-type");
+
+    window.requestAnimationFrame(() => {
+      scrollToSection("accounts");
+    });
+  }
+
   return (
     <main className="personal-finance-page">
       <div className="personal-finance-page__container">
@@ -217,10 +229,9 @@ function ReadyPersonalFinancePage({
               id: "add-account",
               label: "Add account",
               description:
-                "Operational account intake is being migrated to the new account domain.",
+                "Create a checking, savings, credit card, or loan account.",
               emphasis: "primary",
-              disabled: true,
-              onClick: () => scrollToSection("accounts"),
+              onClick: handleOpenAccountTypeSelector,
             },
             {
               id: "add-obligation",
@@ -328,7 +339,17 @@ function ReadyPersonalFinancePage({
 
           <div className="personal-finance-page__surface">
             <section className="finance-workspace finance-workspace--product">
-              {hasAccounts ? (
+              {accountIntakeStep === "account-type" ? (
+                <OperationalAccountTypeSelector
+                  onBack={() => setAccountIntakeStep("dashboard")}
+                  onContinue={(accountType) => {
+                    console.log(
+                      "Selected operational account type:",
+                      accountType,
+                    );
+                  }}
+                />
+              ) : hasAccounts ? (
                 <div className="personal-finance-page__empty-product">
                   <strong>
                     {operationalOverview.activeAccountCount} operational{" "}
@@ -340,7 +361,7 @@ function ReadyPersonalFinancePage({
 
                   <p>
                     Operational account display and editing will be connected in
-                    the next migration slice.
+                    a later account workspace slice.
                   </p>
                 </div>
               ) : (
@@ -352,6 +373,10 @@ function ReadyPersonalFinancePage({
                     first checking, savings, credit card, or loan account must
                     be added intentionally.
                   </p>
+
+                  <button type="button" onClick={handleOpenAccountTypeSelector}>
+                    Add your first account
+                  </button>
                 </div>
               )}
             </section>
