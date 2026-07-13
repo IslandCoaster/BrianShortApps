@@ -3,6 +3,7 @@ import { verifyFinancialLedgerRepository } from "./financialLedgerRepositoryVeri
 import { verifyFinancialObligationRepository } from "./financialObligationRepositoryVerification";
 import { verifyFundingSourceRepository } from "./fundingSourceRepositoryVerification";
 import { verifyOperationalFundingEngine } from "../funding/operationalFundingEngineVerification";
+import { verifyOperationalFundingTimeline } from "../funding/operationalFundingTimelineVerification";
 
 export async function verifyFinancialRepositories(): Promise<void> {
   await verifyFinancialLedgerRepository();
@@ -10,4 +11,5 @@ export async function verifyFinancialRepositories(): Promise<void> {
   await verifyFinancialObligationRepository();
   await verifyFundingSourceRepository();
   verifyOperationalFundingEngine();
+  verifyOperationalFundingTimeline();
 }

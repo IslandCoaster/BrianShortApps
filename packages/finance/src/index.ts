@@ -193,3 +193,6 @@ export * from "./repositories/fundingSourceRepositoryVerification";
 
 export * from "./funding/operationalFundingEngine";
 export * from "./funding/operationalFundingEngineVerification";
+
+export * from "./funding/operationalFundingTimeline";
+export * from "./funding/operationalFundingTimelineVerification";

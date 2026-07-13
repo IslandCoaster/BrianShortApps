@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import {
   buildOperationalFundingPlan,
+  buildOperationalFundingTimeline,
   type FinancialAccount,
   type FinancialObligation,
   type FundingSource,
@@ -8,6 +9,7 @@ import {
 } from "@bsa/finance";
 
 import "./OperationalFundingPlanView.css";
+import { CashFlowTimelineView } from "./CashFlowTimelineView";
 
 type OperationalFundingPlanViewProps = {
   currentCash: number;
@@ -86,6 +88,15 @@ export function OperationalFundingPlanView({
         fundingSources,
       }),
     [accounts, currentCash, fundingSources, minimumCashReserve, obligations],
+  );
+
+  const timeline = useMemo(
+    () =>
+      buildOperationalFundingTimeline({
+        fundingPlan: plan,
+        fundingSources,
+      }),
+    [fundingSources, plan],
   );
 
   const fundedByDueDate = plan.items.filter(
@@ -311,6 +322,10 @@ export function OperationalFundingPlanView({
             ))}
           </ul>
         </section>
+      ) : null}
+      {plan.items.some((item) => item.allocations.length > 0) ||
+      fundingSources.some((source) => source.status === "planned") ? (
+        <CashFlowTimelineView timeline={timeline} />
       ) : null}
     </section>
   );
