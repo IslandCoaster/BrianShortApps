@@ -170,11 +170,6 @@
   justify-content: flex-end;
 }
 
-.operational-funding-sources__actions button {
-  border-color: rgb(248 113 113 / 35%);
-  color: #fecaca;
-}
-
 @media (max-width: 860px) {
   .operational-funding-sources__list {
     grid-template-columns: 1fr;
@@ -192,5 +187,86 @@
 
   .operational-funding-sources__summary {
     grid-template-columns: 1fr;
+  }
+}
+
+.operational-funding-sources__card dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.operational-funding-sources__routing {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid rgb(148 163 184 / 24%);
+  border-radius: 0.75rem;
+}
+
+.operational-funding-sources__routing span {
+  color: #8ca0c4;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.operational-funding-sources__routing--fully-allocated {
+  border-color: rgb(34 197 94 / 30%);
+  background: rgb(34 197 94 / 7%);
+  color: #86efac;
+}
+
+.operational-funding-sources__routing--partially-allocated,
+.operational-funding-sources__routing--unallocated {
+  border-color: rgb(245 158 11 / 25%);
+  background: rgb(245 158 11 / 7%);
+  color: #fde68a;
+}
+
+.operational-funding-sources__routing--overallocated,
+.operational-funding-sources__routing--invalid {
+  border-color: rgb(239 68 68 / 35%);
+  background: rgb(239 68 68 / 7%);
+  color: #fca5a5;
+}
+
+.operational-funding-sources__destinations {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.operational-funding-sources__destinations > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.65rem;
+  background: rgb(15 23 42 / 40%);
+}
+
+.operational-funding-sources__destinations span {
+  color: #cbd5e1;
+}
+
+.operational-funding-sources__actions {
+  gap: 0.75rem;
+}
+
+.operational-funding-sources__actions button:last-child {
+  border-color: rgb(248 113 113 / 35%);
+  color: #fecaca;
+}
+
+@media (max-width: 680px) {
+  .operational-funding-sources__card dl {
+    grid-template-columns: 1fr;
+  }
+
+  .operational-funding-sources__actions {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

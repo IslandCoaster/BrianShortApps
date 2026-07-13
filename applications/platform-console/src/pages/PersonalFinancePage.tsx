@@ -9,6 +9,7 @@ import {
   type FinancialLedgerReplayState,
   type FinancialObligation,
   type FundingSource,
+  type FundingDepositAllocation,
 } from "@bsa/finance";
 import { Link } from "react-router";
 
@@ -46,6 +47,13 @@ import {
 import { OperationalFundingSourcesView } from "../experiences/finance-workspace/OperationalFundingSourcesView";
 import { OperationalFundingPlanView } from "../experiences/finance-workspace/OperationalFundingPlanView";
 import { OperationalFinancialObligationsView } from "../experiences/finance-workspace/OperationalFinancialObligationsView";
+
+import { getOperationalFundingDepositAllocationRepository } from "../experiences/finance-workspace/operationalFundingDepositAllocationRepository";
+
+import {
+  OperationalFundingDestinationEditor,
+  type FundingDestinationDraft,
+} from "../experiences/finance-workspace/OperationalFundingDestinationEditor";
 
 function formatAmount(amount: number) {
   return `$${amount.toLocaleString(undefined, {
@@ -94,21 +102,27 @@ type ReadyPersonalFinancePageProps = {
   ledgerReplay: FinancialLedgerReplayState;
   accounts: FinancialAccount[];
   obligations: FinancialObligation[];
+  fundingSources: FundingSource[];
+  fundingDepositAllocations: FundingDepositAllocation[];
+
   onAccountsChanged: (accounts: FinancialAccount[]) => void;
   onObligationsChanged: (obligations: FinancialObligation[]) => void;
-  fundingSources: FundingSource[];
-
   onFundingSourcesChanged: (fundingSources: FundingSource[]) => void;
+  onFundingDepositAllocationsChanged: (
+    allocations: FundingDepositAllocation[],
+  ) => void;
 };
 
 function ReadyPersonalFinancePage({
   ledgerReplay,
   accounts,
   obligations,
+  fundingSources,
+  fundingDepositAllocations,
   onAccountsChanged,
   onObligationsChanged,
-  fundingSources,
   onFundingSourcesChanged,
+  onFundingDepositAllocationsChanged,
 }: ReadyPersonalFinancePageProps) {
   const [accountIntakeStep, setAccountIntakeStep] = useState<
     "dashboard" | "account-type" | "account-form"
@@ -136,6 +150,22 @@ function ReadyPersonalFinancePage({
 
   const [fundingSourceOperationError, setFundingSourceOperationError] =
     useState("");
+
+  const [selectedFundingSourceId, setSelectedFundingSourceId] = useState<
+    string | null
+  >(null);
+
+  const [isSavingFundingDestinations, setIsSavingFundingDestinations] =
+    useState(false);
+
+  const [
+    fundingDestinationOperationError,
+    setFundingDestinationOperationError,
+  ] = useState("");
+
+  const selectedFundingSource = fundingSources.find(
+    (source) => source.id === selectedFundingSourceId,
+  );
 
   const operationalOverview = useMemo(() => {
     const activeAccounts = accounts.filter(isOperationalAccountActive);
@@ -392,23 +422,112 @@ function ReadyPersonalFinancePage({
     }
   }
 
+  async function handleSaveFundingDestinations(
+    fundingSourceId: string,
+    drafts: FundingDestinationDraft[],
+  ) {
+    setFundingDestinationOperationError("");
+    setIsSavingFundingDestinations(true);
+
+    try {
+      const repository = getOperationalFundingDepositAllocationRepository();
+
+      const currentAllocations = await repository.load();
+
+      const existingSourceAllocations = currentAllocations.filter(
+        (allocation) => allocation.fundingSourceId === fundingSourceId,
+      );
+
+      const retainedAllocations = currentAllocations.filter(
+        (allocation) => allocation.fundingSourceId !== fundingSourceId,
+      );
+
+      const existingByDestination = new Map(
+        existingSourceAllocations.map((allocation) => [
+          allocation.destinationAccountId,
+          allocation,
+        ]),
+      );
+
+      const now = new Date().toISOString();
+
+      const replacementAllocations: FundingDepositAllocation[] = drafts.map(
+        (draft) => {
+          const existing = existingByDestination.get(
+            draft.destinationAccountId,
+          );
+
+          return {
+            id: existing?.id ?? crypto.randomUUID(),
+            fundingSourceId,
+            destinationAccountId: draft.destinationAccountId,
+            amount: draft.amount,
+            createdAt: existing?.createdAt ?? now,
+            updatedAt: now,
+            notes: existing?.notes,
+          };
+        },
+      );
+
+      await repository.save([
+        ...retainedAllocations,
+        ...replacementAllocations,
+      ]);
+
+      const restoredAllocations = await repository.load();
+
+      onFundingDepositAllocationsChanged(restoredAllocations);
+
+      setSelectedFundingSourceId(null);
+    } catch (error) {
+      setFundingDestinationOperationError(
+        error instanceof Error
+          ? error.message
+          : "The funding destinations could not be saved.",
+      );
+    } finally {
+      setIsSavingFundingDestinations(false);
+    }
+  }
+
   async function handleRemoveFundingSource(fundingSourceId: string) {
     setFundingSourceOperationError("");
 
     try {
-      const repository = getOperationalFundingSourceRepository();
+      const fundingSourceRepository = getOperationalFundingSourceRepository();
 
-      const currentFundingSources = await repository.load();
+      const allocationRepository =
+        getOperationalFundingDepositAllocationRepository();
 
-      const updatedFundingSources = currentFundingSources.filter(
-        (source) => source.id !== fundingSourceId,
-      );
+      const [currentFundingSources, currentAllocations] = await Promise.all([
+        fundingSourceRepository.load(),
+        allocationRepository.load(),
+      ]);
 
-      await repository.save(updatedFundingSources);
+      await Promise.all([
+        fundingSourceRepository.save(
+          currentFundingSources.filter(
+            (source) => source.id !== fundingSourceId,
+          ),
+        ),
+        allocationRepository.save(
+          currentAllocations.filter(
+            (allocation) => allocation.fundingSourceId !== fundingSourceId,
+          ),
+        ),
+      ]);
 
-      const restoredFundingSources = await repository.load();
+      const [restoredFundingSources, restoredAllocations] = await Promise.all([
+        fundingSourceRepository.load(),
+        allocationRepository.load(),
+      ]);
 
       onFundingSourcesChanged(restoredFundingSources);
+      onFundingDepositAllocationsChanged(restoredAllocations);
+
+      if (selectedFundingSourceId === fundingSourceId) {
+        setSelectedFundingSourceId(null);
+      }
     } catch (error) {
       setFundingSourceOperationError(
         error instanceof Error
@@ -821,7 +940,29 @@ function ReadyPersonalFinancePage({
 
           <div className="personal-finance-page__surface">
             <section className="finance-workspace finance-workspace--product">
-              {isAddingFundingSource ? (
+              {selectedFundingSource ? (
+                <OperationalFundingDestinationEditor
+                  key={selectedFundingSource.id}
+                  fundingSource={selectedFundingSource}
+                  accounts={accounts}
+                  existingAllocations={fundingDepositAllocations.filter(
+                    (allocation) =>
+                      allocation.fundingSourceId === selectedFundingSource.id,
+                  )}
+                  isSaving={isSavingFundingDestinations}
+                  operationError={fundingDestinationOperationError}
+                  onCancel={() => {
+                    setSelectedFundingSourceId(null);
+                    setFundingDestinationOperationError("");
+                  }}
+                  onSave={(drafts) => {
+                    void handleSaveFundingDestinations(
+                      selectedFundingSource.id,
+                      drafts,
+                    );
+                  }}
+                />
+              ) : isAddingFundingSource ? (
                 <>
                   <OperationalFundingSourceForm
                     onCancel={() => {
@@ -844,7 +985,13 @@ function ReadyPersonalFinancePage({
               ) : fundingSources.length > 0 ? (
                 <OperationalFundingSourcesView
                   fundingSources={fundingSources}
+                  accounts={accounts}
+                  allocations={fundingDepositAllocations}
                   onAddFundingSource={handleOpenFundingSourceForm}
+                  onAssignDestinations={(fundingSourceId) => {
+                    setFundingDestinationOperationError("");
+                    setSelectedFundingSourceId(fundingSourceId);
+                  }}
                   onRemoveFundingSource={(fundingSourceId) => {
                     void handleRemoveFundingSource(fundingSourceId);
                   }}
@@ -906,6 +1053,7 @@ type OperationalData = {
   accounts: FinancialAccount[];
   obligations: FinancialObligation[];
   fundingSources: FundingSource[];
+  fundingDepositAllocations: FundingDepositAllocation[];
 };
 
 type OperationalSessionState =
@@ -917,6 +1065,7 @@ type OperationalSessionState =
       accounts: FinancialAccount[];
       obligations: FinancialObligation[];
       fundingSources: FundingSource[];
+      fundingDepositAllocations: FundingDepositAllocation[];
     }
   | ({
       status: "ready";
@@ -966,13 +1115,22 @@ export function PersonalFinancePage() {
 
         const fundingSourceRepository = getOperationalFundingSourceRepository();
 
-        const [ledgerEvents, accounts, obligations, fundingSources] =
-          await Promise.all([
-            ledgerRepository.load(),
-            accountRepository.load(),
-            obligationRepository.load(),
-            fundingSourceRepository.load(),
-          ]);
+        const fundingDepositAllocationRepository =
+          getOperationalFundingDepositAllocationRepository();
+
+        const [
+          ledgerEvents,
+          accounts,
+          obligations,
+          fundingSources,
+          fundingDepositAllocations,
+        ] = await Promise.all([
+          ledgerRepository.load(),
+          accountRepository.load(),
+          obligationRepository.load(),
+          fundingSourceRepository.load(),
+          fundingDepositAllocationRepository.load(),
+        ]);
 
         if (!isCurrent) {
           return;
@@ -984,6 +1142,7 @@ export function PersonalFinancePage() {
             accounts,
             obligations,
             fundingSources,
+            fundingDepositAllocations,
           });
 
           return;
@@ -998,6 +1157,7 @@ export function PersonalFinancePage() {
           accounts,
           obligations,
           fundingSources,
+          fundingDepositAllocations,
         });
       } catch (error) {
         if (!isCurrent) {
@@ -1063,6 +1223,7 @@ export function PersonalFinancePage() {
               accounts: sessionState.accounts,
               obligations: sessionState.obligations,
               fundingSources: sessionState.fundingSources,
+              fundingDepositAllocations: sessionState.fundingDepositAllocations,
             });
           } catch (error) {
             setSessionState({
@@ -1093,6 +1254,7 @@ export function PersonalFinancePage() {
       accounts={sessionState.accounts}
       obligations={sessionState.obligations}
       fundingSources={sessionState.fundingSources}
+      fundingDepositAllocations={sessionState.fundingDepositAllocations}
       onAccountsChanged={(accounts) => {
         setSessionState((current) => {
           if (current.status !== "ready") {
@@ -1126,6 +1288,18 @@ export function PersonalFinancePage() {
           return {
             ...current,
             fundingSources,
+          };
+        });
+      }}
+      onFundingDepositAllocationsChanged={(fundingDepositAllocations) => {
+        setSessionState((current) => {
+          if (current.status !== "ready") {
+            return current;
+          }
+
+          return {
+            ...current,
+            fundingDepositAllocations,
           };
         });
       }}
