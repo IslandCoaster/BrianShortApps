@@ -30,6 +30,7 @@ import {
   OperationalAccountForm,
   type OperationalAccountDraft,
 } from "../experiences/finance-workspace/OperationalAccountForm";
+import { OperationalFinancialAccountsView } from "../experiences/finance-workspace/OperationalFinancialAccountsView";
 
 function formatAmount(amount: number) {
   return `$${amount.toLocaleString(undefined, {
@@ -90,13 +91,17 @@ function ReadyPersonalFinancePage({
   const [accountIntakeStep, setAccountIntakeStep] = useState<
     "dashboard" | "account-type" | "account-form"
   >("dashboard");
+
   const [accountSaveError, setAccountSaveError] = useState("");
 
   const [isSavingAccount, setIsSavingAccount] = useState(false);
 
+  const [accountOperationError, setAccountOperationError] = useState("");
+
   const [selectedAccountType, setSelectedAccountType] = useState<
     FinancialAccount["accountType"] | null
   >(null);
+
   const operationalOverview = useMemo(() => {
     const activeAccounts = accounts.filter(isOperationalAccountActive);
 
@@ -303,6 +308,32 @@ function ReadyPersonalFinancePage({
     }
   }
 
+  async function handleRemoveAccount(accountId: string) {
+    setAccountOperationError("");
+
+    try {
+      const repository = getOperationalFinancialAccountRepository();
+
+      const currentAccounts = await repository.load();
+
+      const updatedAccounts = currentAccounts.filter(
+        (account) => account.id !== accountId,
+      );
+
+      await repository.save(updatedAccounts);
+
+      const restoredAccounts = await repository.load();
+
+      onAccountsChanged(restoredAccounts);
+    } catch (error) {
+      setAccountOperationError(
+        error instanceof Error
+          ? error.message
+          : "The account could not be removed.",
+      );
+    }
+  }
+
   return (
     <main className="personal-finance-page">
       <div className="personal-finance-page__container">
@@ -478,24 +509,21 @@ function ReadyPersonalFinancePage({
                   ) : null}
                 </>
               ) : hasAccounts ? (
-                <div className="personal-finance-page__empty-product">
-                  <strong>
-                    {operationalOverview.activeAccountCount} operational{" "}
-                    {operationalOverview.activeAccountCount === 1
-                      ? "account is"
-                      : "accounts are"}{" "}
-                    persisted
-                  </strong>
+                <>
+                  <OperationalFinancialAccountsView
+                    accounts={accounts}
+                    onAddAccount={handleOpenAccountTypeSelector}
+                    onRemoveAccount={(accountId) => {
+                      void handleRemoveAccount(accountId);
+                    }}
+                  />
 
-                  <p>
-                    The account was restored from operational storage. The full
-                    account workspace will be added in the next commit.
-                  </p>
-
-                  <button type="button" onClick={handleOpenAccountTypeSelector}>
-                    Add another account
-                  </button>
-                </div>
+                  {accountOperationError ? (
+                    <p className="operational-account-form__error">
+                      {accountOperationError}
+                    </p>
+                  ) : null}
+                </>
               ) : (
                 <div className="personal-finance-page__empty-product">
                   <strong>No financial accounts entered</strong>
