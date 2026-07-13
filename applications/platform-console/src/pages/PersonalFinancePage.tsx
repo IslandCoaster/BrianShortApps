@@ -8,6 +8,7 @@ import {
   type FinancialLedgerEvent,
   type FinancialLedgerReplayState,
   type FinancialObligation,
+  type FundingSource,
 } from "@bsa/finance";
 import { Link } from "react-router";
 
@@ -35,6 +36,14 @@ import {
   OperationalObligationForm,
   type OperationalUtilityObligationDraft,
 } from "../experiences/finance-workspace/OperationalObligationForm";
+import { getOperationalFundingSourceRepository } from "../experiences/finance-workspace/operationalFundingSourceRepository";
+
+import {
+  OperationalFundingSourceForm,
+  type OperationalPaycheckFundingSourceDraft,
+} from "../experiences/finance-workspace/OperationalFundingSourceForm";
+
+import { OperationalFundingSourcesView } from "../experiences/finance-workspace/OperationalFundingSourcesView";
 
 function formatAmount(amount: number) {
   return `$${amount.toLocaleString(undefined, {
@@ -85,6 +94,9 @@ type ReadyPersonalFinancePageProps = {
   obligations: FinancialObligation[];
   onAccountsChanged: (accounts: FinancialAccount[]) => void;
   onObligationsChanged: (obligations: FinancialObligation[]) => void;
+  fundingSources: FundingSource[];
+
+  onFundingSourcesChanged: (fundingSources: FundingSource[]) => void;
 };
 
 function ReadyPersonalFinancePage({
@@ -93,6 +105,8 @@ function ReadyPersonalFinancePage({
   obligations,
   onAccountsChanged,
   onObligationsChanged,
+  fundingSources,
+  onFundingSourcesChanged,
 }: ReadyPersonalFinancePageProps) {
   const [accountIntakeStep, setAccountIntakeStep] = useState<
     "dashboard" | "account-type" | "account-form"
@@ -111,6 +125,13 @@ function ReadyPersonalFinancePage({
   const [selectedAccountType, setSelectedAccountType] = useState<
     FinancialAccount["accountType"] | null
   >(null);
+
+  const [isAddingFundingSource, setIsAddingFundingSource] = useState(false);
+
+  const [isSavingFundingSource, setIsSavingFundingSource] = useState(false);
+
+  const [fundingSourceOperationError, setFundingSourceOperationError] =
+    useState("");
 
   const operationalOverview = useMemo(() => {
     const activeAccounts = accounts.filter(isOperationalAccountActive);
@@ -287,6 +308,85 @@ function ReadyPersonalFinancePage({
     }
   }
 
+  function handleOpenFundingSourceForm() {
+    setFundingSourceOperationError("");
+    setIsAddingFundingSource(true);
+
+    window.requestAnimationFrame(() => {
+      scrollToSection("future-cash");
+    });
+  }
+
+  async function handleFundingSourceDraft(
+    draft: OperationalPaycheckFundingSourceDraft,
+  ) {
+    setFundingSourceOperationError("");
+    setIsSavingFundingSource(true);
+
+    try {
+      const repository = getOperationalFundingSourceRepository();
+
+      const currentFundingSources = await repository.load();
+
+      const now = new Date().toISOString();
+
+      const fundingSource: FundingSource = {
+        id: crypto.randomUUID(),
+        fundingSourceType: "paycheck",
+        title: draft.title,
+        employerName: draft.employerName,
+        amount: draft.amount,
+        expectedOn: draft.expectedOn,
+        status: "planned",
+        createdAt: now,
+        updatedAt: now,
+        notes: draft.notes,
+      };
+
+      await repository.save([...currentFundingSources, fundingSource]);
+
+      const restoredFundingSources = await repository.load();
+
+      onFundingSourcesChanged(restoredFundingSources);
+
+      setIsAddingFundingSource(false);
+    } catch (error) {
+      setFundingSourceOperationError(
+        error instanceof Error
+          ? error.message
+          : "The future cash source could not be saved.",
+      );
+    } finally {
+      setIsSavingFundingSource(false);
+    }
+  }
+
+  async function handleRemoveFundingSource(fundingSourceId: string) {
+    setFundingSourceOperationError("");
+
+    try {
+      const repository = getOperationalFundingSourceRepository();
+
+      const currentFundingSources = await repository.load();
+
+      const updatedFundingSources = currentFundingSources.filter(
+        (source) => source.id !== fundingSourceId,
+      );
+
+      await repository.save(updatedFundingSources);
+
+      const restoredFundingSources = await repository.load();
+
+      onFundingSourcesChanged(restoredFundingSources);
+    } catch (error) {
+      setFundingSourceOperationError(
+        error instanceof Error
+          ? error.message
+          : "The future cash source could not be removed.",
+      );
+    }
+  }
+
   async function handleAccountDraft(draft: OperationalAccountDraft) {
     setAccountSaveError("");
     setIsSavingAccount(true);
@@ -436,12 +536,10 @@ function ReadyPersonalFinancePage({
               onClick: handleOpenObligationForm,
             },
             {
-              id: "build-funding-plan",
-              label: "Build funding plan",
-              description:
-                "Funding migration follows operational account and obligation intake.",
-              disabled: true,
-              onClick: () => scrollToSection("funding-plan"),
+              id: "add-future-cash",
+              label: "Add future cash",
+              description: "Record an expected paycheck for future funding.",
+              onClick: handleOpenFundingSourceForm,
             },
           ]}
         />
@@ -681,29 +779,68 @@ function ReadyPersonalFinancePage({
           </div>
         </section>
 
-        <section className="personal-finance-page__section" id="funding-plan">
+        <section className="personal-finance-page__section" id="future-cash">
           <div className="personal-finance-page__section-heading">
             <div>
-              <h2>Funding plan</h2>
+              <h2>Future cash sources</h2>
 
               <p>
-                Funding will consume replay-derived cash, persisted accounts,
-                persisted obligations, and user-entered paycheck timing.
+                Track expected incoming cash separately from your replay-derived
+                current cash position.
               </p>
             </div>
           </div>
 
           <div className="personal-finance-page__surface">
             <section className="finance-workspace finance-workspace--product">
-              <div className="personal-finance-page__empty-product">
-                <strong>No funding plan created</strong>
+              {isAddingFundingSource ? (
+                <>
+                  <OperationalFundingSourceForm
+                    onCancel={() => {
+                      setIsAddingFundingSource(false);
+                      setFundingSourceOperationError("");
+                    }}
+                    onSubmit={(draft) => {
+                      if (!isSavingFundingSource) {
+                        void handleFundingSourceDraft(draft);
+                      }
+                    }}
+                  />
 
-                <p>
-                  No seeded accounts or in-memory snapshot data are being used
-                  to generate a funding plan. Operational funding integration
-                  will follow account and obligation intake.
+                  {isSavingFundingSource ? (
+                    <p className="operational-funding-source-form__status">
+                      Saving future cash source…
+                    </p>
+                  ) : null}
+                </>
+              ) : fundingSources.length > 0 ? (
+                <OperationalFundingSourcesView
+                  fundingSources={fundingSources}
+                  onAddFundingSource={handleOpenFundingSourceForm}
+                  onRemoveFundingSource={(fundingSourceId) => {
+                    void handleRemoveFundingSource(fundingSourceId);
+                  }}
+                />
+              ) : (
+                <div className="personal-finance-page__empty-product">
+                  <strong>No future cash sources entered</strong>
+
+                  <p>
+                    Add an expected paycheck to begin establishing the future
+                    cash available for funding obligations.
+                  </p>
+
+                  <button type="button" onClick={handleOpenFundingSourceForm}>
+                    Add your first paycheck
+                  </button>
+                </div>
+              )}
+
+              {fundingSourceOperationError ? (
+                <p className="operational-funding-source-form__error">
+                  {fundingSourceOperationError}
                 </p>
-              </div>
+              ) : null}
             </section>
           </div>
         </section>
@@ -717,6 +854,7 @@ type OperationalData = {
   ledgerReplay: FinancialLedgerReplayState;
   accounts: FinancialAccount[];
   obligations: FinancialObligation[];
+  fundingSources: FundingSource[];
 };
 
 type OperationalSessionState =
@@ -727,6 +865,7 @@ type OperationalSessionState =
       status: "first-run";
       accounts: FinancialAccount[];
       obligations: FinancialObligation[];
+      fundingSources: FundingSource[];
     }
   | ({
       status: "ready";
@@ -774,11 +913,15 @@ export function PersonalFinancePage() {
         const obligationRepository =
           getOperationalFinancialObligationRepository();
 
-        const [ledgerEvents, accounts, obligations] = await Promise.all([
-          ledgerRepository.load(),
-          accountRepository.load(),
-          obligationRepository.load(),
-        ]);
+        const fundingSourceRepository = getOperationalFundingSourceRepository();
+
+        const [ledgerEvents, accounts, obligations, fundingSources] =
+          await Promise.all([
+            ledgerRepository.load(),
+            accountRepository.load(),
+            obligationRepository.load(),
+            fundingSourceRepository.load(),
+          ]);
 
         if (!isCurrent) {
           return;
@@ -789,6 +932,7 @@ export function PersonalFinancePage() {
             status: "first-run",
             accounts,
             obligations,
+            fundingSources,
           });
 
           return;
@@ -802,6 +946,7 @@ export function PersonalFinancePage() {
           ledgerReplay,
           accounts,
           obligations,
+          fundingSources,
         });
       } catch (error) {
         if (!isCurrent) {
@@ -866,6 +1011,7 @@ export function PersonalFinancePage() {
               ledgerReplay,
               accounts: sessionState.accounts,
               obligations: sessionState.obligations,
+              fundingSources: sessionState.fundingSources,
             });
           } catch (error) {
             setSessionState({
@@ -895,6 +1041,7 @@ export function PersonalFinancePage() {
       ledgerReplay={sessionState.ledgerReplay}
       accounts={sessionState.accounts}
       obligations={sessionState.obligations}
+      fundingSources={sessionState.fundingSources}
       onAccountsChanged={(accounts) => {
         setSessionState((current) => {
           if (current.status !== "ready") {
@@ -916,6 +1063,18 @@ export function PersonalFinancePage() {
           return {
             ...current,
             obligations,
+          };
+        });
+      }}
+      onFundingSourcesChanged={(fundingSources) => {
+        setSessionState((current) => {
+          if (current.status !== "ready") {
+            return current;
+          }
+
+          return {
+            ...current,
+            fundingSources,
           };
         });
       }}

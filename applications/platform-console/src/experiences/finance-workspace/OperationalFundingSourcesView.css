@@ -1,0 +1,196 @@
+.operational-funding-sources {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  color: #e2e8f0;
+}
+
+.operational-funding-sources__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.operational-funding-sources__header > div {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.operational-funding-sources__header > div > span {
+  color: #7891bf;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.operational-funding-sources__header h3 {
+  margin: 0;
+  color: #f8fafc;
+}
+
+.operational-funding-sources__header p {
+  max-width: 44rem;
+  margin: 0;
+  color: #8ca0c4;
+  line-height: 1.5;
+}
+
+.operational-funding-sources__summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.operational-funding-sources__summary article {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem;
+  border: 1px solid rgb(148 163 184 / 24%);
+  border-radius: 0.85rem;
+}
+
+.operational-funding-sources__summary span {
+  color: #8ca0c4;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.operational-funding-sources__summary strong {
+  font-size: 1.2rem;
+}
+
+.operational-funding-sources__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.operational-funding-sources__card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.15rem;
+  border: 1px solid rgb(148 163 184 / 24%);
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 4%);
+}
+
+.operational-funding-sources__card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.operational-funding-sources__card-header > div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.operational-funding-sources__card-header small {
+  color: #7891bf;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.operational-funding-sources__card-header span {
+  color: #8ca0c4;
+}
+
+.operational-funding-sources__status {
+  align-self: start;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.operational-funding-sources__status--planned {
+  background: rgb(59 130 246 / 15%);
+  color: #93c5fd;
+}
+
+.operational-funding-sources__status--received {
+  background: rgb(34 197 94 / 14%);
+  color: #86efac;
+}
+
+.operational-funding-sources__status--cancelled {
+  background: rgb(148 163 184 / 15%);
+  color: #cbd5e1;
+}
+
+.operational-funding-sources__amount {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.9rem;
+  border-radius: 0.8rem;
+  background: rgb(15 23 42 / 40%);
+}
+
+.operational-funding-sources__amount span,
+.operational-funding-sources dt {
+  color: #8ca0c4;
+  font-size: 0.75rem;
+}
+
+.operational-funding-sources__amount strong {
+  font-size: 1.3rem;
+}
+
+.operational-funding-sources dl {
+  margin: 0;
+}
+
+.operational-funding-sources dl div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.operational-funding-sources dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.operational-funding-sources__notes {
+  margin: 0;
+  padding: 0.8rem;
+  border-left: 3px solid #3159a6;
+  background: rgb(49 89 166 / 8%);
+  color: #cbd5e1;
+}
+
+.operational-funding-sources__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.operational-funding-sources__actions button {
+  border-color: rgb(248 113 113 / 35%);
+  color: #fecaca;
+}
+
+@media (max-width: 860px) {
+  .operational-funding-sources__list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .operational-funding-sources {
+    padding: 1.1rem;
+  }
+
+  .operational-funding-sources__header {
+    flex-direction: column;
+  }
+
+  .operational-funding-sources__summary {
+    grid-template-columns: 1fr;
+  }
+}
