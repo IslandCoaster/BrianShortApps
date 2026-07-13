@@ -31,6 +31,10 @@ import {
   type OperationalAccountDraft,
 } from "../experiences/finance-workspace/OperationalAccountForm";
 import { OperationalFinancialAccountsView } from "../experiences/finance-workspace/OperationalFinancialAccountsView";
+import {
+  OperationalObligationForm,
+  type OperationalUtilityObligationDraft,
+} from "../experiences/finance-workspace/OperationalObligationForm";
 
 function formatAmount(amount: number) {
   return `$${amount.toLocaleString(undefined, {
@@ -97,6 +101,7 @@ function ReadyPersonalFinancePage({
   const [isSavingAccount, setIsSavingAccount] = useState(false);
 
   const [accountOperationError, setAccountOperationError] = useState("");
+  const [isAddingObligation, setIsAddingObligation] = useState(false);
 
   const [selectedAccountType, setSelectedAccountType] = useState<
     FinancialAccount["accountType"] | null
@@ -145,9 +150,9 @@ function ReadyPersonalFinancePage({
       .map(getAccountPaymentDueDate)
       .filter((dueDate): dueDate is string => dueDate !== undefined);
 
-    const obligationDueDates = activeObligations.map(
-      (obligation) => obligation.dueDate,
-    );
+    const obligationDueDates = activeObligations
+      .map((obligation) => obligation.dueDate)
+      .filter((dueDate): dueDate is string => dueDate !== undefined);
 
     const nextRequiredDate = [...accountDueDates, ...obligationDueDates].sort(
       (left, right) => left.localeCompare(right),
@@ -220,6 +225,18 @@ function ReadyPersonalFinancePage({
     window.requestAnimationFrame(() => {
       scrollToSection("accounts");
     });
+  }
+
+  function handleOpenObligationForm() {
+    setIsAddingObligation(true);
+
+    window.requestAnimationFrame(() => {
+      scrollToSection("obligations");
+    });
+  }
+
+  function handleObligationDraft(draft: OperationalUtilityObligationDraft) {
+    console.log("Operational obligation draft:", draft);
   }
 
   async function handleAccountDraft(draft: OperationalAccountDraft) {
@@ -367,10 +384,8 @@ function ReadyPersonalFinancePage({
             {
               id: "add-obligation",
               label: "Add obligation",
-              description:
-                "Utility obligation intake will use the separate obligation domain.",
-              disabled: true,
-              onClick: () => scrollToSection("obligations"),
+              description: "Create a recurring utility payment obligation.",
+              onClick: handleOpenObligationForm,
             },
             {
               id: "build-funding-plan",
@@ -556,33 +571,44 @@ function ReadyPersonalFinancePage({
           </div>
 
           <div className="personal-finance-page__surface">
-            <section className="finance-workspace finance-workspace--product">
-              {hasObligations ? (
-                <div className="personal-finance-page__empty-product">
-                  <strong>
-                    {operationalOverview.activeObligationCount} operational{" "}
-                    {operationalOverview.activeObligationCount === 1
-                      ? "obligation is"
-                      : "obligations are"}{" "}
-                    persisted
-                  </strong>
+            {isAddingObligation ? (
+              <OperationalObligationForm
+                onCancel={() => setIsAddingObligation(false)}
+                onSubmit={handleObligationDraft}
+              />
+            ) : hasObligations ? (
+              <div className="personal-finance-page__empty-product">
+                <strong>
+                  {operationalOverview.activeObligationCount} operational{" "}
+                  {operationalOverview.activeObligationCount === 1
+                    ? "obligation is"
+                    : "obligations are"}{" "}
+                  persisted
+                </strong>
 
-                  <p>
-                    Operational obligation display and editing will be connected
-                    after account intake.
-                  </p>
-                </div>
-              ) : (
-                <div className="personal-finance-page__empty-product">
-                  <strong>No financial obligations entered</strong>
+                <p>
+                  Operational obligation display will be connected after
+                  persistence is added.
+                </p>
 
-                  <p>
-                    Utility bills and future recurring obligations will appear
-                    here only after they are intentionally created.
-                  </p>
-                </div>
-              )}
-            </section>
+                <button type="button" onClick={handleOpenObligationForm}>
+                  Add another obligation
+                </button>
+              </div>
+            ) : (
+              <div className="personal-finance-page__empty-product">
+                <strong>No financial obligations entered</strong>
+
+                <p>
+                  Utility bills and future recurring obligations will appear
+                  here only after they are intentionally created.
+                </p>
+
+                <button type="button" onClick={handleOpenObligationForm}>
+                  Add your first obligation
+                </button>
+              </div>
+            )}
           </div>
         </section>
 

@@ -72,6 +72,34 @@ export async function verifyFinancialObligationRepository(): Promise<void> {
 
   const restoredObligations = await repository.load();
 
+  const variableDateUtility: FinancialObligation = {
+    id: "utility-variable-date",
+    obligationType: "utility",
+    name: "Variable Billing Utility",
+    provider: "Example Utility",
+    status: "active",
+    amountDue: 95,
+    cadence: "monthly",
+    createdAt: "2026-07-13T12:00:00.000Z",
+    updatedAt: "2026-07-13T12:00:00.000Z",
+  };
+
+  await repository.save([utilityObligation, variableDateUtility]);
+
+  const restoredVariableDateObligations = await repository.load();
+
+  assertEqual(
+    restoredVariableDateObligations.length,
+    2,
+    "Utilities may be restored without a fixed next due date",
+  );
+
+  assertEqual(
+    restoredVariableDateObligations[1]?.dueDate,
+    undefined,
+    "Variable-date utility has no required due date",
+  );
+
   assertEqual(
     restoredObligations.length,
     1,

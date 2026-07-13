@@ -82,7 +82,11 @@ export function assertValidFinancialObligation(
         );
       }
 
-      assertNonEmptyString(obligation.dueDate, "dueDate", obligation.id);
+      assertOptionalNonEmptyString(
+        obligation.dueDate,
+        "dueDate",
+        obligation.id,
+      );
 
       if (!obligationCadences.includes(obligation.cadence)) {
         throw new Error(

@@ -28,7 +28,13 @@ export type UtilityObligation = BaseFinancialObligation & {
   obligationType: "utility";
   provider: string;
   amountDue: number;
-  dueDate: string;
+  /**
+   * Next known due date, when one has been established.
+   *
+   * Cadence does not imply a fixed calendar date and must not be used to
+   * generate future due dates automatically.
+   */
+  dueDate?: string;
   cadence: ObligationCadence;
   referenceNumber?: string;
 };

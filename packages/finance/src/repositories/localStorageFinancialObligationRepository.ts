@@ -137,9 +137,9 @@ function deserializeFinancialObligation(
         );
       }
 
-      if (typeof value.dueDate !== "string") {
+      if (!isOptionalString(value.dueDate)) {
         throw new Error(
-          `Invalid persisted financial obligation "${value.id}": dueDate must be a string.`,
+          `Invalid persisted financial obligation "${value.id}": dueDate must be a string when present.`,
         );
       }
 
