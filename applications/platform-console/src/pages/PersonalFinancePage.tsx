@@ -44,6 +44,7 @@ import {
 } from "../experiences/finance-workspace/OperationalFundingSourceForm";
 
 import { OperationalFundingSourcesView } from "../experiences/finance-workspace/OperationalFundingSourcesView";
+import { OperationalFundingPlanView } from "../experiences/finance-workspace/OperationalFundingPlanView";
 
 function formatAmount(amount: number) {
   return `$${amount.toLocaleString(undefined, {
@@ -841,6 +842,29 @@ function ReadyPersonalFinancePage({
                   {fundingSourceOperationError}
                 </p>
               ) : null}
+            </section>
+          </div>
+        </section>
+        <section className="personal-finance-page__section" id="funding-plan">
+          <div className="personal-finance-page__section-heading">
+            <div>
+              <h2>Operational funding plan</h2>
+
+              <p>
+                Evaluate whether current and expected cash can fund known dated
+                obligations while protecting a selected cash reserve.
+              </p>
+            </div>
+          </div>
+
+          <div className="personal-finance-page__surface">
+            <section className="finance-workspace finance-workspace--product">
+              <OperationalFundingPlanView
+                currentCash={ledgerReplay.currentCash}
+                accounts={accounts}
+                obligations={obligations}
+                fundingSources={fundingSources}
+              />
             </section>
           </div>
         </section>
