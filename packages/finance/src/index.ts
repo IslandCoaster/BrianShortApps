@@ -183,3 +183,10 @@ export * from "./repositories/localStorageFinancialObligationRepository";
 export * from "./repositories/financialAccountRepositoryVerification";
 export * from "./repositories/financialObligationRepositoryVerification";
 export * from "./repositories/financialRepositoryVerification";
+
+export * from "./funding/fundingSource";
+export * from "./funding/fundingSourceValidation";
+
+export * from "./repositories/fundingSourceRepository";
+export * from "./repositories/localStorageFundingSourceRepository";
+export * from "./repositories/fundingSourceRepositoryVerification";
