@@ -26,6 +26,10 @@ import { getOperationalFinancialObligationRepository } from "../experiences/fina
 import "../experiences/finance-workspace/FinanceWorkspace.css";
 import "./PersonalFinancePage.css";
 import { OperationalAccountTypeSelector } from "../experiences/finance-workspace/OperationalAccountTypeSelector";
+import {
+  OperationalAccountForm,
+  type OperationalAccountDraft,
+} from "../experiences/finance-workspace/OperationalAccountForm";
 
 function formatAmount(amount: number) {
   return `$${amount.toLocaleString(undefined, {
@@ -82,8 +86,12 @@ function ReadyPersonalFinancePage({
   obligations,
 }: ReadyPersonalFinancePageProps) {
   const [accountIntakeStep, setAccountIntakeStep] = useState<
-    "dashboard" | "account-type"
+    "dashboard" | "account-type" | "account-form"
   >("dashboard");
+
+  const [selectedAccountType, setSelectedAccountType] = useState<
+    FinancialAccount["accountType"] | null
+  >(null);
   const operationalOverview = useMemo(() => {
     const activeAccounts = accounts.filter(isOperationalAccountActive);
 
@@ -196,11 +204,16 @@ function ReadyPersonalFinancePage({
   }
 
   function handleOpenAccountTypeSelector() {
+    setSelectedAccountType(null);
     setAccountIntakeStep("account-type");
 
     window.requestAnimationFrame(() => {
       scrollToSection("accounts");
     });
+  }
+
+  function handleAccountDraft(draft: OperationalAccountDraft) {
+    console.log("Operational account draft:", draft);
   }
 
   return (
@@ -343,11 +356,20 @@ function ReadyPersonalFinancePage({
                 <OperationalAccountTypeSelector
                   onBack={() => setAccountIntakeStep("dashboard")}
                   onContinue={(accountType) => {
-                    console.log(
-                      "Selected operational account type:",
-                      accountType,
-                    );
+                    setSelectedAccountType(accountType);
+                    setAccountIntakeStep("account-form");
                   }}
+                />
+              ) : accountIntakeStep === "account-form" &&
+                selectedAccountType ? (
+                <OperationalAccountForm
+                  accountType={selectedAccountType}
+                  onBack={() => setAccountIntakeStep("account-type")}
+                  onCancel={() => {
+                    setSelectedAccountType(null);
+                    setAccountIntakeStep("dashboard");
+                  }}
+                  onSubmit={handleAccountDraft}
                 />
               ) : hasAccounts ? (
                 <div className="personal-finance-page__empty-product">

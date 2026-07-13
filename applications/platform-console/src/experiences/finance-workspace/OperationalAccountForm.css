@@ -1,0 +1,133 @@
+.operational-account-form {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.operational-account-form__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.operational-account-form__header > div {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.operational-account-form__header span {
+  color: #7891bf;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.operational-account-form__header h3 {
+  margin: 0;
+  font-size: 1.45rem;
+}
+
+.operational-account-form__header p {
+  max-width: 44rem;
+  margin: 0;
+  color: #8ca0c4;
+  line-height: 1.6;
+}
+
+.operational-account-form__header button {
+  flex: 0 0 auto;
+}
+
+.operational-account-form form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.operational-account-form fieldset {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 1.25rem;
+  border: 1px solid rgb(148 163 184 / 24%);
+  border-radius: 1rem;
+}
+
+.operational-account-form legend {
+  padding: 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.operational-account-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.operational-account-form label {
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.operational-account-form input,
+.operational-account-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.7rem;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+}
+
+.operational-account-form input:focus,
+.operational-account-form textarea:focus {
+  border-color: #3159a6;
+  outline: 3px solid rgb(49 89 166 / 18%);
+}
+
+.operational-account-form__notes {
+  padding: 0 0.1rem;
+}
+
+.operational-account-form__error {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid #f0b7b7;
+  border-radius: 0.75rem;
+  background: #fff1f1;
+  color: #9f1d1d;
+  font-weight: 600;
+}
+
+.operational-account-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.operational-account-form__actions button {
+  min-width: 8rem;
+}
+
+@media (max-width: 760px) {
+  .operational-account-form__header {
+    flex-direction: column;
+  }
+
+  .operational-account-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .operational-account-form__actions {
+    flex-direction: column-reverse;
+  }
+
+  .operational-account-form__actions button {
+    width: 100%;
+  }
+}
