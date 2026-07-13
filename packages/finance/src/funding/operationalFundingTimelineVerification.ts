@@ -82,9 +82,15 @@ export function verifyOperationalFundingTimeline(): void {
         isPastDue: false,
         allocations: [
           {
+            availableOn: "2026-07-13",
+            paymentDate: "2026-07-20",
+            amount: 75,
+            fundingSourceId: "replay-current-cash",
+          },
+          {
             availableOn: "2026-07-18",
             paymentDate: "2026-07-20",
-            amount: 125,
+            amount: 50,
             fundingSourceId: plannedPaycheck.id,
           },
         ],
@@ -144,5 +150,19 @@ export function verifyOperationalFundingTimeline(): void {
     timeline.lowestDeployableCash,
     25,
     "Timeline lowest deployable cash",
+  );
+
+  assertEqual(
+    timeline.entries.filter((entry) => entry.title === "Electric Service")
+      .length,
+    1,
+    "One requirement produces one payment event",
+  );
+
+  assertEqual(
+    timeline.entries.find((entry) => entry.title === "Electric Service")
+      ?.amount,
+    -125,
+    "Payment event contains the complete allocated amount",
   );
 }

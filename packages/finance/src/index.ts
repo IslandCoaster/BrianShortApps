@@ -196,3 +196,10 @@ export * from "./funding/operationalFundingEngineVerification";
 
 export * from "./funding/operationalFundingTimeline";
 export * from "./funding/operationalFundingTimelineVerification";
+
+export * from "./funding/fundingDepositAllocation";
+export * from "./funding/fundingDepositAllocationValidation";
+
+export * from "./repositories/fundingDepositAllocationRepository";
+export * from "./repositories/localStorageFundingDepositAllocationRepository";
+export * from "./repositories/fundingDepositAllocationRepositoryVerification";

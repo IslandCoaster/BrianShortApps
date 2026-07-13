@@ -1,0 +1,251 @@
+.operational-financial-obligations {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  color: #e2e8f0;
+}
+
+.operational-financial-obligations__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.operational-financial-obligations__header > div {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.operational-financial-obligations__header > div > span {
+  color: #7891bf;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.operational-financial-obligations__header h3,
+.operational-financial-obligations__group-header h4 {
+  margin: 0;
+  color: #f8fafc;
+}
+
+.operational-financial-obligations__header p,
+.operational-financial-obligations__group-header p {
+  margin: 0;
+  color: #8ca0c4;
+  line-height: 1.5;
+}
+
+.operational-financial-obligations__summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.operational-financial-obligations__summary article {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem;
+  border: 1px solid rgb(148 163 184 / 24%);
+  border-radius: 0.85rem;
+}
+
+.operational-financial-obligations__summary span {
+  color: #8ca0c4;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.operational-financial-obligations__summary strong {
+  font-size: 1.15rem;
+}
+
+.operational-financial-obligations__group {
+  display: grid;
+  gap: 1rem;
+}
+
+.operational-financial-obligations__group-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.operational-financial-obligations__group-header > div {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.operational-financial-obligations__group-header > span {
+  color: #8ca0c4;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.operational-financial-obligations__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.operational-financial-obligations__card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.15rem;
+  border: 1px solid rgb(148 163 184 / 24%);
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 4%);
+}
+
+.operational-financial-obligations__card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.operational-financial-obligations__card-header > div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.operational-financial-obligations__card-header small {
+  color: #7891bf;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.operational-financial-obligations__card-header > div > span {
+  color: #8ca0c4;
+  font-size: 0.85rem;
+}
+
+.operational-financial-obligations__status {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.operational-financial-obligations__status--active {
+  background: rgb(34 197 94 / 14%);
+  color: #86efac;
+}
+
+.operational-financial-obligations__status--past-due {
+  background: rgb(245 158 11 / 16%);
+  color: #fcd34d;
+}
+
+.operational-financial-obligations__status--satisfied,
+.operational-financial-obligations__status--cancelled {
+  background: rgb(148 163 184 / 15%);
+  color: #cbd5e1;
+}
+
+.operational-financial-obligations__amount {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.9rem;
+  border-radius: 0.8rem;
+  background: rgb(15 23 42 / 40%);
+}
+
+.operational-financial-obligations__amount span {
+  color: #8ca0c4;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.operational-financial-obligations__amount strong {
+  font-size: 1.3rem;
+}
+
+.operational-financial-obligations__card dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin: 0;
+}
+
+.operational-financial-obligations__card dl div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.operational-financial-obligations__card dt {
+  color: #8ca0c4;
+  font-size: 0.72rem;
+}
+
+.operational-financial-obligations__card dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.operational-financial-obligations__planning-note {
+  margin: 0;
+  padding: 0.8rem;
+  border: 1px solid rgb(245 158 11 / 20%);
+  border-radius: 0.75rem;
+  background: rgb(245 158 11 / 7%);
+  color: #fde68a;
+  line-height: 1.5;
+}
+
+.operational-financial-obligations__notes {
+  margin: 0;
+  padding: 0.8rem;
+  border-left: 3px solid #3159a6;
+  background: rgb(49 89 166 / 8%);
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.operational-financial-obligations__card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.operational-financial-obligations__card-actions button {
+  border-color: rgb(248 113 113 / 35%);
+  color: #fecaca;
+}
+
+@media (max-width: 900px) {
+  .operational-financial-obligations__summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .operational-financial-obligations__list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .operational-financial-obligations {
+    padding: 1.1rem;
+  }
+
+  .operational-financial-obligations__header,
+  .operational-financial-obligations__group-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .operational-financial-obligations__summary,
+  .operational-financial-obligations__card dl {
+    grid-template-columns: 1fr;
+  }
+}

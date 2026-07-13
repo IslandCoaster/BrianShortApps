@@ -45,6 +45,7 @@ import {
 
 import { OperationalFundingSourcesView } from "../experiences/finance-workspace/OperationalFundingSourcesView";
 import { OperationalFundingPlanView } from "../experiences/finance-workspace/OperationalFundingPlanView";
+import { OperationalFinancialObligationsView } from "../experiences/finance-workspace/OperationalFinancialObligationsView";
 
 function formatAmount(amount: number) {
   return `$${amount.toLocaleString(undefined, {
@@ -122,6 +123,8 @@ function ReadyPersonalFinancePage({
   const [isSavingObligation, setIsSavingObligation] = useState(false);
 
   const [obligationSaveError, setObligationSaveError] = useState("");
+
+  const [obligationOperationError, setObligationOperationError] = useState("");
 
   const [selectedAccountType, setSelectedAccountType] = useState<
     FinancialAccount["accountType"] | null
@@ -256,6 +259,7 @@ function ReadyPersonalFinancePage({
 
   function handleOpenObligationForm() {
     setObligationSaveError("");
+    setObligationOperationError("");
     setIsAddingObligation(true);
 
     window.requestAnimationFrame(() => {
@@ -306,6 +310,32 @@ function ReadyPersonalFinancePage({
       );
     } finally {
       setIsSavingObligation(false);
+    }
+  }
+
+  async function handleRemoveObligation(obligationId: string) {
+    setObligationOperationError("");
+
+    try {
+      const repository = getOperationalFinancialObligationRepository();
+
+      const currentObligations = await repository.load();
+
+      const updatedObligations = currentObligations.filter(
+        (obligation) => obligation.id !== obligationId,
+      );
+
+      await repository.save(updatedObligations);
+
+      const restoredObligations = await repository.load();
+
+      onObligationsChanged(restoredObligations);
+    } catch (error) {
+      setObligationOperationError(
+        error instanceof Error
+          ? error.message
+          : "The obligation could not be removed.",
+      );
     }
   }
 
@@ -745,24 +775,21 @@ function ReadyPersonalFinancePage({
                 ) : null}
               </>
             ) : hasObligations ? (
-              <div className="personal-finance-page__empty-product">
-                <strong>
-                  {operationalOverview.activeObligationCount} operational{" "}
-                  {operationalOverview.activeObligationCount === 1
-                    ? "obligation is"
-                    : "obligations are"}{" "}
-                  persisted
-                </strong>
+              <>
+                <OperationalFinancialObligationsView
+                  obligations={obligations}
+                  onAddObligation={handleOpenObligationForm}
+                  onRemoveObligation={(obligationId) => {
+                    void handleRemoveObligation(obligationId);
+                  }}
+                />
 
-                <p>
-                  The obligation was restored from operational storage. The full
-                  obligation workspace will be added in the next commit.
-                </p>
-
-                <button type="button" onClick={handleOpenObligationForm}>
-                  Add another obligation
-                </button>
-              </div>
+                {obligationOperationError ? (
+                  <p className="operational-obligation-form__error">
+                    {obligationOperationError}
+                  </p>
+                ) : null}
+              </>
             ) : (
               <div className="personal-finance-page__empty-product">
                 <strong>No financial obligations entered</strong>

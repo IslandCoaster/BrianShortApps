@@ -51,36 +51,52 @@ function buildFundingSourceEvents(
     );
 }
 
+function getPlannedPaymentDate(
+  item: OperationalFundingPlan["items"][number],
+): string | undefined {
+  if (item.allocatedAmount <= 0) {
+    return undefined;
+  }
+
+  if (item.fundingStatus === "funded-after-due-date") {
+    return item.fullyFundedOn;
+  }
+
+  return item.dueDate;
+}
+
 function buildPaymentEvents(
   fundingPlan: OperationalFundingPlan,
 ): CashFlowEvent[] {
-  return fundingPlan.items.flatMap((item) =>
-    item.allocations
-      .filter((allocation) => allocation.amount > 0)
-      .map(
-        (allocation, allocationIndex): CashFlowEvent => ({
-          id: [
-            "planned-payment",
-            item.requirementType,
-            item.requirementId,
-            allocation.paymentDate,
-            allocationIndex,
-          ].join("-"),
-          date: allocation.paymentDate,
-          type: "payment",
-          title: item.name,
-          description: item.isPastDue
-            ? `Past-due priority payment to ${item.counterparty}`
-            : `Required payment to ${item.counterparty}`,
-          amount: -allocation.amount,
-          status:
-            item.fundingStatus === "partially-funded" ||
-            item.fundingStatus === "unfunded"
-              ? "partially-funded"
-              : "planned",
-        }),
-      ),
-  );
+  return fundingPlan.items.flatMap((item): CashFlowEvent[] => {
+    const paymentDate = getPlannedPaymentDate(item);
+
+    if (paymentDate === undefined || item.allocatedAmount <= 0) {
+      return [];
+    }
+
+    return [
+      {
+        id: [
+          "planned-payment",
+          item.requirementType,
+          item.requirementId,
+          paymentDate,
+        ].join("-"),
+        date: paymentDate,
+        type: "payment",
+        title: item.name,
+        description: item.isPastDue
+          ? `Past-due priority payment to ${item.counterparty}`
+          : `Required payment to ${item.counterparty}`,
+        amount: -item.allocatedAmount,
+        status:
+          item.fundingStatus === "partially-funded"
+            ? "partially-funded"
+            : "planned",
+      },
+    ];
+  });
 }
 
 export function buildOperationalFundingTimeline({
