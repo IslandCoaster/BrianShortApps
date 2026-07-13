@@ -190,3 +190,6 @@ export * from "./funding/fundingSourceValidation";
 export * from "./repositories/fundingSourceRepository";
 export * from "./repositories/localStorageFundingSourceRepository";
 export * from "./repositories/fundingSourceRepositoryVerification";
+
+export * from "./funding/operationalFundingEngine";
+export * from "./funding/operationalFundingEngineVerification";
