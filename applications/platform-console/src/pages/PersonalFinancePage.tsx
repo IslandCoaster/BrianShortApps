@@ -84,6 +84,7 @@ type ReadyPersonalFinancePageProps = {
   accounts: FinancialAccount[];
   obligations: FinancialObligation[];
   onAccountsChanged: (accounts: FinancialAccount[]) => void;
+  onObligationsChanged: (obligations: FinancialObligation[]) => void;
 };
 
 function ReadyPersonalFinancePage({
@@ -91,6 +92,7 @@ function ReadyPersonalFinancePage({
   accounts,
   obligations,
   onAccountsChanged,
+  onObligationsChanged,
 }: ReadyPersonalFinancePageProps) {
   const [accountIntakeStep, setAccountIntakeStep] = useState<
     "dashboard" | "account-type" | "account-form"
@@ -102,6 +104,9 @@ function ReadyPersonalFinancePage({
 
   const [accountOperationError, setAccountOperationError] = useState("");
   const [isAddingObligation, setIsAddingObligation] = useState(false);
+  const [isSavingObligation, setIsSavingObligation] = useState(false);
+
+  const [obligationSaveError, setObligationSaveError] = useState("");
 
   const [selectedAccountType, setSelectedAccountType] = useState<
     FinancialAccount["accountType"] | null
@@ -228,6 +233,7 @@ function ReadyPersonalFinancePage({
   }
 
   function handleOpenObligationForm() {
+    setObligationSaveError("");
     setIsAddingObligation(true);
 
     window.requestAnimationFrame(() => {
@@ -235,8 +241,50 @@ function ReadyPersonalFinancePage({
     });
   }
 
-  function handleObligationDraft(draft: OperationalUtilityObligationDraft) {
-    console.log("Operational obligation draft:", draft);
+  async function handleObligationDraft(
+    draft: OperationalUtilityObligationDraft,
+  ) {
+    setObligationSaveError("");
+    setIsSavingObligation(true);
+
+    try {
+      const repository = getOperationalFinancialObligationRepository();
+
+      const currentObligations = await repository.load();
+
+      const now = new Date().toISOString();
+
+      const obligation: FinancialObligation = {
+        id: crypto.randomUUID(),
+        obligationType: "utility",
+        name: draft.name,
+        provider: draft.provider,
+        status: "active",
+        amountDue: draft.amountDue,
+        dueDate: draft.dueDate,
+        cadence: draft.cadence,
+        referenceNumber: draft.referenceNumber,
+        notes: draft.notes,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      await repository.save([...currentObligations, obligation]);
+
+      const restoredObligations = await repository.load();
+
+      onObligationsChanged(restoredObligations);
+
+      setIsAddingObligation(false);
+    } catch (error) {
+      setObligationSaveError(
+        error instanceof Error
+          ? error.message
+          : "The obligation could not be saved.",
+      );
+    } finally {
+      setIsSavingObligation(false);
+    }
   }
 
   async function handleAccountDraft(draft: OperationalAccountDraft) {
@@ -572,10 +620,31 @@ function ReadyPersonalFinancePage({
 
           <div className="personal-finance-page__surface">
             {isAddingObligation ? (
-              <OperationalObligationForm
-                onCancel={() => setIsAddingObligation(false)}
-                onSubmit={handleObligationDraft}
-              />
+              <>
+                <OperationalObligationForm
+                  onCancel={() => {
+                    setIsAddingObligation(false);
+                    setObligationSaveError("");
+                  }}
+                  onSubmit={(draft) => {
+                    if (!isSavingObligation) {
+                      void handleObligationDraft(draft);
+                    }
+                  }}
+                />
+
+                {isSavingObligation ? (
+                  <p className="operational-obligation-form__status">
+                    Saving operational obligation…
+                  </p>
+                ) : null}
+
+                {obligationSaveError ? (
+                  <p className="operational-obligation-form__error">
+                    {obligationSaveError}
+                  </p>
+                ) : null}
+              </>
             ) : hasObligations ? (
               <div className="personal-finance-page__empty-product">
                 <strong>
@@ -587,8 +656,8 @@ function ReadyPersonalFinancePage({
                 </strong>
 
                 <p>
-                  Operational obligation display will be connected after
-                  persistence is added.
+                  The obligation was restored from operational storage. The full
+                  obligation workspace will be added in the next commit.
                 </p>
 
                 <button type="button" onClick={handleOpenObligationForm}>
@@ -835,6 +904,18 @@ export function PersonalFinancePage() {
           return {
             ...current,
             accounts,
+          };
+        });
+      }}
+      onObligationsChanged={(obligations) => {
+        setSessionState((current) => {
+          if (current.status !== "ready") {
+            return current;
+          }
+
+          return {
+            ...current,
+            obligations,
           };
         });
       }}
