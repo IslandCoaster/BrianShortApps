@@ -1,0 +1,81 @@
+﻿export type FinancialRecommendation = {
+  id: string;
+  title: string;
+  rationale: string;
+  priority: "critical" | "high" | "medium" | "low";
+};
+
+export type PaycheckSummary = {
+  id: string;
+  occurredOn: string;
+  netPay: number;
+  grossPay: number;
+  payPeriodStart: string;
+  payPeriodEnd: string;
+};
+
+export type StatementSummary = {
+  id: string;
+  occurredOn: string;
+  accountId: string;
+  accountName: string;
+  statementPeriodStart: string;
+  statementPeriodEnd: string;
+  statementClosingDate: string;
+  paymentDueDate: string;
+  statementBalance: number;
+  currentBalance: number;
+  projectedStatementBalance: number;
+  minimumPayment: number;
+};
+
+export type PaymentSummary = {
+  id: string;
+  occurredOn: string;
+  sourceAccountId: string;
+  sourceAccountName: string;
+  destinationAccountId: string;
+  destinationAccountName: string;
+  amount: number;
+  strategy: string;
+};
+
+export type FinancialState = {
+  liquidity: {
+    cashAvailable: number;
+  };
+  income: {
+    receivedIncome: number;
+    paychecks: PaycheckSummary[];
+  };
+  obligations: {
+    statementBalanceTotal: number;
+    currentBalanceTotal: number;
+    projectedStatementBalanceTotal: number;
+    minimumPaymentTotal: number;
+    statements: StatementSummary[];
+    payments: PaymentSummary[];
+  };
+  recommendations: FinancialRecommendation[];
+};
+
+export function createEmptyFinancialState(): FinancialState {
+  return {
+    liquidity: {
+      cashAvailable: 0,
+    },
+    income: {
+      receivedIncome: 0,
+      paychecks: [],
+    },
+    obligations: {
+      statementBalanceTotal: 0,
+      currentBalanceTotal: 0,
+      projectedStatementBalanceTotal: 0,
+      minimumPaymentTotal: 0,
+      statements: [],
+      payments: [],
+    },
+    recommendations: [],
+  };
+}
