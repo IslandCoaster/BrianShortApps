@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import type { FinancialAccountType } from "@bsa/finance";
+import type { AssetFinancialAccount, FinancialAccountType } from "@bsa/finance";
 
 import "./OperationalAccountForm.css";
 
@@ -28,6 +28,7 @@ export type OperationalAccountDraft =
       creditLimit?: number;
       minimumPayment?: number;
       paymentDueDate?: string;
+      settlementAccountId?: string;
       statementDate?: string;
       aprPercent?: number;
       accountSuffix?: string;
@@ -41,6 +42,7 @@ export type OperationalAccountDraft =
       originalPrincipal?: number;
       minimumPayment?: number;
       paymentDueDate?: string;
+      settlementAccountId?: string;
       interestRatePercent?: number;
       maturityDate?: string;
       accountSuffix?: string;
@@ -49,6 +51,7 @@ export type OperationalAccountDraft =
 
 type OperationalAccountFormProps = {
   accountType: FinancialAccountType;
+  assetAccounts: AssetFinancialAccount[];
   onBack: () => void;
   onCancel: () => void;
   onSubmit: (draft: OperationalAccountDraft) => void;
@@ -63,6 +66,7 @@ type AccountFormState = {
   originalPrincipal: string;
   minimumPayment: string;
   paymentDueDate: string;
+  settlementAccountId: string;
   statementDate: string;
   aprPercent: string;
   interestRatePercent: string;
@@ -80,6 +84,7 @@ const initialState: AccountFormState = {
   originalPrincipal: "",
   minimumPayment: "",
   paymentDueDate: "",
+  settlementAccountId: "",
   statementDate: "",
   aprPercent: "",
   interestRatePercent: "",
@@ -134,6 +139,7 @@ function optionalTrimmedString(value: string): string | undefined {
 
 export function OperationalAccountForm({
   accountType,
+  assetAccounts,
   onBack,
   onCancel,
   onSubmit,
@@ -229,6 +235,9 @@ export function OperationalAccountForm({
             formState.minimumPayment,
           ),
           paymentDueDate: formState.paymentDueDate || undefined,
+          settlementAccountId: optionalTrimmedString(
+            formState.settlementAccountId,
+          ),
           statementDate: formState.statementDate || undefined,
           aprPercent: parseOptionalNonNegativeNumber(formState.aprPercent),
         });
@@ -260,6 +269,9 @@ export function OperationalAccountForm({
             formState.minimumPayment,
           ),
           paymentDueDate: formState.paymentDueDate || undefined,
+          settlementAccountId: optionalTrimmedString(
+            formState.settlementAccountId,
+          ),
           interestRatePercent: parseOptionalNonNegativeNumber(
             formState.interestRatePercent,
           ),
@@ -529,6 +541,48 @@ export function OperationalAccountForm({
                 />
               </label>
             </div>
+          </fieldset>
+        ) : null}
+
+        {!isAssetAccount ? (
+          <fieldset>
+            <legend>Financial routing</legend>
+
+            <div className="operational-account-form__grid">
+              <label>
+                Settlement account
+                <select
+                  value={formState.settlementAccountId}
+                  onChange={(event) =>
+                    updateField("settlementAccountId", event.target.value)
+                  }
+                  disabled={assetAccounts.length === 0}
+                >
+                  <option value="">Select later</option>
+
+                  {assetAccounts.map((account) => (
+                    <option key={account.id} value={account.id}>
+                      {account.name} — {account.institutionName}
+                      {account.accountSuffix
+                        ? ` · ${account.accountSuffix}`
+                        : ""}
+                    </option>
+                  ))}
+                </select>
+                <small>
+                  Select the checking or savings account expected to settle this
+                  debt. You can leave this unassigned and complete routing
+                  later.
+                </small>
+              </label>
+            </div>
+
+            {assetAccounts.length === 0 ? (
+              <p className="operational-account-form__routing-message">
+                No active checking or savings accounts are available. Add an
+                asset account before assigning a settlement account.
+              </p>
+            ) : null}
           </fieldset>
         ) : null}
 

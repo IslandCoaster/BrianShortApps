@@ -73,6 +73,7 @@
 }
 
 .operational-account-form input,
+.operational-account-form select,
 .operational-account-form textarea {
   width: 100%;
   box-sizing: border-box;
@@ -85,6 +86,7 @@
 }
 
 .operational-account-form input:focus,
+.operational-account-form select:focus,
 .operational-account-form textarea:focus {
   border-color: #3159a6;
   outline: 3px solid rgb(49 89 166 / 18%);
@@ -140,4 +142,21 @@
   background: rgb(49 89 166 / 8%);
   color: #3159a6;
   font-weight: 600;
+}
+
+.operational-account-form label small {
+  color: #8ca0c4;
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.operational-account-form__routing-message {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgb(245 158 11 / 30%);
+  border-radius: 0.75rem;
+  background: rgb(245 158 11 / 8%);
+  color: #fcd34d;
+  line-height: 1.5;
 }

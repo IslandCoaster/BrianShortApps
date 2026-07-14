@@ -11,6 +11,7 @@ import {
   type FinancialObligation,
   type FundingDepositAllocation,
   type FundingSource,
+  type AssetFinancialAccount,
 } from "@bsa/finance";
 import { Link } from "react-router";
 
@@ -243,6 +244,11 @@ function ReadyPersonalFinancePage({
   }, [accounts, obligations]);
 
   const hasAccounts = operationalOverview.activeAccountCount > 0;
+
+  const activeAssetAccounts = accounts.filter(
+    (account): account is AssetFinancialAccount =>
+      isOperationalAccountActive(account) && isAssetFinancialAccount(account),
+  );
 
   const hasObligations = operationalOverview.activeObligationCount > 0;
 
@@ -597,6 +603,7 @@ function ReadyPersonalFinancePage({
             creditLimit: draft.creditLimit,
             minimumPayment: draft.minimumPayment,
             paymentDueDate: draft.paymentDueDate,
+            settlementAccountId: draft.settlementAccountId,
             statementDate: draft.statementDate,
             aprPercent: draft.aprPercent,
           };
@@ -610,6 +617,7 @@ function ReadyPersonalFinancePage({
             originalPrincipal: draft.originalPrincipal,
             minimumPayment: draft.minimumPayment,
             paymentDueDate: draft.paymentDueDate,
+            settlementAccountId: draft.settlementAccountId,
             interestRatePercent: draft.interestRatePercent,
             maturityDate: draft.maturityDate,
           };
@@ -806,6 +814,7 @@ function ReadyPersonalFinancePage({
                 <>
                   <OperationalAccountForm
                     accountType={selectedAccountType}
+                    assetAccounts={activeAssetAccounts}
                     onBack={() => setAccountIntakeStep("account-type")}
                     onCancel={() => {
                       setSelectedAccountType(null);
