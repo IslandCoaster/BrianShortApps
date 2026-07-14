@@ -56,6 +56,43 @@ function getBalanceLabel(account: FinancialAccount) {
     : "Current Balance";
 }
 
+function getSettlementAccountLabel(
+  account: FinancialAccount,
+  accounts: readonly FinancialAccount[],
+): string | undefined {
+  if (
+    account.accountType !== "credit-card" &&
+    account.accountType !== "loan"
+  ) {
+    return undefined;
+  }
+
+  if (!account.settlementAccountId) {
+    return "Not assigned";
+  }
+
+  const settlementAccount = accounts.find(
+    (candidate) => candidate.id === account.settlementAccountId,
+  );
+
+  if (!settlementAccount || !isAssetFinancialAccount(settlementAccount)) {
+    return "Unavailable account";
+  }
+
+  const accountIdentity = settlementAccount.accountSuffix
+    ? `${settlementAccount.name} · ${settlementAccount.accountSuffix}`
+    : settlementAccount.name;
+
+  if (
+    settlementAccount.status === "closed" ||
+    settlementAccount.status === "paid-off"
+  ) {
+    return `${accountIdentity} · Inactive`;
+  }
+
+  return `${accountIdentity} · ${settlementAccount.institutionName}`;
+}
+
 function AccountDetail({ label, value }: { label: string; value: string }) {
   return (
     <div className="operational-financial-accounts__detail">
@@ -67,11 +104,15 @@ function AccountDetail({ label, value }: { label: string; value: string }) {
 
 function OperationalAccountCard({
   account,
+  accounts,
   onRemoveAccount,
 }: {
   account: FinancialAccount;
+  accounts: readonly FinancialAccount[];
   onRemoveAccount: (accountId: string) => void;
 }) {
+  const settlementAccountLabel = getSettlementAccountLabel(account, accounts);
+
   return (
     <article className="operational-financial-accounts__card">
       <div className="operational-financial-accounts__card-header">
@@ -123,6 +164,11 @@ function OperationalAccountCard({
             />
 
             <AccountDetail
+              label="Settlement Account"
+              value={settlementAccountLabel ?? "Not assigned"}
+            />
+
+            <AccountDetail
               label="Statement Date"
               value={account.statementDate ?? "Not entered"}
             />
@@ -149,6 +195,11 @@ function OperationalAccountCard({
             <AccountDetail
               label="Payment Due"
               value={account.paymentDueDate ?? "Not entered"}
+            />
+
+            <AccountDetail
+              label="Settlement Account"
+              value={settlementAccountLabel ?? "Not assigned"}
             />
 
             <AccountDetail
@@ -218,7 +269,9 @@ export function OperationalFinancialAccountsView({
       <div className="operational-financial-accounts__header">
         <div>
           <span>Operational accounts</span>
+
           <h3>Financial Accounts</h3>
+
           <p>
             These accounts were restored from the operational account
             repository.
@@ -233,16 +286,19 @@ export function OperationalFinancialAccountsView({
       <div className="operational-financial-accounts__summary">
         <article>
           <span>Active Accounts</span>
+
           <strong>{activeAccounts.length}</strong>
         </article>
 
         <article>
           <span>Asset Balance</span>
+
           <strong>{formatAmount(assetTotal)}</strong>
         </article>
 
         <article>
           <span>Debt Balance</span>
+
           <strong>{formatAmount(debtTotal)}</strong>
         </article>
       </div>
@@ -252,6 +308,7 @@ export function OperationalFinancialAccountsView({
           <div className="operational-financial-accounts__group-header">
             <div>
               <h4>Asset Accounts</h4>
+
               <p>
                 Checking and savings accounts that hold available or reserved
                 cash.
@@ -269,6 +326,7 @@ export function OperationalFinancialAccountsView({
               <OperationalAccountCard
                 key={account.id}
                 account={account}
+                accounts={accounts}
                 onRemoveAccount={onRemoveAccount}
               />
             ))}
@@ -281,6 +339,7 @@ export function OperationalFinancialAccountsView({
           <div className="operational-financial-accounts__group-header">
             <div>
               <h4>Debt Accounts</h4>
+
               <p>
                 Credit cards and loans with outstanding payment obligations.
               </p>
@@ -297,6 +356,7 @@ export function OperationalFinancialAccountsView({
               <OperationalAccountCard
                 key={account.id}
                 account={account}
+                accounts={accounts}
                 onRemoveAccount={onRemoveAccount}
               />
             ))}
