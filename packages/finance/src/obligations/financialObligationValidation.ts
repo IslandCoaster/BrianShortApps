@@ -88,6 +88,12 @@ export function assertValidFinancialObligation(
         obligation.id,
       );
 
+      assertOptionalNonEmptyString(
+  obligation.settlementAccountId,
+  "settlementAccountId",
+  obligation.id,
+);
+
       if (!obligationCadences.includes(obligation.cadence)) {
         throw new Error(
           `Invalid financial obligation "${obligation.id}": unrecognized cadence.`,

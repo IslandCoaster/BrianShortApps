@@ -129,6 +129,11 @@ export function assertValidFinancialAccount(account: FinancialAccount): void {
         "paymentDueDate",
         account.id,
       );
+      assertOptionalNonEmptyString(
+        account.settlementAccountId,
+        "settlementAccountId",
+        account.id,
+      );
 
       assertOptionalNonEmptyString(
         account.statementDate,
@@ -165,6 +170,12 @@ export function assertValidFinancialAccount(account: FinancialAccount): void {
       assertOptionalNonEmptyString(
         account.paymentDueDate,
         "paymentDueDate",
+        account.id,
+      );
+
+      assertOptionalNonEmptyString(
+        account.settlementAccountId,
+        "settlementAccountId",
         account.id,
       );
 

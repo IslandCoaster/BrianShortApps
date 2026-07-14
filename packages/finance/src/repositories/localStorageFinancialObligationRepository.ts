@@ -138,6 +138,11 @@ function deserializeFinancialObligation(
       }
 
       if (!isOptionalString(value.dueDate)) {
+        if (!isOptionalString(value.settlementAccountId)) {
+  throw new Error(
+    `Invalid persisted financial obligation "${value.id}": settlementAccountId must be a string when present.`,
+  );
+}
         throw new Error(
           `Invalid persisted financial obligation "${value.id}": dueDate must be a string when present.`,
         );
@@ -155,6 +160,13 @@ function deserializeFinancialObligation(
         );
       }
 
+      const settlementAccountId = value.settlementAccountId;
+
+if (!isOptionalString(settlementAccountId)) {
+  throw new Error(
+    `Invalid persisted financial obligation "${value.id}": settlementAccountId must be a string when present.`,
+  );
+}
       const obligation: UtilityObligation = {
         id: value.id,
         obligationType: "utility",
@@ -165,6 +177,7 @@ function deserializeFinancialObligation(
         provider: value.provider,
         amountDue: value.amountDue,
         dueDate: value.dueDate,
+        settlementAccountId: settlementAccountId,
         cadence: value.cadence,
         referenceNumber: value.referenceNumber,
         notes: value.notes,

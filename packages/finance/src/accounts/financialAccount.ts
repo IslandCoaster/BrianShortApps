@@ -51,6 +51,7 @@ export type CreditCardAccount = BaseFinancialAccount & {
   creditLimit?: number;
   minimumPayment?: number;
   paymentDueDate?: string;
+  settlementAccountId?: string;
   statementDate?: string;
   aprPercent?: number;
   accountSuffix?: string;
@@ -63,6 +64,7 @@ export type LoanAccount = BaseFinancialAccount & {
   originalPrincipal?: number;
   minimumPayment?: number;
   paymentDueDate?: string;
+  settlementAccountId?: string;
   interestRatePercent?: number;
   maturityDate?: string;
   accountSuffix?: string;

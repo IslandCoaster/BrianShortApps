@@ -203,6 +203,11 @@ function deserializeFinancialAccount(
       }
 
       if (!isOptionalString(value.paymentDueDate)) {
+        if (!isOptionalString(value.settlementAccountId)) {
+  throw new Error(
+    `Invalid persisted financial account "${value.id}": settlementAccountId must be a string when present.`,
+  );
+}
         throw new Error(
           `Invalid persisted financial account "${value.id}": paymentDueDate must be a string when present.`,
         );
@@ -214,6 +219,13 @@ function deserializeFinancialAccount(
         );
       }
 
+      const settlementAccountId = value.settlementAccountId;
+
+      if (!isOptionalString(settlementAccountId)) {
+        throw new Error(
+          `Invalid persisted financial account "${value.id}": settlementAccountId must be a string when present.`,
+        );
+      }
       const creditCardAccount: CreditCardAccount = {
         ...commonFields,
         accountType: "credit-card",
@@ -221,6 +233,7 @@ function deserializeFinancialAccount(
         creditLimit: value.creditLimit,
         minimumPayment: value.minimumPayment,
         paymentDueDate: value.paymentDueDate,
+        settlementAccountId: settlementAccountId,
         statementDate: value.statementDate,
         aprPercent: value.aprPercent,
       };
@@ -258,6 +271,11 @@ function deserializeFinancialAccount(
       }
 
       if (!isOptionalString(value.paymentDueDate)) {
+        if (!isOptionalString(value.settlementAccountId)) {
+  throw new Error(
+    `Invalid persisted financial account "${value.id}": settlementAccountId must be a string when present.`,
+  );
+}
         throw new Error(
           `Invalid persisted financial account "${value.id}": paymentDueDate must be a string when present.`,
         );
@@ -269,6 +287,13 @@ function deserializeFinancialAccount(
         );
       }
 
+      const settlementAccountId = value.settlementAccountId;
+
+if (!isOptionalString(settlementAccountId)) {
+  throw new Error(
+    `Invalid persisted financial account "${value.id}": settlementAccountId must be a string when present.`,
+  );
+}
       const loanAccount: LoanAccount = {
         ...commonFields,
         accountType: "loan",
@@ -276,6 +301,7 @@ function deserializeFinancialAccount(
         originalPrincipal: value.originalPrincipal,
         minimumPayment: value.minimumPayment,
         paymentDueDate: value.paymentDueDate,
+        settlementAccountId: settlementAccountId,
         interestRatePercent: value.interestRatePercent,
         maturityDate: value.maturityDate,
       };
