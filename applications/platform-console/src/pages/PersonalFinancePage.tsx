@@ -1,5 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import {
+  buildAssetAccountProjection,
   createFinancialLedgerEvent,
   getFinancialAccountBalance,
   isAssetFinancialAccount,
@@ -8,8 +9,8 @@ import {
   type FinancialLedgerEvent,
   type FinancialLedgerReplayState,
   type FinancialObligation,
-  type FundingSource,
   type FundingDepositAllocation,
+  type FundingSource,
 } from "@bsa/finance";
 import { Link } from "react-router";
 
@@ -39,6 +40,7 @@ import {
 } from "../experiences/finance-workspace/OperationalObligationForm";
 import { getOperationalFundingSourceRepository } from "../experiences/finance-workspace/operationalFundingSourceRepository";
 
+import { OperationalAccountProjectionView } from "../experiences/finance-workspace/OperationalAccountProjectionView";
 import {
   OperationalFundingSourceForm,
   type OperationalPaycheckFundingSourceDraft,
@@ -165,6 +167,16 @@ function ReadyPersonalFinancePage({
 
   const selectedFundingSource = fundingSources.find(
     (source) => source.id === selectedFundingSourceId,
+  );
+
+  const assetAccountProjection = useMemo(
+    () =>
+      buildAssetAccountProjection({
+        accounts,
+        fundingSources,
+        allocations: fundingDepositAllocations,
+      }),
+    [accounts, fundingDepositAllocations, fundingSources],
   );
 
   const operationalOverview = useMemo(() => {
@@ -850,6 +862,30 @@ function ReadyPersonalFinancePage({
                   </button>
                 </div>
               )}
+            </section>
+          </div>
+        </section>
+
+        <section
+          className="personal-finance-page__section"
+          id="account-projections"
+        >
+          <div className="personal-finance-page__section-heading">
+            <div>
+              <h2>Account projections</h2>
+
+              <p>
+                Review how valid routed future deposits change each checking and
+                savings account over time.
+              </p>
+            </div>
+          </div>
+
+          <div className="personal-finance-page__surface">
+            <section className="finance-workspace finance-workspace--product">
+              <OperationalAccountProjectionView
+                projection={assetAccountProjection}
+              />
             </section>
           </div>
         </section>
