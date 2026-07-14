@@ -35,7 +35,6 @@ export type UtilityObligation = BaseFinancialObligation & {
    * generate future due dates automatically.
    */
   dueDate?: string;
-  settlementAccountId?: string;
   cadence: ObligationCadence;
   referenceNumber?: string;
 };
