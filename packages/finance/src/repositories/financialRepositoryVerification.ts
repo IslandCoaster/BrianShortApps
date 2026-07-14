@@ -6,6 +6,7 @@ import { verifyOperationalFundingEngine } from "../funding/operationalFundingEng
 import { verifyOperationalFundingTimeline } from "../funding/operationalFundingTimelineVerification";
 import { verifyFundingDepositAllocationRepository } from "./fundingDepositAllocationRepositoryVerification";
 import { verifyFundingAllocationProjection } from "../funding/fundingAllocationProjectionVerification";
+import { verifyAssetAccountProjection } from "../projections/assetAccountProjectionVerification";
 
 export async function verifyFinancialRepositories(): Promise<void> {
   await verifyFinancialLedgerRepository();
@@ -17,4 +18,5 @@ export async function verifyFinancialRepositories(): Promise<void> {
   verifyOperationalFundingEngine();
   verifyOperationalFundingTimeline();
   verifyFundingAllocationProjection();
+  verifyAssetAccountProjection();
 }

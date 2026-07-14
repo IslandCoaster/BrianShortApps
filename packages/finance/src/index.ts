@@ -206,3 +206,6 @@ export * from "./repositories/fundingDepositAllocationRepositoryVerification";
 
 export * from "./funding/fundingAllocationProjection";
 export * from "./funding/fundingAllocationProjectionVerification";
+
+export * from "./projections/assetAccountProjection";
+export * from "./projections/assetAccountProjectionVerification";
