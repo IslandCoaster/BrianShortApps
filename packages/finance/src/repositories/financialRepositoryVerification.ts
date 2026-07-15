@@ -9,6 +9,7 @@ import { verifyFundingAllocationProjection } from "../funding/fundingAllocationP
 import { verifyAssetAccountProjection } from "../projections/assetAccountProjectionVerification";
 import { verifyFundingDepositProjection } from "../projections/entries/fundingDepositProjectionVerification";
 import { verifyProjectionReplay } from "../projections/replay/projectionReplayVerification";
+import { verifySettlementProjection } from "../projections/entries/settlementProjectionVerification";
 
 export async function verifyFinancialRepositories(): Promise<void> {
   await verifyFinancialLedgerRepository();
@@ -23,4 +24,5 @@ export async function verifyFinancialRepositories(): Promise<void> {
   verifyAssetAccountProjection();
   verifyFundingDepositProjection();
   verifyProjectionReplay();
+  verifySettlementProjection();
 }

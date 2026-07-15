@@ -5,3 +5,5 @@ export * from "./projectionEntryValidation";
 export * from "./projectionEntryVerification";
 export * from "./fundingDepositProjection";
 export * from "./fundingDepositProjectionVerification";
+export * from "./settlementProjection"
+export * from "./settlementProjectionVerification"
