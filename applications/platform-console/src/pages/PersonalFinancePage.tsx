@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import {
   buildAssetAccountProjection,
+  buildOperationalFundingPlan,
   createFinancialLedgerEvent,
   getFinancialAccountBalance,
   isAssetFinancialAccount,
@@ -12,6 +13,7 @@ import {
   type FundingDepositAllocation,
   type FundingSource,
   type AssetFinancialAccount,
+  type OperationalFundingPlan,
 } from "@bsa/finance";
 import { Link } from "react-router";
 
@@ -87,6 +89,16 @@ function getAccountRequiredPayment(account: FinancialAccount): number {
   }
 }
 
+function parseNonNegativeAmount(value: string): number {
+  const parsed = Number(value);
+
+  return Number.isFinite(parsed) ? Math.max(parsed, 0) : 0;
+}
+
+function getTodayDate(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 function getAccountPaymentDueDate(
   account: FinancialAccount,
 ): string | undefined {
@@ -134,7 +146,7 @@ function ReadyPersonalFinancePage({
   const [accountSaveError, setAccountSaveError] = useState("");
 
   const [isSavingAccount, setIsSavingAccount] = useState(false);
-
+  const [minimumCashReserveInput, setMinimumCashReserveInput] = useState("0");
   const [accountOperationError, setAccountOperationError] = useState("");
   const [isAddingObligation, setIsAddingObligation] = useState(false);
   const [isSavingObligation, setIsSavingObligation] = useState(false);
@@ -170,6 +182,24 @@ function ReadyPersonalFinancePage({
     (source) => source.id === selectedFundingSourceId,
   );
 
+  const operationalFundingPlan = useMemo<OperationalFundingPlan>(
+    () =>
+      buildOperationalFundingPlan({
+        planningDate: getTodayDate(),
+        currentCash: ledgerReplay.currentCash,
+        minimumCashReserve: parseNonNegativeAmount(minimumCashReserveInput),
+        accounts,
+        obligations,
+        fundingSources,
+      }),
+    [
+      accounts,
+      fundingSources,
+      ledgerReplay.currentCash,
+      minimumCashReserveInput,
+      obligations,
+    ],
+  );
   const assetAccountProjection = useMemo(
     () =>
       buildAssetAccountProjection({
@@ -1079,10 +1109,10 @@ function ReadyPersonalFinancePage({
           <div className="personal-finance-page__surface">
             <section className="finance-workspace finance-workspace--product">
               <OperationalFundingPlanView
-                currentCash={ledgerReplay.currentCash}
-                accounts={accounts}
-                obligations={obligations}
+                plan={operationalFundingPlan}
                 fundingSources={fundingSources}
+                minimumCashReserveInput={minimumCashReserveInput}
+                onMinimumCashReserveChange={setMinimumCashReserveInput}
               />
             </section>
           </div>

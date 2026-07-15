@@ -1,10 +1,8 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
-  buildOperationalFundingPlan,
   buildOperationalFundingTimeline,
-  type FinancialAccount,
-  type FinancialObligation,
   type FundingSource,
+  type OperationalFundingPlan,
   type OperationalFundingStatus,
 } from "@bsa/finance";
 
@@ -12,10 +10,10 @@ import "./OperationalFundingPlanView.css";
 import { CashFlowTimelineView } from "./CashFlowTimelineView";
 
 type OperationalFundingPlanViewProps = {
-  currentCash: number;
-  accounts: FinancialAccount[];
-  obligations: FinancialObligation[];
+  plan: OperationalFundingPlan;
   fundingSources: FundingSource[];
+  minimumCashReserveInput: string;
+  onMinimumCashReserveChange: (value: string) => void;
 };
 
 function formatAmount(amount: number) {
@@ -57,39 +55,12 @@ function formatExclusionReason(
     : "Required payment amount not entered";
 }
 
-function parseNonNegativeAmount(value: string) {
-  const parsed = Number(value);
-
-  return Number.isFinite(parsed) ? Math.max(parsed, 0) : 0;
-}
-
-function getTodayDate() {
-  return new Date().toISOString().slice(0, 10);
-}
-
 export function OperationalFundingPlanView({
-  currentCash,
-  accounts,
-  obligations,
+  plan,
   fundingSources,
+  minimumCashReserveInput,
+  onMinimumCashReserveChange,
 }: OperationalFundingPlanViewProps) {
-  const [minimumCashReserveInput, setMinimumCashReserveInput] = useState("0");
-
-  const minimumCashReserve = parseNonNegativeAmount(minimumCashReserveInput);
-
-  const plan = useMemo(
-    () =>
-      buildOperationalFundingPlan({
-        planningDate: getTodayDate(),
-        currentCash,
-        minimumCashReserve,
-        accounts,
-        obligations,
-        fundingSources,
-      }),
-    [accounts, currentCash, fundingSources, minimumCashReserve, obligations],
-  );
-
   const timeline = useMemo(
     () =>
       buildOperationalFundingTimeline({
@@ -116,7 +87,7 @@ export function OperationalFundingPlanView({
   const hasRequirements = plan.items.length > 0;
 
   const hasOperationalInputs =
-    currentCash > 0 ||
+    plan.position.currentCash > 0 ||
     fundingSources.some((source) => source.status === "planned");
 
   return (
@@ -140,7 +111,7 @@ export function OperationalFundingPlanView({
             min="0"
             step="0.01"
             value={minimumCashReserveInput}
-            onChange={(event) => setMinimumCashReserveInput(event.target.value)}
+            onChange={(event) => onMinimumCashReserveChange(event.target.value)}
           />
         </label>
       </div>
