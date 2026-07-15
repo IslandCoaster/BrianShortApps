@@ -3,3 +3,5 @@ export * from "./projectionEntryOrdering";
 export * from "./projectionEntryPriority";
 export * from "./projectionEntryValidation";
 export * from "./projectionEntryVerification";
+export * from "./fundingDepositProjection";
+export * from "./fundingDepositProjectionVerification";
