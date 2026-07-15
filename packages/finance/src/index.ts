@@ -209,3 +209,4 @@ export * from "./funding/fundingAllocationProjectionVerification";
 
 export * from "./projections/assetAccountProjection";
 export * from "./projections/assetAccountProjectionVerification";
+export * from "./projections/entries";
