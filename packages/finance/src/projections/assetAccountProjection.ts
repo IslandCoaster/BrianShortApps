@@ -3,16 +3,20 @@ import {
   type AssetFinancialAccount,
   type FinancialAccount,
 } from "../accounts/financialAccount";
-import {
-  buildFundingAllocationProjection,
-  type FundingAllocationIssue,
-  type FundingAllocationStatus,
+import type {
+  FundingAllocationIssue,
+  FundingAllocationStatus,
 } from "../funding/fundingAllocationProjection";
 import type { FundingDepositAllocation } from "../funding/fundingDepositAllocation";
 import type { FundingSource } from "../funding/fundingSource";
+import {
+  buildFundingDepositProjection,
+  type BlockedFundingDepositSource,
+} from "./entries/fundingDepositProjection";
+import type { ProjectionEntry } from "./entries/projectionEntry";
+import { replayProjectionEntries } from "./replay/projectionReplay";
 
-export type AssetAccountProjectionEntryType =
-  "funding-deposit";
+export type AssetAccountProjectionEntryType = "funding-deposit";
 
 export type AssetAccountProjectionEntry = {
   id: string;
@@ -60,48 +64,39 @@ export type AssetAccountProjectionRequest = {
   allocations: readonly FundingDepositAllocation[];
 };
 
-function toCents(amount: number): number {
-  if (!Number.isFinite(amount)) {
-    return 0;
+function mapBlockedFundingSource(
+  source: BlockedFundingDepositSource,
+): BlockedFundingSourceProjection {
+  return {
+    fundingSourceId: source.fundingSourceId,
+    fundingSourceTitle: source.fundingSourceTitle,
+    fundingSourceAmount: source.fundingSourceAmount,
+    status: source.status,
+    remainingAmount: source.remainingAmount,
+    issues: source.issues,
+  };
+}
+
+function mapProjectionEntry(
+  entry: ProjectionEntry & { runningBalance: number },
+): AssetAccountProjectionEntry {
+  if (entry.entryType !== "funding-deposit") {
+    throw new Error(
+      `Asset funding projection received unsupported entry type "${entry.entryType}".`,
+    );
   }
 
-  return Math.round(amount * 100);
-}
-
-function fromCents(amountInCents: number): number {
-  return amountInCents / 100;
-}
-
-function orderProjectionEntries(
-  entries: readonly Omit<
-    AssetAccountProjectionEntry,
-    "runningBalance"
-  >[],
-): Omit<
-  AssetAccountProjectionEntry,
-  "runningBalance"
->[] {
-  return [...entries].sort((left, right) => {
-    const dateComparison =
-      left.occurredOn.localeCompare(
-        right.occurredOn,
-      );
-
-    if (dateComparison !== 0) {
-      return dateComparison;
-    }
-
-    const sourceComparison =
-      left.fundingSourceId.localeCompare(
-        right.fundingSourceId,
-      );
-
-    if (sourceComparison !== 0) {
-      return sourceComparison;
-    }
-
-    return left.id.localeCompare(right.id);
-  });
+  return {
+    id: entry.id,
+    accountId: entry.accountId,
+    occurredOn: entry.occurredOn,
+    entryType: "funding-deposit",
+    title: entry.title,
+    amount: entry.amount,
+    runningBalance: entry.runningBalance,
+    fundingSourceId: entry.sourceId,
+    fundingSourceTitle: entry.sourceName ?? entry.title,
+  };
 }
 
 export function buildAssetAccountProjection({
@@ -109,212 +104,55 @@ export function buildAssetAccountProjection({
   fundingSources,
   allocations,
 }: AssetAccountProjectionRequest): AssetAccountProjectionResult {
-  const plannedFundingSources =
-    fundingSources.filter(
-      (fundingSource) =>
-        fundingSource.status === "planned",
+  const fundingDepositProjection = buildFundingDepositProjection({
+    accounts,
+    fundingSources,
+    allocations,
+  });
+
+  const entriesByAccountId = new Map<string, ProjectionEntry[]>();
+
+  fundingDepositProjection.entries.forEach((entry) => {
+    const accountEntries = entriesByAccountId.get(entry.accountId) ?? [];
+
+    accountEntries.push(entry);
+
+    entriesByAccountId.set(entry.accountId, accountEntries);
+  });
+
+  const accountProjections = accounts
+    .filter(
+      (account): account is AssetFinancialAccount =>
+        account.status === "active" && isAssetFinancialAccount(account),
+    )
+    .map((account): AssetAccountProjection => {
+      const replay = replayProjectionEntries({
+        openingBalance: account.currentBalance,
+        entries: entriesByAccountId.get(account.id) ?? [],
+      });
+
+      return {
+        accountId: account.id,
+        accountName: account.name,
+        institutionName: account.institutionName,
+        accountType: account.accountType,
+        openingBalance: replay.openingBalance,
+        totalPlannedDeposits: replay.totalInflows,
+        closingBalance: replay.closingBalance,
+        lowestBalance: replay.lowestBalance,
+        entries: replay.entries.map(mapProjectionEntry),
+      };
+    })
+    .sort((left, right) =>
+      left.accountName.localeCompare(right.accountName),
     );
-
-  const allocationProjection =
-    buildFundingAllocationProjection({
-      accounts,
-      fundingSources:
-        plannedFundingSources,
-      allocations,
-    });
-
-  const fullyAllocatedSourceIds =
-    new Set(
-      allocationProjection.sources
-        .filter(
-          (source) =>
-            source.status ===
-            "fully-allocated",
-        )
-        .map(
-          (source) =>
-            source.fundingSourceId,
-        ),
-    );
-
-  const blockedFundingSources =
-    allocationProjection.sources
-      .filter(
-        (source) =>
-          source.status !==
-          "fully-allocated",
-      )
-      .map(
-        (
-          source,
-        ): BlockedFundingSourceProjection => ({
-          fundingSourceId:
-            source.fundingSourceId,
-          fundingSourceTitle:
-            source.fundingSourceTitle,
-          fundingSourceAmount:
-            source.fundingSourceAmount,
-          status: source.status,
-          remainingAmount:
-            source.remainingAmount,
-          issues: source.issues,
-        }),
-      );
-
-  const accountEntries = new Map<
-    string,
-    Omit<
-      AssetAccountProjectionEntry,
-      "runningBalance"
-    >[]
-  >();
-
-  allocationProjection.accounts.forEach(
-    (accountProjection) => {
-      const validDeposits =
-        accountProjection.deposits.filter(
-          (deposit) =>
-            fullyAllocatedSourceIds.has(
-              deposit.fundingSourceId,
-            ),
-        );
-
-      accountEntries.set(
-        accountProjection.accountId,
-        validDeposits.map(
-          (
-            deposit,
-          ): Omit<
-            AssetAccountProjectionEntry,
-            "runningBalance"
-          > => ({
-            id: `funding-deposit-${deposit.allocationId}`,
-            accountId:
-              deposit.destinationAccountId,
-            occurredOn:
-              deposit.expectedOn,
-            entryType:
-              "funding-deposit",
-            title:
-              deposit.fundingSourceTitle,
-            amount: fromCents(
-              toCents(deposit.amount),
-            ),
-            fundingSourceId:
-              deposit.fundingSourceId,
-            fundingSourceTitle:
-              deposit.fundingSourceTitle,
-          }),
-        ),
-      );
-    },
-  );
-
-  const accountProjections =
-    accounts
-      .filter(
-        (
-          account,
-        ): account is AssetFinancialAccount =>
-          account.status === "active" &&
-          isAssetFinancialAccount(account),
-      )
-      .map(
-        (
-          account,
-        ): AssetAccountProjection => {
-          const openingBalanceInCents =
-            toCents(
-              account.currentBalance,
-            );
-
-          const orderedEntries =
-            orderProjectionEntries(
-              accountEntries.get(
-                account.id,
-              ) ?? [],
-            );
-
-          let runningBalanceInCents =
-            openingBalanceInCents;
-
-          let lowestBalanceInCents =
-            openingBalanceInCents;
-
-          const entries =
-            orderedEntries.map(
-              (
-                entry,
-              ): AssetAccountProjectionEntry => {
-                runningBalanceInCents +=
-                  toCents(entry.amount);
-
-                lowestBalanceInCents =
-                  Math.min(
-                    lowestBalanceInCents,
-                    runningBalanceInCents,
-                  );
-
-                return {
-                  ...entry,
-                  runningBalance:
-                    fromCents(
-                      runningBalanceInCents,
-                    ),
-                };
-              },
-            );
-
-          const totalPlannedDepositsInCents =
-            entries.reduce(
-              (total, entry) =>
-                total +
-                toCents(entry.amount),
-              0,
-            );
-
-          return {
-            accountId: account.id,
-            accountName: account.name,
-            institutionName:
-              account.institutionName,
-            accountType:
-              account.accountType,
-            openingBalance:
-              fromCents(
-                openingBalanceInCents,
-              ),
-            totalPlannedDeposits:
-              fromCents(
-                totalPlannedDepositsInCents,
-              ),
-            closingBalance:
-              fromCents(
-                openingBalanceInCents +
-                  totalPlannedDepositsInCents,
-              ),
-            lowestBalance:
-              fromCents(
-                lowestBalanceInCents,
-              ),
-            entries,
-          };
-        },
-      )
-      .sort((left, right) =>
-        left.accountName.localeCompare(
-          right.accountName,
-        ),
-      );
 
   return {
     accounts: accountProjections,
-    blockedFundingSources,
-    orphanedIssues:
-      allocationProjection.orphanedIssues,
+    blockedFundingSources:
+      fundingDepositProjection.blockedSources.map(mapBlockedFundingSource),
+    orphanedIssues: fundingDepositProjection.orphanedAllocationIssues,
     canProjectAllPlannedFunding:
-      blockedFundingSources.length === 0 &&
-      allocationProjection.orphanedIssues
-        .length === 0,
+      fundingDepositProjection.canProjectAllPlannedFunding,
   };
 }
