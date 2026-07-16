@@ -34,7 +34,7 @@ export async function verifyFinancialRepositories(): Promise<void> {
 
   verifyAssetAccountProjection();
   verifyProjectionDiagnostics();
-verifyProjectionReplay();
-verifyAssetAccountProjection();
-verifyLiquidityState();
+  verifyProjectionReplay();
+  verifyAssetAccountProjection();
+  verifyLiquidityState();
 }
