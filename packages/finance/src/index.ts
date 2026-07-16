@@ -212,3 +212,5 @@ export * from "./projections/assetAccountProjectionVerification";
 export * from "./projections/entries";
 
 export * from "./projections/replay";
+
+export * from "./projections/diagnostics";

@@ -10,6 +10,7 @@ import { verifyAssetAccountProjection } from "../projections/assetAccountProject
 import { verifyFundingDepositProjection } from "../projections/entries/fundingDepositProjectionVerification";
 import { verifyProjectionReplay } from "../projections/replay/projectionReplayVerification";
 import { verifySettlementProjection } from "../projections/entries/settlementProjectionVerification";
+import { verifyProjectionDiagnostics } from "../projections/diagnostics/projectionDiagnosticVerification";
 
 export async function verifyFinancialRepositories(): Promise<void> {
   await verifyFinancialLedgerRepository();
@@ -18,11 +19,17 @@ export async function verifyFinancialRepositories(): Promise<void> {
   await verifyFundingSourceRepository();
   await verifyFundingDepositAllocationRepository();
 
-  verifyFundingAllocationProjection();
-    verifyOperationalFundingEngine();
+  verifyOperationalFundingEngine();
   verifyOperationalFundingTimeline();
-  verifyAssetAccountProjection();
+
+  verifyFundingAllocationProjection();
+
   verifyFundingDepositProjection();
-  verifyProjectionReplay();
   verifySettlementProjection();
+
+  verifyProjectionDiagnostics();
+
+  verifyProjectionReplay();
+
+  verifyAssetAccountProjection();
 }
