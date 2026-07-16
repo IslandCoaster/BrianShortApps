@@ -206,8 +206,14 @@ function ReadyPersonalFinancePage({
         accounts,
         fundingSources,
         allocations: fundingDepositAllocations,
+        fundingPlan: operationalFundingPlan,
       }),
-    [accounts, fundingDepositAllocations, fundingSources],
+    [
+      accounts,
+      fundingDepositAllocations,
+      fundingSources,
+      operationalFundingPlan,
+    ],
   );
 
   const operationalOverview = useMemo(() => {

@@ -2,6 +2,7 @@ import type { FinancialAccount } from "../accounts/financialAccount";
 import type { FundingDepositAllocation } from "../funding/fundingDepositAllocation";
 import type { FundingSource } from "../funding/fundingSource";
 import { buildAssetAccountProjection } from "./assetAccountProjection";
+import type { OperationalFundingPlan } from "../funding/operationalFundingEngine";
 
 function assertEqual<T>(
   actual: T,
@@ -173,21 +174,38 @@ export function verifyAssetAccountProjection(): void {
     },
   ];
 
+  const fundingPlan: OperationalFundingPlan = {
+  planningDate: "2026-07-14",
+  position: {
+    currentCash: 0,
+    plannedFutureCash: 1500,
+    grossAvailableCash: 1500,
+    protectedCash: 0,
+    deployableCash: 1500,
+    allocatedCash: 0,
+    fundingBuffer: 1500,
+    unresolvedAmount: 0,
+  },
+  items: [],
+  excludedRequirements: [],
+};
+
   const projection =
-    buildAssetAccountProjection({
-      accounts: [
-        checkingAccount,
-        savingsAccount,
-        creditCardAccount,
-      ],
-      fundingSources: [
-        firstPaycheck,
-        secondPaycheck,
-        partialRefund,
-        receivedDeposit,
-      ],
-      allocations,
-    });
+  buildAssetAccountProjection({
+    accounts: [
+      checkingAccount,
+      savingsAccount,
+      creditCardAccount,
+    ],
+    fundingSources: [
+      firstPaycheck,
+      secondPaycheck,
+      partialRefund,
+      receivedDeposit,
+    ],
+    allocations,
+    fundingPlan,
+  });
 
   assertEqual(
     projection.accounts.length,
@@ -285,4 +303,22 @@ export function verifyAssetAccountProjection(): void {
     false,
     "Incomplete routing blocks complete projection",
   );
+
+  assertEqual(
+    checkingProjection?.totalPlannedSettlements,
+    0,
+    "Checking has no planned settlements in deposit-only fixture",
+    );
+
+  assertEqual(
+    projection.settlementIssues.length,
+    0,
+    "Deposit-only fixture has no settlement issues",
+  );
+
+    assertEqual(
+        projection.canProjectAllDebtSettlements,
+        true,
+        "Empty settlement plan is fully projectable",
+    );
 }

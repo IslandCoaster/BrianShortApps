@@ -9,25 +9,43 @@ import type {
 } from "../funding/fundingAllocationProjection";
 import type { FundingDepositAllocation } from "../funding/fundingDepositAllocation";
 import type { FundingSource } from "../funding/fundingSource";
+import type { OperationalFundingPlan } from "../funding/operationalFundingEngine";
 import {
   buildFundingDepositProjection,
   type BlockedFundingDepositSource,
 } from "./entries/fundingDepositProjection";
-import type { ProjectionEntry } from "./entries/projectionEntry";
+import type {
+  ProjectionEntry,
+  ProjectionIssue,
+} from "./entries/projectionEntry";
+import { buildSettlementProjection } from "./entries/settlementProjection";
+import type { ProjectionReplayEntry } from "./replay/projectionReplay";
 import { replayProjectionEntries } from "./replay/projectionReplay";
 
-export type AssetAccountProjectionEntryType = "funding-deposit";
+export type AssetAccountProjectionEntryType =
+  | "funding-deposit"
+  | "planned-settlement";
 
 export type AssetAccountProjectionEntry = {
   id: string;
   accountId: string;
   occurredOn: string;
   entryType: AssetAccountProjectionEntryType;
+  status: ProjectionEntry["status"];
   title: string;
+  description?: string;
   amount: number;
   runningBalance: number;
-  fundingSourceId: string;
-  fundingSourceTitle: string;
+  sourceType: ProjectionEntry["sourceType"];
+  sourceId: string;
+  sourceName?: string;
+
+  /**
+   * Retained temporarily for compatibility with the existing deposit-only UI
+   * and verification contract.
+   */
+  fundingSourceId?: string;
+  fundingSourceTitle?: string;
 };
 
 export type AssetAccountProjection = {
@@ -37,6 +55,7 @@ export type AssetAccountProjection = {
   accountType: AssetFinancialAccount["accountType"];
   openingBalance: number;
   totalPlannedDeposits: number;
+  totalPlannedSettlements: number;
   closingBalance: number;
   lowestBalance: number;
   entries: AssetAccountProjectionEntry[];
@@ -55,13 +74,16 @@ export type AssetAccountProjectionResult = {
   accounts: AssetAccountProjection[];
   blockedFundingSources: BlockedFundingSourceProjection[];
   orphanedIssues: FundingAllocationIssue[];
+  settlementIssues: ProjectionIssue[];
   canProjectAllPlannedFunding: boolean;
+  canProjectAllDebtSettlements: boolean;
 };
 
 export type AssetAccountProjectionRequest = {
   accounts: readonly FinancialAccount[];
   fundingSources: readonly FundingSource[];
   allocations: readonly FundingDepositAllocation[];
+  fundingPlan: OperationalFundingPlan;
 };
 
 function mapBlockedFundingSource(
@@ -78,11 +100,14 @@ function mapBlockedFundingSource(
 }
 
 function mapProjectionEntry(
-  entry: ProjectionEntry & { runningBalance: number },
+  entry: ProjectionReplayEntry,
 ): AssetAccountProjectionEntry {
-  if (entry.entryType !== "funding-deposit") {
+  if (
+    entry.entryType !== "funding-deposit" &&
+    entry.entryType !== "planned-settlement"
+  ) {
     throw new Error(
-      `Asset funding projection received unsupported entry type "${entry.entryType}".`,
+      `Asset account projection received unsupported entry type "${entry.entryType}".`,
     );
   }
 
@@ -90,12 +115,21 @@ function mapProjectionEntry(
     id: entry.id,
     accountId: entry.accountId,
     occurredOn: entry.occurredOn,
-    entryType: "funding-deposit",
+    entryType: entry.entryType,
+    status: entry.status,
     title: entry.title,
+    description: entry.description,
     amount: entry.amount,
     runningBalance: entry.runningBalance,
-    fundingSourceId: entry.sourceId,
-    fundingSourceTitle: entry.sourceName ?? entry.title,
+    sourceType: entry.sourceType,
+    sourceId: entry.sourceId,
+    sourceName: entry.sourceName,
+    fundingSourceId:
+      entry.entryType === "funding-deposit" ? entry.sourceId : undefined,
+    fundingSourceTitle:
+      entry.entryType === "funding-deposit"
+        ? entry.sourceName ?? entry.title
+        : undefined,
   };
 }
 
@@ -103,6 +137,7 @@ export function buildAssetAccountProjection({
   accounts,
   fundingSources,
   allocations,
+  fundingPlan,
 }: AssetAccountProjectionRequest): AssetAccountProjectionResult {
   const fundingDepositProjection = buildFundingDepositProjection({
     accounts,
@@ -110,9 +145,19 @@ export function buildAssetAccountProjection({
     allocations,
   });
 
+  const settlementProjection = buildSettlementProjection({
+    accounts,
+    fundingPlan,
+  });
+
+  const projectionEntries: ProjectionEntry[] = [
+    ...fundingDepositProjection.entries,
+    ...settlementProjection.entries,
+  ];
+
   const entriesByAccountId = new Map<string, ProjectionEntry[]>();
 
-  fundingDepositProjection.entries.forEach((entry) => {
+  projectionEntries.forEach((entry) => {
     const accountEntries = entriesByAccountId.get(entry.accountId) ?? [];
 
     accountEntries.push(entry);
@@ -138,6 +183,7 @@ export function buildAssetAccountProjection({
         accountType: account.accountType,
         openingBalance: replay.openingBalance,
         totalPlannedDeposits: replay.totalInflows,
+        totalPlannedSettlements: replay.totalOutflows,
         closingBalance: replay.closingBalance,
         lowestBalance: replay.lowestBalance,
         entries: replay.entries.map(mapProjectionEntry),
@@ -152,7 +198,10 @@ export function buildAssetAccountProjection({
     blockedFundingSources:
       fundingDepositProjection.blockedSources.map(mapBlockedFundingSource),
     orphanedIssues: fundingDepositProjection.orphanedAllocationIssues,
+    settlementIssues: settlementProjection.issues,
     canProjectAllPlannedFunding:
       fundingDepositProjection.canProjectAllPlannedFunding,
+    canProjectAllDebtSettlements:
+      settlementProjection.canProjectAllDebtSettlements,
   };
 }
