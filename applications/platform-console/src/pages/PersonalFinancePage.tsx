@@ -12,6 +12,7 @@ import {
   type FinancialObligation,
   type FundingDepositAllocation,
   type FundingSource,
+  type AccountLiquidityBuffer,
   type AssetFinancialAccount,
   type OperationalFundingPlan,
 } from "@bsa/finance";
@@ -200,6 +201,20 @@ function ReadyPersonalFinancePage({
       obligations,
     ],
   );
+  const accountLiquidityBuffers = useMemo<AccountLiquidityBuffer[]>(
+    () =>
+      accounts
+        .filter(
+          (account): account is AssetFinancialAccount =>
+            isOperationalAccountActive(account) &&
+            isAssetFinancialAccount(account),
+        )
+        .map((account) => ({
+          accountId: account.id,
+          recommendedMinimumBuffer: account.recommendedMinimumBuffer ?? 0,
+        })),
+    [accounts],
+  );
   const assetAccountProjection = useMemo(
     () =>
       buildAssetAccountProjection({
@@ -207,8 +222,10 @@ function ReadyPersonalFinancePage({
         fundingSources,
         allocations: fundingDepositAllocations,
         fundingPlan: operationalFundingPlan,
+        accountLiquidityBuffers,
       }),
     [
+      accountLiquidityBuffers,
       accounts,
       fundingDepositAllocations,
       fundingSources,
