@@ -321,4 +321,22 @@ export function verifyAssetAccountProjection(): void {
         true,
         "Empty settlement plan is fully projectable",
     );
+
+    assertEqual(
+  projection.diagnostics.blockingCount,
+  1,
+  "Partially routed source creates one blocking diagnostic",
+);
+
+assertEqual(
+  projection.diagnostics.attentionCount,
+  0,
+  "Deposit-only fixture has no attention diagnostics",
+);
+
+assertEqual(
+  projection.diagnostics.canProjectCompletely,
+  false,
+  "Blocked funding prevents complete projection",
+);
 }

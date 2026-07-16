@@ -11,6 +11,10 @@ import type { FundingDepositAllocation } from "../funding/fundingDepositAllocati
 import type { FundingSource } from "../funding/fundingSource";
 import type { OperationalFundingPlan } from "../funding/operationalFundingEngine";
 import {
+  buildProjectionDiagnostics,
+  type ProjectionDiagnosticSummary,
+} from "./diagnostics/projectionDiagnostic";
+import {
   buildFundingDepositProjection,
   type BlockedFundingDepositSource,
 } from "./entries/fundingDepositProjection";
@@ -19,8 +23,10 @@ import type {
   ProjectionIssue,
 } from "./entries/projectionEntry";
 import { buildSettlementProjection } from "./entries/settlementProjection";
-import type { ProjectionReplayEntry } from "./replay/projectionReplay";
-import { replayProjectionEntries } from "./replay/projectionReplay";
+import {
+  replayProjectionEntries,
+  type ProjectionReplayEntry,
+} from "./replay/projectionReplay";
 
 export type AssetAccountProjectionEntryType =
   | "funding-deposit"
@@ -41,8 +47,8 @@ export type AssetAccountProjectionEntry = {
   sourceName?: string;
 
   /**
-   * Retained temporarily for compatibility with the existing deposit-only UI
-   * and verification contract.
+   * Temporary compatibility fields retained while older consumers migrate
+   * to the canonical projection-entry source fields.
    */
   fundingSourceId?: string;
   fundingSourceTitle?: string;
@@ -72,9 +78,17 @@ export type BlockedFundingSourceProjection = {
 
 export type AssetAccountProjectionResult = {
   accounts: AssetAccountProjection[];
+
+  diagnostics: ProjectionDiagnosticSummary;
+
+  /**
+   * Temporary compatibility fields. Remove after every consumer uses
+   * the normalized diagnostics summary.
+   */
   blockedFundingSources: BlockedFundingSourceProjection[];
   orphanedIssues: FundingAllocationIssue[];
   settlementIssues: ProjectionIssue[];
+
   canProjectAllPlannedFunding: boolean;
   canProjectAllDebtSettlements: boolean;
 };
@@ -161,7 +175,6 @@ export function buildAssetAccountProjection({
     const accountEntries = entriesByAccountId.get(entry.accountId) ?? [];
 
     accountEntries.push(entry);
-
     entriesByAccountId.set(entry.accountId, accountEntries);
   });
 
@@ -193,8 +206,16 @@ export function buildAssetAccountProjection({
       left.accountName.localeCompare(right.accountName),
     );
 
+  const diagnostics = buildProjectionDiagnostics({
+    blockedFundingSources: fundingDepositProjection.blockedSources,
+    orphanedFundingIssues:
+      fundingDepositProjection.orphanedAllocationIssues,
+    settlementIssues: settlementProjection.issues,
+  });
+
   return {
     accounts: accountProjections,
+    diagnostics,
     blockedFundingSources:
       fundingDepositProjection.blockedSources.map(mapBlockedFundingSource),
     orphanedIssues: fundingDepositProjection.orphanedAllocationIssues,

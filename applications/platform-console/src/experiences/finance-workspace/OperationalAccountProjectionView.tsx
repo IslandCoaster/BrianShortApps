@@ -1,7 +1,8 @@
 import type {
   AssetAccountProjection,
+  AssetAccountProjectionEntry,
   AssetAccountProjectionResult,
-  BlockedFundingSourceProjection,
+  ProjectionDiagnostic,
 } from "@bsa/finance";
 
 import "./OperationalAccountProjectionView.css";
@@ -33,22 +34,39 @@ function formatAccountType(accountType: AssetAccountProjection["accountType"]) {
   }
 }
 
-function formatRoutingStatus(status: BlockedFundingSourceProjection["status"]) {
-  switch (status) {
-    case "unallocated":
-      return "Unallocated";
+function formatEntryType(entryType: AssetAccountProjectionEntry["entryType"]) {
+  switch (entryType) {
+    case "funding-deposit":
+      return "Funding Deposit";
 
-    case "partially-allocated":
-      return "Partially allocated";
+    case "planned-settlement":
+      return "Planned Settlement";
+  }
+}
 
-    case "fully-allocated":
-      return "Fully allocated";
+function getEntryDescription(
+  entry: AssetAccountProjectionEntry,
+  account: AssetAccountProjection,
+) {
+  if (entry.description) {
+    return entry.description;
+  }
 
-    case "overallocated":
-      return "Overallocated";
+  return entry.entryType === "funding-deposit"
+    ? `Routed into ${account.accountName}`
+    : `Planned from ${account.accountName}`;
+}
 
-    case "invalid":
-      return "Invalid routing";
+function formatDiagnosticCategory(category: ProjectionDiagnostic["category"]) {
+  switch (category) {
+    case "funding-routing":
+      return "Funding Routing";
+
+    case "settlement-routing":
+      return "Settlement Routing";
+
+    case "orphaned-record":
+      return "Orphaned Record";
   }
 }
 
@@ -76,25 +94,26 @@ function AccountProjectionCard({
       <div className="operational-account-projection__account-summary">
         <article>
           <span>Opening Balance</span>
-
           <strong>{formatAmount(account.openingBalance)}</strong>
         </article>
 
         <article>
           <span>Planned Deposits</span>
-
           <strong>{formatAmount(account.totalPlannedDeposits)}</strong>
         </article>
 
         <article>
-          <span>Lowest Balance</span>
+          <span>Planned Settlements</span>
+          <strong>{formatAmount(account.totalPlannedSettlements)}</strong>
+        </article>
 
+        <article>
+          <span>Lowest Balance</span>
           <strong>{formatAmount(account.lowestBalance)}</strong>
         </article>
 
         <article>
           <span>Closing Balance</span>
-
           <strong>{formatAmount(account.closingBalance)}</strong>
         </article>
       </div>
@@ -104,12 +123,15 @@ function AccountProjectionCard({
           <div>
             <h5>Projected Timeline</h5>
 
-            <p>Valid routed deposits applied in date order.</p>
+            <p>
+              Valid projected deposits and debt settlements replayed in date
+              order.
+            </p>
           </div>
 
           <span>
             {account.entries.length}{" "}
-            {account.entries.length === 1 ? "deposit" : "deposits"}
+            {account.entries.length === 1 ? "movement" : "movements"}
           </span>
         </div>
 
@@ -136,7 +158,10 @@ function AccountProjectionCard({
         {account.entries.map((entry) => (
           <article
             key={entry.id}
-            className="operational-account-projection__entry"
+            className={[
+              "operational-account-projection__entry",
+              `operational-account-projection__entry--${entry.entryType}`,
+            ].join(" ")}
           >
             <div className="operational-account-projection__marker">
               <span aria-hidden="true" />
@@ -145,11 +170,11 @@ function AccountProjectionCard({
             <time dateTime={entry.occurredOn}>{entry.occurredOn}</time>
 
             <div className="operational-account-projection__entry-description">
-              <small>Funding Deposit</small>
+              <small>{formatEntryType(entry.entryType)}</small>
 
               <strong>{entry.title}</strong>
 
-              <span>Routed into {account.accountName}</span>
+              <span>{getEntryDescription(entry, account)}</span>
             </div>
 
             <div className="operational-account-projection__entry-amount">
@@ -162,11 +187,11 @@ function AccountProjectionCard({
 
         {account.entries.length === 0 ? (
           <div className="operational-account-projection__empty-timeline">
-            <strong>No projected deposits</strong>
+            <strong>No projected account movements</strong>
 
             <p>
-              Fully routed planned funding sources assigned to this account will
-              appear here.
+              Valid routed deposits and planned debt settlements assigned to
+              this account will appear here.
             </p>
           </div>
         ) : null}
@@ -175,55 +200,28 @@ function AccountProjectionCard({
   );
 }
 
-function BlockedFundingSourceCard({
-  source,
+function ProjectionDiagnosticCard({
+  diagnostic,
 }: {
-  source: BlockedFundingSourceProjection;
+  diagnostic: ProjectionDiagnostic;
 }) {
   return (
-    <article className="operational-account-projection__blocked-source">
-      <div className="operational-account-projection__blocked-source-header">
+    <article
+      className={[
+        "operational-account-projection__diagnostic",
+        `operational-account-projection__diagnostic--${diagnostic.severity}`,
+      ].join(" ")}
+    >
+      <div className="operational-account-projection__diagnostic-header">
         <div>
-          <small>Funding source needs attention</small>
-
-          <strong>{source.fundingSourceTitle}</strong>
+          <small>{formatDiagnosticCategory(diagnostic.category)}</small>
+          <strong>{diagnostic.title}</strong>
         </div>
 
-        <span
-          className={`operational-account-projection__routing-status operational-account-projection__routing-status--${source.status}`}
-        >
-          {formatRoutingStatus(source.status)}
-        </span>
+        <span>{diagnostic.severity}</span>
       </div>
 
-      <dl>
-        <div>
-          <dt>Funding Source Total</dt>
-
-          <dd>{formatAmount(source.fundingSourceAmount)}</dd>
-        </div>
-
-        <div>
-          <dt>Remaining Allocation</dt>
-
-          <dd>{formatAmount(Math.abs(source.remainingAmount))}</dd>
-        </div>
-      </dl>
-
-      {source.issues.length > 0 ? (
-        <ul>
-          {source.issues.map((issue, index) => (
-            <li key={`${issue.code}-${issue.allocationId ?? index}`}>
-              {issue.message}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>
-          Complete the destination routing before this funding source can
-          contribute to an account projection.
-        </p>
-      )}
+      <p>{diagnostic.message}</p>
     </article>
   );
 }
@@ -249,6 +247,11 @@ export function OperationalAccountProjectionView({
     0,
   );
 
+  const projectedSettlements = projection.accounts.reduce(
+    (total, account) => total + account.totalPlannedSettlements,
+    0,
+  );
+
   const projectedClosingBalance = projection.accounts.reduce(
     (total, account) => total + account.closingBalance,
     0,
@@ -270,39 +273,40 @@ export function OperationalAccountProjectionView({
 
         <span
           className={`operational-account-projection__projection-status ${
-            projection.canProjectAllPlannedFunding
+            projection.diagnostics.canProjectCompletely
               ? "operational-account-projection__projection-status--ready"
               : "operational-account-projection__projection-status--attention"
           }`}
         >
-          {projection.canProjectAllPlannedFunding
-            ? "All planned funding projected"
-            : "Routing attention required"}
+          {projection.diagnostics.canProjectCompletely
+            ? "Projection complete"
+            : "Projection attention required"}
         </span>
       </div>
 
       <div className="operational-account-projection__summary">
         <article>
           <span>Projected Asset Accounts</span>
-
           <strong>{projection.accounts.length}</strong>
         </article>
 
         <article>
           <span>Opening Asset Balance</span>
-
           <strong>{formatAmount(projectedOpeningBalance)}</strong>
         </article>
 
         <article>
           <span>Valid Planned Deposits</span>
-
           <strong>{formatAmount(projectedDeposits)}</strong>
         </article>
 
         <article>
-          <span>Projected Closing Balance</span>
+          <span>Planned Debt Settlements</span>
+          <strong>{formatAmount(projectedSettlements)}</strong>
+        </article>
 
+        <article>
+          <span>Projected Closing Balance</span>
           <strong>{formatAmount(projectedClosingBalance)}</strong>
         </article>
       </div>
@@ -374,53 +378,35 @@ export function OperationalAccountProjectionView({
         </>
       )}
 
-      {projection.blockedFundingSources.length > 0 ? (
-        <section className="operational-account-projection__attention">
-          <div className="operational-account-projection__attention-header">
+      {projection.diagnostics.diagnostics.length > 0 ? (
+        <section className="operational-account-projection__diagnostics">
+          <div className="operational-account-projection__diagnostics-header">
             <div>
-              <h4>Funding Needs Attention</h4>
+              <h4>Projection Diagnostics</h4>
 
               <p>
-                These planned funding sources are not included in projected
-                account balances until their routing is complete and valid.
+                Resolve these routing conditions to produce a complete,
+                account-aware projection.
               </p>
             </div>
 
-            <span>
-              {projection.blockedFundingSources.length}{" "}
-              {projection.blockedFundingSources.length === 1
-                ? "source"
-                : "sources"}
-            </span>
+            <div className="operational-account-projection__diagnostic-counts">
+              <span>{projection.diagnostics.blockingCount} blocking</span>
+
+              <span>{projection.diagnostics.attentionCount} attention</span>
+            </div>
           </div>
 
-          <div className="operational-account-projection__blocked-list">
-            {projection.blockedFundingSources.map((source) => (
-              <BlockedFundingSourceCard
-                key={source.fundingSourceId}
-                source={source}
-              />
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      {projection.orphanedIssues.length > 0 ? (
-        <section className="operational-account-projection__orphaned">
-          <strong>Orphaned routing records detected</strong>
-
-          <p>
-            These routing records reference funding sources that no longer exist
-            and must be reviewed.
-          </p>
-
-          <ul>
-            {projection.orphanedIssues.map((issue, index) => (
-              <li key={`${issue.code}-${issue.allocationId ?? index}`}>
-                {issue.message}
-              </li>
-            ))}
-          </ul>
+          <div className="operational-account-projection__diagnostic-list">
+  {projection.diagnostics.diagnostics.map(
+    (diagnostic: ProjectionDiagnostic) => (
+      <ProjectionDiagnosticCard
+        key={diagnostic.id}
+        diagnostic={diagnostic}
+      />
+    ),
+  )}
+</div>
         </section>
       ) : null}
     </section>
