@@ -214,3 +214,5 @@ export * from "./projections/entries";
 export * from "./projections/replay";
 
 export * from "./projections/diagnostics";
+
+export * from "./liquidity";

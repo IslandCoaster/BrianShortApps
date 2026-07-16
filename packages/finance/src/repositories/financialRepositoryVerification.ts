@@ -11,6 +11,7 @@ import { verifyFundingDepositProjection } from "../projections/entries/fundingDe
 import { verifyProjectionReplay } from "../projections/replay/projectionReplayVerification";
 import { verifySettlementProjection } from "../projections/entries/settlementProjectionVerification";
 import { verifyProjectionDiagnostics } from "../projections/diagnostics/projectionDiagnosticVerification";
+import { verifyLiquidityState } from "../liquidity/liquidityVerification";
 
 export async function verifyFinancialRepositories(): Promise<void> {
   await verifyFinancialLedgerRepository();
@@ -32,4 +33,8 @@ export async function verifyFinancialRepositories(): Promise<void> {
   verifyProjectionReplay();
 
   verifyAssetAccountProjection();
+  verifyProjectionDiagnostics();
+verifyProjectionReplay();
+verifyAssetAccountProjection();
+verifyLiquidityState();
 }
