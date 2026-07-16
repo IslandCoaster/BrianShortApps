@@ -620,6 +620,7 @@ function ReadyPersonalFinancePage({
             ...commonFields,
             accountType: "checking",
             currentBalance: draft.currentBalance,
+            recommendedMinimumBuffer: draft.recommendedMinimumBuffer,
           };
           break;
 
@@ -628,6 +629,7 @@ function ReadyPersonalFinancePage({
             ...commonFields,
             accountType: "savings",
             currentBalance: draft.currentBalance,
+            recommendedMinimumBuffer: draft.recommendedMinimumBuffer,
           };
           break;
 

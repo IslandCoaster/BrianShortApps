@@ -60,10 +60,7 @@ function getSettlementAccountLabel(
   account: FinancialAccount,
   accounts: readonly FinancialAccount[],
 ): string | undefined {
-  if (
-    account.accountType !== "credit-card" &&
-    account.accountType !== "loan"
-  ) {
+  if (account.accountType !== "credit-card" && account.accountType !== "loan") {
     return undefined;
   }
 
@@ -143,7 +140,14 @@ function OperationalAccountCard({
       <div className="operational-financial-accounts__details">
         {account.accountType === "checking" ||
         account.accountType === "savings" ? (
-          <AccountDetail label="Account Category" value="Asset Account" />
+          <>
+            <AccountDetail label="Account Category" value="Asset Account" />
+
+            <AccountDetail
+              label="Minimum Liquidity Buffer"
+              value={formatOptionalAmount(account.recommendedMinimumBuffer)}
+            />
+          </>
         ) : null}
 
         {account.accountType === "credit-card" ? (

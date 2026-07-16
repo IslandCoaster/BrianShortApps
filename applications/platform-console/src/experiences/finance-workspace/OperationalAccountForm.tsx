@@ -9,6 +9,7 @@ export type OperationalAccountDraft =
       name: string;
       institutionName: string;
       currentBalance: number;
+      recommendedMinimumBuffer?: number;
       accountSuffix?: string;
       notes?: string;
     }
@@ -17,6 +18,7 @@ export type OperationalAccountDraft =
       name: string;
       institutionName: string;
       currentBalance: number;
+      recommendedMinimumBuffer?: number;
       accountSuffix?: string;
       notes?: string;
     }
@@ -61,6 +63,7 @@ type AccountFormState = {
   name: string;
   institutionName: string;
   currentBalance: string;
+  recommendedMinimumBuffer: string;
   currentPrincipal: string;
   creditLimit: string;
   originalPrincipal: string;
@@ -79,6 +82,7 @@ const initialState: AccountFormState = {
   name: "",
   institutionName: "",
   currentBalance: "",
+  recommendedMinimumBuffer: "",
   currentPrincipal: "",
   creditLimit: "",
   originalPrincipal: "",
@@ -208,6 +212,9 @@ export function OperationalAccountForm({
           ...commonFields,
           accountType,
           currentBalance,
+          recommendedMinimumBuffer: parseOptionalNonNegativeNumber(
+            formState.recommendedMinimumBuffer,
+          ),
         });
 
         return;
@@ -367,6 +374,23 @@ export function OperationalAccountForm({
                   }
                   placeholder="0.00"
                 />
+              </label>
+              <label>
+                Recommended minimum buffer
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={formState.recommendedMinimumBuffer}
+                  onChange={(event) =>
+                    updateField("recommendedMinimumBuffer", event.target.value)
+                  }
+                  placeholder="Optional"
+                />
+                <small>
+                  The lowest balance you prefer this account to maintain during
+                  projected activity.
+                </small>
               </label>
             </div>
           </fieldset>
