@@ -91,13 +91,20 @@ export function assertValidFinancialAccount(account: FinancialAccount): void {
 
   switch (account.accountType) {
     case "checking":
-    case "savings":
-      assertFiniteNonNegativeNumber(
-        account.currentBalance,
-        "currentBalance",
-        account.id,
-      );
-      return;
+case "savings":
+  assertFiniteNonNegativeNumber(
+    account.currentBalance,
+    "currentBalance",
+    account.id,
+  );
+
+  assertOptionalFiniteNonNegativeNumber(
+    account.recommendedMinimumBuffer,
+    "recommendedMinimumBuffer",
+    account.id,
+  );
+
+  return;
 
     case "credit-card":
       assertFiniteNonNegativeNumber(

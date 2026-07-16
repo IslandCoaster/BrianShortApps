@@ -155,24 +155,31 @@ function deserializeFinancialAccount(
 
   switch (value.accountType) {
     case "checking":
-    case "savings": {
-      if (
-        typeof value.currentBalance !== "number" ||
-        !Number.isFinite(value.currentBalance)
-      ) {
-        throw new Error(
-          `Invalid persisted financial account "${value.id}": currentBalance must be a finite number.`,
-        );
-      }
+case "savings": {
+  if (
+    typeof value.currentBalance !== "number" ||
+    !Number.isFinite(value.currentBalance)
+  ) {
+    throw new Error(
+      `Invalid persisted financial account "${value.id}": currentBalance must be a finite number.`,
+    );
+  }
 
-      account = {
-        ...commonFields,
-        accountType: value.accountType,
-        currentBalance: value.currentBalance,
-      };
+  if (!isOptionalFiniteNumber(value.recommendedMinimumBuffer)) {
+    throw new Error(
+      `Invalid persisted financial account "${value.id}": recommendedMinimumBuffer must be a finite number when present.`,
+    );
+  }
 
-      break;
-    }
+  account = {
+    ...commonFields,
+    accountType: value.accountType,
+    currentBalance: value.currentBalance,
+    recommendedMinimumBuffer: value.recommendedMinimumBuffer,
+  };
+
+  break;
+}
 
     case "credit-card": {
       if (
@@ -203,15 +210,10 @@ function deserializeFinancialAccount(
       }
 
       if (!isOptionalString(value.paymentDueDate)) {
-        if (!isOptionalString(value.settlementAccountId)) {
   throw new Error(
-    `Invalid persisted financial account "${value.id}": settlementAccountId must be a string when present.`,
+    `Invalid persisted financial account "${value.id}": paymentDueDate must be a string when present.`,
   );
 }
-        throw new Error(
-          `Invalid persisted financial account "${value.id}": paymentDueDate must be a string when present.`,
-        );
-      }
 
       if (!isOptionalString(value.statementDate)) {
         throw new Error(
@@ -227,16 +229,16 @@ function deserializeFinancialAccount(
         );
       }
       const creditCardAccount: CreditCardAccount = {
-        ...commonFields,
-        accountType: "credit-card",
-        currentBalance: value.currentBalance,
-        creditLimit: value.creditLimit,
-        minimumPayment: value.minimumPayment,
-        paymentDueDate: value.paymentDueDate,
-        settlementAccountId: settlementAccountId,
-        statementDate: value.statementDate,
-        aprPercent: value.aprPercent,
-      };
+  ...commonFields,
+  accountType: "credit-card",
+  currentBalance: value.currentBalance,
+  creditLimit: value.creditLimit,
+  minimumPayment: value.minimumPayment,
+  paymentDueDate: value.paymentDueDate,
+  settlementAccountId,
+  statementDate: value.statementDate,
+  aprPercent: value.aprPercent,
+};
 
       account = creditCardAccount;
       break;
@@ -271,40 +273,36 @@ function deserializeFinancialAccount(
       }
 
       if (!isOptionalString(value.paymentDueDate)) {
-        if (!isOptionalString(value.settlementAccountId)) {
   throw new Error(
-    `Invalid persisted financial account "${value.id}": settlementAccountId must be a string when present.`,
+    `Invalid persisted financial account "${value.id}": paymentDueDate must be a string when present.`,
   );
 }
-        throw new Error(
-          `Invalid persisted financial account "${value.id}": paymentDueDate must be a string when present.`,
-        );
-      }
 
-      if (!isOptionalString(value.maturityDate)) {
-        throw new Error(
-          `Invalid persisted financial account "${value.id}": maturityDate must be a string when present.`,
-        );
-      }
+if (!isOptionalString(value.maturityDate)) {
+  throw new Error(
+    `Invalid persisted financial account "${value.id}": maturityDate must be a string when present.`,
+  );
+}
 
-      const settlementAccountId = value.settlementAccountId;
+const settlementAccountId = value.settlementAccountId;
 
 if (!isOptionalString(settlementAccountId)) {
   throw new Error(
     `Invalid persisted financial account "${value.id}": settlementAccountId must be a string when present.`,
   );
 }
+
       const loanAccount: LoanAccount = {
-        ...commonFields,
-        accountType: "loan",
-        currentPrincipal: value.currentPrincipal,
-        originalPrincipal: value.originalPrincipal,
-        minimumPayment: value.minimumPayment,
-        paymentDueDate: value.paymentDueDate,
-        settlementAccountId: settlementAccountId,
-        interestRatePercent: value.interestRatePercent,
-        maturityDate: value.maturityDate,
-      };
+  ...commonFields,
+  accountType: "loan",
+  currentPrincipal: value.currentPrincipal,
+  originalPrincipal: value.originalPrincipal,
+  minimumPayment: value.minimumPayment,
+  paymentDueDate: value.paymentDueDate,
+  settlementAccountId,
+  interestRatePercent: value.interestRatePercent,
+  maturityDate: value.maturityDate,
+};
 
       account = loanAccount;
       break;
@@ -376,7 +374,7 @@ export class LocalStorageFinancialAccountRepository implements FinancialAccountR
     assertUniqueFinancialAccountIds(accounts);
 
     this.storage.setItem(this.storageKey, JSON.stringify(accounts));
-  }
+}
 
   async clear(): Promise<void> {
     this.storage.removeItem(this.storageKey);

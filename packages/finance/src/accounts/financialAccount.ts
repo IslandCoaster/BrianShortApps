@@ -34,6 +34,7 @@ export type CheckingAccount = BaseFinancialAccount & {
   accountType: "checking";
   institutionName: string;
   currentBalance: number;
+  recommendedMinimumBuffer?: number;
   accountSuffix?: string;
 };
 
@@ -41,6 +42,7 @@ export type SavingsAccount = BaseFinancialAccount & {
   accountType: "savings";
   institutionName: string;
   currentBalance: number;
+  recommendedMinimumBuffer?: number;
   accountSuffix?: string;
 };
 
