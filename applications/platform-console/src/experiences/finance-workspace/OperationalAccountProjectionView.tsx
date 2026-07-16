@@ -1,4 +1,5 @@
 import type {
+  AccountLiquidityState,
   AssetAccountProjection,
   AssetAccountProjectionEntry,
   AssetAccountProjectionResult,
@@ -32,6 +33,31 @@ function formatAccountType(accountType: AssetAccountProjection["accountType"]) {
     case "savings":
       return "Savings Account";
   }
+}
+
+function formatLiquidityStatus(status: AccountLiquidityState["status"]) {
+  switch (status) {
+    case "healthy":
+      return "Healthy";
+
+    case "low-buffer":
+      return "Low Buffer";
+
+    case "overdraft-risk":
+      return "Overdraft Risk";
+
+    case "routing-incomplete":
+      return "Routing Incomplete";
+  }
+}
+
+function getLiquidityStateForAccount(
+  accountId: string,
+  liquidityAccounts: readonly AccountLiquidityState[],
+): AccountLiquidityState | undefined {
+  return liquidityAccounts.find(
+    (liquidityAccount) => liquidityAccount.accountId === accountId,
+  );
 }
 
 function formatEntryType(entryType: AssetAccountProjectionEntry["entryType"]) {
@@ -72,8 +98,10 @@ function formatDiagnosticCategory(category: ProjectionDiagnostic["category"]) {
 
 function AccountProjectionCard({
   account,
+  liquidity,
 }: {
   account: AssetAccountProjection;
+  liquidity: AccountLiquidityState | undefined;
 }) {
   return (
     <article className="operational-account-projection__account">
@@ -86,8 +114,17 @@ function AccountProjectionCard({
           <span>{account.institutionName}</span>
         </div>
 
-        <span className="operational-account-projection__account-status">
-          Projected
+        <span
+          className={[
+            "operational-account-projection__account-status",
+            liquidity
+              ? `operational-account-projection__account-status--${liquidity.status}`
+              : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          {liquidity ? formatLiquidityStatus(liquidity.status) : "Projected"}
         </span>
       </div>
 
@@ -117,6 +154,28 @@ function AccountProjectionCard({
           <strong>{formatAmount(account.closingBalance)}</strong>
         </article>
       </div>
+      {liquidity ? (
+        <section
+          className={[
+            "operational-account-projection__liquidity",
+            `operational-account-projection__liquidity--${liquidity.status}`,
+          ].join(" ")}
+        >
+          <div>
+            <span>Liquidity Status</span>
+
+            <strong>{formatLiquidityStatus(liquidity.status)}</strong>
+          </div>
+
+          <div>
+            <span>Recommended Minimum Buffer</span>
+
+            <strong>{formatAmount(liquidity.recommendedMinimumBuffer)}</strong>
+          </div>
+
+          <p>{liquidity.rationale}</p>
+        </section>
+      ) : null}
 
       <div className="operational-account-projection__timeline">
         <div className="operational-account-projection__timeline-header">
@@ -257,6 +316,8 @@ export function OperationalAccountProjectionView({
     0,
   );
 
+  const liquidity = projection.liquidity;
+
   return (
     <section className="operational-account-projection">
       <div className="operational-account-projection__header">
@@ -272,15 +333,24 @@ export function OperationalAccountProjectionView({
         </div>
 
         <span
-          className={`operational-account-projection__projection-status ${
-            projection.diagnostics.canProjectCompletely
-              ? "operational-account-projection__projection-status--ready"
-              : "operational-account-projection__projection-status--attention"
-          }`}
+          className={[
+            "operational-account-projection__projection-status",
+            liquidity.hasLiquidityRisk
+              ? "operational-account-projection__projection-status--risk"
+              : projection.diagnostics.canProjectCompletely
+                ? "operational-account-projection__projection-status--ready"
+                : "operational-account-projection__projection-status--attention",
+          ].join(" ")}
         >
-          {projection.diagnostics.canProjectCompletely
-            ? "Projection complete"
-            : "Projection attention required"}
+          {liquidity.overdraftRiskCount > 0
+            ? "Overdraft risk detected"
+            : liquidity.routingIncompleteCount > 0
+              ? "Routing incomplete"
+              : liquidity.lowBufferCount > 0
+                ? "Low liquidity buffer"
+                : projection.diagnostics.canProjectCompletely
+                  ? "Projection healthy"
+                  : "Projection attention required"}
         </span>
       </div>
 
@@ -308,6 +378,28 @@ export function OperationalAccountProjectionView({
         <article>
           <span>Projected Closing Balance</span>
           <strong>{formatAmount(projectedClosingBalance)}</strong>
+        </article>
+      </div>
+
+      <div className="operational-account-projection__liquidity-summary">
+        <article>
+          <span>Healthy</span>
+          <strong>{liquidity.healthyCount}</strong>
+        </article>
+
+        <article>
+          <span>Low Buffer</span>
+          <strong>{liquidity.lowBufferCount}</strong>
+        </article>
+
+        <article>
+          <span>Overdraft Risk</span>
+          <strong>{liquidity.overdraftRiskCount}</strong>
+        </article>
+
+        <article>
+          <span>Routing Incomplete</span>
+          <strong>{liquidity.routingIncompleteCount}</strong>
         </article>
       </div>
 
@@ -344,6 +436,10 @@ export function OperationalAccountProjectionView({
                   <AccountProjectionCard
                     key={account.accountId}
                     account={account}
+                    liquidity={getLiquidityStateForAccount(
+                      account.accountId,
+                      liquidity.accounts,
+                    )}
                   />
                 ))}
               </div>
@@ -370,6 +466,10 @@ export function OperationalAccountProjectionView({
                   <AccountProjectionCard
                     key={account.accountId}
                     account={account}
+                    liquidity={getLiquidityStateForAccount(
+                      account.accountId,
+                      liquidity.accounts,
+                    )}
                   />
                 ))}
               </div>
@@ -398,15 +498,15 @@ export function OperationalAccountProjectionView({
           </div>
 
           <div className="operational-account-projection__diagnostic-list">
-  {projection.diagnostics.diagnostics.map(
-    (diagnostic: ProjectionDiagnostic) => (
-      <ProjectionDiagnosticCard
-        key={diagnostic.id}
-        diagnostic={diagnostic}
-      />
-    ),
-  )}
-</div>
+            {projection.diagnostics.diagnostics.map(
+              (diagnostic: ProjectionDiagnostic) => (
+                <ProjectionDiagnosticCard
+                  key={diagnostic.id}
+                  diagnostic={diagnostic}
+                />
+              ),
+            )}
+          </div>
         </section>
       ) : null}
     </section>
