@@ -227,6 +227,79 @@ export function verifyAssetAccountProjection(): void {
         savingsAccount.id,
     );
 
+    const overdraftCheckingAccount: FinancialAccount = {
+  id: "checking-overdraft",
+  accountType: "checking",
+  name: "Overdraft Checking",
+  institutionName: "Example Bank",
+  status: "active",
+  currentBalance: 100,
+  createdAt: "2026-07-14T12:00:00.000Z",
+  updatedAt: "2026-07-14T12:00:00.000Z",
+};
+
+const overdraftCreditCard: FinancialAccount = {
+  id: "card-overdraft",
+  accountType: "credit-card",
+  name: "Overdraft Card",
+  institutionName: "Example Issuer",
+  status: "active",
+  currentBalance: 500,
+  minimumPayment: 300,
+  paymentDueDate: "2026-07-23",
+  settlementAccountId: overdraftCheckingAccount.id,
+  createdAt: "2026-07-14T12:00:00.000Z",
+  updatedAt: "2026-07-14T12:00:00.000Z",
+};
+
+const overdraftFundingPlan: OperationalFundingPlan = {
+  planningDate: "2026-07-14",
+  position: {
+    currentCash: 300,
+    plannedFutureCash: 0,
+    grossAvailableCash: 300,
+    protectedCash: 0,
+    deployableCash: 300,
+    allocatedCash: 300,
+    fundingBuffer: 0,
+    unresolvedAmount: 0,
+  },
+  items: [
+    {
+      requirementId: overdraftCreditCard.id,
+      requirementType: "debt-account",
+      name: overdraftCreditCard.name,
+      counterparty: overdraftCreditCard.institutionName,
+      dueDate: "2026-07-23",
+      requestedAmount: 300,
+      allocatedAmount: 300,
+      fundedAmountByDueDate: 300,
+      fundingStatus: "funded-by-due-date",
+      fullyFundedOn: "2026-07-14",
+      isPastDue: false,
+      allocations: [
+        {
+          availableOn: "2026-07-14",
+          paymentDate: "2026-07-23",
+          amount: 300,
+          fundingSourceId: "replay-current-cash",
+        },
+      ],
+    },
+  ],
+  excludedRequirements: [],
+};
+
+const overdraftProjection = buildAssetAccountProjection({
+  accounts: [
+    overdraftCheckingAccount,
+    overdraftCreditCard,
+  ],
+  fundingSources: [],
+  allocations: [],
+  fundingPlan: overdraftFundingPlan,
+});
+
   assertEqual(
     checkingProjection?.openingBalance,
     47.15,
@@ -323,9 +396,29 @@ export function verifyAssetAccountProjection(): void {
     );
 
     assertEqual(
-  projection.diagnostics.blockingCount,
-  1,
-  "Partially routed source creates one blocking diagnostic",
+    projection.diagnostics.blockingCount,
+    1,
+    "Partially routed source creates one blocking diagnostic",
+  );
+
+  assertEqual(
+    projection.liquidity.accounts.length,
+    projection.accounts.length,
+    "Each projected asset account receives liquidity state",
+  );
+
+  assertEqual(
+  projection.liquidity.accounts.every(
+    (account) => account.status === "healthy",
+  ),
+  true,
+  "Deposit-only account projections are healthy with a zero buffer",
+);
+
+assertEqual(
+  projection.liquidity.hasLiquidityRisk,
+  false,
+  "Deposit-only fixture has no liquidity risk",
 );
 
 assertEqual(
@@ -338,5 +431,23 @@ assertEqual(
   projection.diagnostics.canProjectCompletely,
   false,
   "Blocked funding prevents complete projection",
+);
+
+assertEqual(
+  overdraftProjection.accounts[0]?.lowestBalance,
+  -200,
+  "Settlement replay exposes negative lowest balance",
+);
+
+assertEqual(
+  overdraftProjection.liquidity.overdraftRiskCount,
+  1,
+  "Overdraft-risk summary count",
+);
+
+assertEqual(
+  overdraftProjection.liquidity.hasLiquidityRisk,
+  true,
+  "Overdraft projection reports liquidity risk",
 );
 }

@@ -28,6 +28,12 @@ import {
   type ProjectionReplayEntry,
 } from "./replay/projectionReplay";
 
+import {
+  buildLiquidityState,
+  type AccountLiquidityBuffer,
+  type LiquidityStateSummary,
+} from "../liquidity";
+
 export type AssetAccountProjectionEntryType =
   | "funding-deposit"
   | "planned-settlement";
@@ -81,6 +87,8 @@ export type AssetAccountProjectionResult = {
 
   diagnostics: ProjectionDiagnosticSummary;
 
+  liquidity: LiquidityStateSummary;
+
   /**
    * Temporary compatibility fields. Remove after every consumer uses
    * the normalized diagnostics summary.
@@ -98,6 +106,8 @@ export type AssetAccountProjectionRequest = {
   fundingSources: readonly FundingSource[];
   allocations: readonly FundingDepositAllocation[];
   fundingPlan: OperationalFundingPlan;
+  accountLiquidityBuffers?: readonly AccountLiquidityBuffer[];
+  defaultMinimumLiquidityBuffer?: number;
 };
 
 function mapBlockedFundingSource(
@@ -152,6 +162,8 @@ export function buildAssetAccountProjection({
   fundingSources,
   allocations,
   fundingPlan,
+  accountLiquidityBuffers = [],
+  defaultMinimumLiquidityBuffer = 0,
 }: AssetAccountProjectionRequest): AssetAccountProjectionResult {
   const fundingDepositProjection = buildFundingDepositProjection({
     accounts,
@@ -213,9 +225,17 @@ export function buildAssetAccountProjection({
     settlementIssues: settlementProjection.issues,
   });
 
+  const liquidity = buildLiquidityState({
+  accounts: accountProjections,
+  diagnostics,
+  accountBuffers: accountLiquidityBuffers,
+  defaultMinimumBuffer: defaultMinimumLiquidityBuffer,
+});
+
   return {
-    accounts: accountProjections,
-    diagnostics,
+  accounts: accountProjections,
+  diagnostics,
+  liquidity,
     blockedFundingSources:
       fundingDepositProjection.blockedSources.map(mapBlockedFundingSource),
     orphanedIssues: fundingDepositProjection.orphanedAllocationIssues,
