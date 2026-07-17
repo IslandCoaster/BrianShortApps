@@ -1,9 +1,41 @@
-﻿import { App } from "aws-cdk-lib";
+import {
+  App,
+} from "aws-cdk-lib";
 
-import { PlatformFoundationStack } from "../stacks/PlatformFoundationStack";
+import {
+  resolvePlatformEnvironment,
+} from "../config/platformEnvironment";
+import {
+  PlatformFoundationStack,
+} from "../stacks/PlatformFoundationStack";
+import {
+  buildResourceName,
+} from "../standards/resourceNaming";
 
 const app = new App();
 
-new PlatformFoundationStack(app, "bsa-platform-foundation-dev", {
-  description: "BrianShortApps development cloud foundation.",
+const platformEnvironment = resolvePlatformEnvironment(
+  app.node.tryGetContext("environment"),
+);
+
+const stackName = buildResourceName({
+  application: "platform",
+  component: "foundation",
+  environment: platformEnvironment,
 });
+
+new PlatformFoundationStack(
+  app,
+  stackName,
+  {
+    stackName,
+    description:
+      `BrianShortApps ${platformEnvironment.environment} ` +
+      "cloud foundation.",
+    platformEnvironment,
+    env: {
+      account: platformEnvironment.account,
+      region: platformEnvironment.region,
+    },
+  },
+);

@@ -5,7 +5,9 @@
   "type": "commonjs",
   "scripts": {
     "build": "tsc --noEmit",
-    "synth": "cdk synth",
+    "synth": "npm run synth:dev",
+    "synth:dev": "cdk synth --context environment=development",
+    "synth:prod": "cdk synth --context environment=production",
     "diff:dev": "cdk diff --context environment=development",
     "diff:prod": "cdk diff --context environment=production"
   },
