@@ -9,7 +9,10 @@
     "synth:dev": "cdk synth --context environment=development",
     "synth:prod": "cdk synth --context environment=production",
     "diff:dev": "cdk diff --context environment=development",
-    "diff:prod": "cdk diff --context environment=production"
+    "diff:prod": "cdk diff --context environment=production",
+    "deploy": "npm run deploy:dev",
+    "deploy:dev": "cdk deploy --context environment=development --require-approval never",
+    "deploy:prod": "cdk deploy --context environment=production"
   },
   "dependencies": {
     "aws-cdk-lib": "^2.0.0",
