@@ -24,3 +24,9 @@ __pycache__/
 
 # Build artifacts
 *.tsbuildinfo
+
+# CDK
+platform/infrastructure/cdk.out/
+
+# Infrastructure dependencies
+platform/infrastructure/node_modules/
