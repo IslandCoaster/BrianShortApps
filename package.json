@@ -1,10 +1,11 @@
-{
+﻿{
   "name": "brianshortapps",
   "version": "1.0.0",
   "private": true,
   "workspaces": [
     "applications/*",
-    "packages/*"
+    "packages/*",
+    "platform/infrastructure"
   ],
   "scripts": {
     "build": "echo Workspace build",

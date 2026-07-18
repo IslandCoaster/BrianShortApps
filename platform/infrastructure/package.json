@@ -1,0 +1,26 @@
+{
+  "name": "@bsa/infrastructure",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "synth": "npm run synth:dev",
+    "synth:dev": "cdk synth --context environment=development",
+    "synth:prod": "cdk synth --context environment=production",
+    "diff:dev": "cdk diff --context environment=development",
+    "diff:prod": "cdk diff --context environment=production",
+    "deploy": "npm run deploy:dev",
+    "deploy:dev": "cdk deploy --context environment=development --require-approval never",
+    "deploy:prod": "cdk deploy --context environment=production"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.0.0",
+    "constructs": "^10.0.0"
+  },
+  "devDependencies": {
+    "aws-cdk": "^2.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
+  }
+}
