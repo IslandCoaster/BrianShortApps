@@ -9,6 +9,9 @@ import {
   PlatformFoundationStack,
 } from "../stacks/PlatformFoundationStack";
 import {
+  PlatformIdentityStack,
+} from "../stacks/PlatformIdentityStack";
+import {
   buildResourceName,
 } from "../standards/resourceNaming";
 
@@ -18,24 +21,48 @@ const platformEnvironment = resolvePlatformEnvironment(
   app.node.tryGetContext("environment"),
 );
 
-const stackName = buildResourceName({
+const sharedStackProps = {
+  platformEnvironment,
+  env: {
+    account: platformEnvironment.account,
+    region: platformEnvironment.region,
+  },
+};
+
+const foundationStackName = buildResourceName({
   application: "platform",
   component: "foundation",
   environment: platformEnvironment,
 });
 
-new PlatformFoundationStack(
+const foundationStack = new PlatformFoundationStack(
   app,
-  stackName,
+  foundationStackName,
   {
-    stackName,
+    ...sharedStackProps,
+    stackName: foundationStackName,
     description:
       `BrianShortApps ${platformEnvironment.environment} ` +
       "cloud foundation.",
-    platformEnvironment,
-    env: {
-      account: platformEnvironment.account,
-      region: platformEnvironment.region,
-    },
   },
 );
+
+const identityStackName = buildResourceName({
+  application: "platform",
+  component: "identity",
+  environment: platformEnvironment,
+});
+
+const identityStack = new PlatformIdentityStack(
+  app,
+  identityStackName,
+  {
+    ...sharedStackProps,
+    stackName: identityStackName,
+    description:
+      `BrianShortApps ${platformEnvironment.environment} ` +
+      "platform identity.",
+  },
+);
+
+identityStack.addDependency(foundationStack);
