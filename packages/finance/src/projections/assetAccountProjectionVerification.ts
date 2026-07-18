@@ -395,6 +395,12 @@ const overdraftProjection = buildAssetAccountProjection({
         "Empty settlement plan is fully projectable",
     );
 
+assertEqual(
+  projection.diagnostics.blockingCount,
+  1,
+  "Partially routed source creates one blocking diagnostic",
+);
+
     assertEqual(
     projection.diagnostics.blockingCount,
     1,

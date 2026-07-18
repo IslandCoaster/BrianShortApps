@@ -72,14 +72,23 @@ export function buildFundingDepositProjection({
   allocations,
 }: FundingDepositProjectionRequest): FundingDepositProjectionResult {
   const plannedFundingSources = fundingSources.filter(
-    (source) => source.status === "planned",
-  );
+  (source) => source.status === "planned",
+);
 
-  const allocationProjection = buildFundingAllocationProjection({
-    accounts,
-    fundingSources: plannedFundingSources,
-    allocations,
-  });
+const plannedFundingSourceIds = new Set(
+  plannedFundingSources.map((source) => source.id),
+);
+
+const plannedAllocations = allocations.filter(
+  (allocation) =>
+    plannedFundingSourceIds.has(allocation.fundingSourceId),
+);
+
+const allocationProjection = buildFundingAllocationProjection({
+  accounts,
+  fundingSources: plannedFundingSources,
+  allocations: plannedAllocations,
+});
 
   const fullyAllocatedSourceIds = new Set(
     allocationProjection.sources
