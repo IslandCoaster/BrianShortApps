@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "workspaces": [
-    "applications/*",
-    "packages/*",
-    "platform/infrastructure"
-  ],
+  "applications/*",
+  "applications/*/infrastructure",
+  "packages/*",
+  "platform/infrastructure"
+],
   "scripts": {
     "build": "echo Workspace build",
     "lint": "echo Workspace lint",
