@@ -4,6 +4,10 @@ import {
   FinancialWorkspacePersistenceStack,
 } from "../stacks/FinancialWorkspacePersistenceStack";
 
+import {
+  FinancialWorkspaceServiceStack,
+} from "../stacks/FinancialWorkspaceServiceStack";
+
 const app = new App();
 
 const requestedEnvironment =
@@ -42,7 +46,8 @@ const stackName =
   `bsa-financial-workspace-persistence-` +
   environmentAbbreviation;
 
-new FinancialWorkspacePersistenceStack(
+const persistenceStack =
+  new FinancialWorkspacePersistenceStack(
   app,
   stackName,
   {
@@ -58,3 +63,25 @@ new FinancialWorkspacePersistenceStack(
     },
   },
 );
+const serviceStackName =
+  `bsa-financial-workspace-service-` +
+  environmentAbbreviation;
+
+const serviceStack = new FinancialWorkspaceServiceStack(
+  app,
+  serviceStackName,
+  {
+    stackName: serviceStackName,
+    description:
+      `BrianShortApps Financial Workspace ` +
+      `${requestedEnvironment} application services.`,
+    environmentName: requestedEnvironment,
+    dataTable: persistenceStack.dataTable,
+    env: {
+      account,
+      region,
+    },
+  },
+);
+
+serviceStack.addDependency(persistenceStack);

@@ -4,6 +4,7 @@
   "private": true,
   "workspaces": [
   "applications/*",
+  "applications/*/api/*",
   "applications/*/infrastructure",
   "packages/*",
   "platform/infrastructure"

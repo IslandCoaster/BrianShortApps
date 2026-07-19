@@ -12,6 +12,9 @@ import {
   UserPoolClient,
   UserPoolClientIdentityProvider,
 } from "aws-cdk-lib/aws-cognito";
+import {
+  StringParameter,
+} from "aws-cdk-lib/aws-ssm";
 
 import type { Construct } from "constructs";
 import type {
@@ -143,5 +146,31 @@ export class PlatformIdentityStack extends Stack {
       description:
         "Cognito app client ID for the BrianShortApps Platform Console.",
     });
+
+    new StringParameter(
+  this,
+  "PlatformUserPoolIdParameter",
+  {
+    parameterName:
+      `/bsa/platform/${props.platformEnvironment.environment}` +
+      "/identity/user-pool-id",
+    stringValue: userPool.userPoolId,
+    description:
+      "BrianShortApps Platform Cognito User Pool ID.",
+  },
+);
+
+new StringParameter(
+  this,
+  "PlatformConsoleClientIdParameter",
+  {
+    parameterName:
+      `/bsa/platform/${props.platformEnvironment.environment}` +
+      "/identity/platform-console-client-id",
+    stringValue: platformConsoleClient.userPoolClientId,
+    description:
+      "BrianShortApps Platform Console Cognito app client ID.",
+  },
+);
   }
 }

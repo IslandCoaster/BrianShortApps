@@ -1,0 +1,18 @@
+{
+  "name": "@bsa/financial-workspace-account-service",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "src/handler.ts",
+  "scripts": {
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0",
+    "@bsa/finance": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
