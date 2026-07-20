@@ -24,18 +24,23 @@ export class CloudFinancialAccountRepository
   }
 
   private async request<T>(
-    method: string,
-    path: string,
-    body?: unknown,
+  method: string,
+  path: string,
+  body?: unknown,
   ): Promise<T> {
+    const accessToken = sessionStorage.getItem(
+      "bsa.auth.accessToken",
+    );
+
     const response = await fetch(`${this.baseUrl}${path}`, {
       method,
       headers: {
         "Content-Type": "application/json",
-
-        // FIN-003:
-        // Replace with Cognito ID token.
-        // Authorization: `Bearer ${token}`,
+        ...(accessToken
+          ? {
+              Authorization: `Bearer ${accessToken}`,
+            }
+          : {}),
       },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
