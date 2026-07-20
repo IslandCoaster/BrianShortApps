@@ -8,6 +8,7 @@ import {
 import {
   AccountRecovery,
   Mfa,
+  OAuthScope,
   UserPool,
   UserPoolClient,
   UserPoolClientIdentityProvider,
@@ -94,6 +95,15 @@ export class PlatformIdentityStack extends Stack {
       removalPolicy: RemovalPolicy.RETAIN,
     });
 
+    const hostedUiDomain = userPool.addDomain(
+  "PlatformHostedUiDomain",
+  {
+    cognitoDomain: {
+      domainPrefix: "bsa-development",
+    },
+  },
+);
+
     const platformConsoleClient = new UserPoolClient(
       this,
       "PlatformConsoleClient",
@@ -119,7 +129,25 @@ export class PlatformIdentityStack extends Stack {
 
         enableTokenRevocation: true,
 
-        disableOAuth: true,
+        oAuth: {
+  flows: {
+    authorizationCodeGrant: true,
+  },
+
+  scopes: [
+    OAuthScope.OPENID,
+    OAuthScope.EMAIL,
+    OAuthScope.PROFILE,
+  ],
+
+  callbackUrls: [
+    "http://localhost:5173/auth/callback",
+  ],
+
+  logoutUrls: [
+    "http://localhost:5173/",
+  ],
+},
       },
     );
 
@@ -172,5 +200,29 @@ new StringParameter(
       "BrianShortApps Platform Console Cognito app client ID.",
   },
 );
+
+new StringParameter(
+  this,
+  "PlatformHostedUiDomainParameter",
+  {
+    parameterName:
+      `/bsa/platform/${props.platformEnvironment.environment}` +
+      "/identity/hosted-ui-domain",
+
+    stringValue:
+      `https://${hostedUiDomain.domainName}.auth.${this.region}.amazoncognito.com`,
+
+    description:
+      "BrianShortApps Platform Cognito Hosted UI base URL.",
+  },
+);
+
+new CfnOutput(this, "PlatformHostedUiDomain", {
+  value:
+    `https://${hostedUiDomain.domainName}.auth.${this.region}.amazoncognito.com`,
+
+  description:
+    "BrianShortApps Platform Cognito Hosted UI base URL.",
+});
   }
 }
